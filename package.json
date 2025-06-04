@@ -9,10 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@farcaster/frame-sdk": "^0.0.55",
+    "@farcaster/frame-wagmi-connector": "^0.0.44",
+    "@tanstack/react-query": "^5.80.3",
     "kaplay": "^3001.0.18",
     "next": "15.3.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.3.0",
+    "viem": "^2.30.6",
+    "wagmi": "^2.15.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
