@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, FormEvent } from "react";
-import { useRouter } from "next/navigation";
 import {
   useSendTransaction,
   useAccount,
@@ -13,15 +12,8 @@ import {
 import { parseEther } from "viem";
 import { UserRejectedRequestError } from "viem";
 import { celo } from "wagmi/chains";
-import GameCanvas from "../components/GameCanvas";
 import { useRef, useEffect } from "react";
-import kaplay, { AudioPlay, GameObj } from "kaplay";
 import { runGame } from "@/components/GameFunction";
-
-interface GameCanvasProps {
-  started: boolean;
-  setStarted: (started: boolean) => void;
-}
 
 type SendTransactionArgs = UseSendTransactionParameters & {
   to: `0x${string}`;
@@ -32,7 +24,7 @@ export default function Home() {
   const { isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { data: hash, sendTransaction } = useSendTransaction();
-  const { isSuccess: isConfirmed, status } = useWaitForTransactionReceipt({
+  const { status } = useWaitForTransactionReceipt({
     hash,
   });
   const { switchChain } = useSwitchChain();

@@ -44,20 +44,16 @@ export function runGame(
   k.loadSound("loop", "/assets/loop.mp3");
   k.loadSound("action", "/assets/action.mp3");
 
-  let currentScene: string = "";
+  let currentScene = "";
   let score: GameObj;
   let flappy: GameObj;
   let lives = 3;
-  let pipes: GameObj[] = [];
+  const pipes: GameObj[] = [];
   let playback: AudioPlay;
-  let hearts: GameObj[] = [];
+  const hearts: GameObj[] = [];
   const MOVEMENT = 12;
 
-  const drawScore = (
-    x: number = k.width() / 1.7,
-    y: number = 30,
-    lastScore: number = 0
-  ) => {
+  const drawScore = (x = k.width() / 1.7, y = 30, lastScore = 0) => {
     score = k.add([
       k.text(`Blocks: ${lastScore}`, {
         size: 20,
@@ -68,21 +64,10 @@ export function runGame(
     ]);
   };
 
-  const drawInstructions = () => {
-    k.add([
-      k.text("Tap the screen to restart", {
-        size: 14,
-      }),
-      k.pos(k.width() / 5, k.height() / 2.5),
-      k.color(k.Color.WHITE),
-    ]);
-    k.onKeyPress("space", () => k.go("game"));
-  };
-
   const drawUi = () => {
-    hearts.map((h) => h.destroy());
+    hearts.forEach((h) => h.destroy());
     k.onDraw(() => {
-      Array.from({ length: lives }).map((_, index) => {
+      Array.from({ length: lives }).forEach((_, index) => {
         const h = k.add([
           k.sprite("heart", { anim: "one" }),
           k.pos(k.vec2(44 * (index + 1), 24)),
@@ -161,6 +146,57 @@ export function runGame(
     ]);
   };
 
+  const removeHearts = () => {
+    hearts.forEach((h) => h.destroy());
+  };
+
+  const handleIsGameOverOrReduceHearts = () => {
+    lives -= 1;
+    removeHearts();
+    if (lives < 0) {
+      k.go("game_over", { lastScore: score.value });
+    }
+  };
+
+  const drawFloor = () => {
+    k.add([
+      "floor",
+      k.sprite("floor", { width: k.width(), height: 68 }),
+      k.pos(0, k.height() - 68),
+      k.area(),
+      k.body({ isStatic: true }),
+    ]);
+  };
+
+  let bgPosX = 0;
+  let bg2: GameObj; // Declare bg2 outside to avoid implicit any
+
+  const bgEffect = () => {
+    k.onUpdate("bg", (bg: GameObj) => {
+      // Changed from any to GameObj
+      if (bg.pos.x < -k.width()) {
+        bg.pos.x = 0;
+        if (bg2) {
+          bg2.pos.x = k.width();
+        }
+      }
+      bgPosX = bg.pos.x;
+    });
+    k.add([
+      "bg",
+      k.sprite("bg", { width: k.width(), height: k.height() }),
+      k.pos(bgPosX, -32),
+      k.move(k.LEFT, MOVEMENT),
+    ]);
+    bg2 = k.add([
+      "bg2",
+      k.sprite("bg", { width: k.width(), height: k.height() }),
+      k.pos(k.width() + bgPosX, -32),
+      k.move(k.LEFT, MOVEMENT),
+    ]);
+    drawFloor();
+  };
+
   k.scene("idle", () => {
     playback = k.play("loop", { volume: 0.2 });
     bgEffect();
@@ -184,7 +220,9 @@ export function runGame(
   });
 
   k.scene("game_over", ({ lastScore = 0 }: { lastScore: number }) => {
-    playback && playback.stop();
+    if (playback) {
+      playback.stop();
+    }
     bgEffect();
     k.add([
       k.text("GAME OVER", { size: 40 }),
@@ -192,7 +230,6 @@ export function runGame(
       k.pos(k.width() / 2 - 120, k.height() / 6),
     ]);
     drawScore(k.width() / 2 - 100, k.height() / 3, lastScore);
-    // drawInstructions();
     drawFloor();
     k.add([
       "rocket",
@@ -212,22 +249,20 @@ export function runGame(
       k.pos(k.width() / 2 - 100, k.height() / 4),
       { value: 0 },
     ]);
-    // k.onClick(() => {
-    //   k.go("game");
-    //   currentScene = "game";
-    // });
-    //lives = 4;
     k.play("game_over");
-    // When game over, call setStarted(false) to close the game
     setTimeout(() => setStarted(false), 1000);
   });
 
   k.scene("game", () => {
-    playback && playback.stop();
+    if (playback) {
+      playback.stop();
+    }
     playback = k.play("action", { volume: 0.3 });
     bgEffect();
     k.setGravity(1000);
-    flappy && flappy.destroy();
+    if (flappy) {
+      flappy.destroy();
+    }
     flappy = k.add([
       "rocket",
       k.stay(),
@@ -246,7 +281,7 @@ export function runGame(
         flappy.angle += 120 * k.dt();
       }
       const limit = flappy.pos.x;
-      pipes = pipes.filter((block) => {
+      pipes.filter((block) => {
         if (block.pos.x + block.width < limit) {
           score.value += 1;
           score.text = "Blocks: " + score.value;
@@ -273,57 +308,11 @@ export function runGame(
     });
   });
 
-  const removeHearts = () => {
-    hearts.map((h) => h.destroy());
-  };
-
-  const handleIsGameOverOrReduceHearts = () => {
-    lives -= 1;
-    removeHearts();
-    if (lives < 0) {
-      k.go("game_over", { lastScore: score.value });
-    }
-  };
-
-  const drawFloor = () => {
-    k.add([
-      "floor",
-      k.sprite("floor", { width: k.width(), height: 68 }),
-      k.pos(0, k.height() - 68),
-      k.area(),
-      k.body({ isStatic: true }),
-    ]);
-  };
-
-  let bgPosX = 0;
-  const bgEffect = () => {
-    k.onUpdate("bg", (bg: any) => {
-      if (bg.pos.x < -k.width()) {
-        bg.pos.x = 0;
-        bg2.pos.x = k.width();
-      }
-      bgPosX = bg.pos.x;
-    });
-    k.add([
-      "bg",
-      k.sprite("bg", { width: k.width(), height: k.height() }),
-      k.pos(bgPosX, -32),
-      k.move(k.LEFT, MOVEMENT),
-    ]);
-    const bg2 = k.add([
-      "bg2",
-      k.sprite("bg", { width: k.width(), height: k.height() }),
-      k.pos(k.width() + bgPosX, -32),
-      k.move(k.LEFT, MOVEMENT),
-    ]);
-    drawFloor();
-  };
-
   // --- Start the game ---
   k.go("idle");
 
-  // Optionally return a cleanup function if needed
+  // Return cleanup function
   return () => {
-    // Cleanup logic if necessary
+    // Cleanup logic if needed
   };
 }
