@@ -201,12 +201,25 @@ export function runGame(
     playback = k.play("loop", { volume: 0.2 });
     bgEffect();
     drawUi();
+
+    // Add "Tap to play" text at the top
     k.add([
-      "rocket",
-      k.scale(0.3),
-      k.sprite("astronaut", { anim: "astro" }),
-      k.pos(200, k.height() / 1.24),
+      "gameText",
+      k.text("Tap to play", { size: 32 }),
+      k.color(k.Color.WHITE),
+      k.pos(k.width() / 2 - 90, 100),
     ]);
+
+    // Add rocket, inclined 30 degrees (in radians: Math.PI / 6)
+    k.add([
+      "rocketIdle",
+      k.scale(0.2),
+      k.sprite("rocket", { anim: "astro" }),
+      k.pos(200, k.height() / 2),
+      k.rotate(-30), // 30 degrees inclination
+      k.anchor("center"),
+    ]);
+
     k.onKeyDown("space", () => {
       if (currentScene !== "game") {
         k.go("game");
