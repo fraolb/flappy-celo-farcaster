@@ -48,7 +48,7 @@ export function runGame(
   let score: GameObj;
   let flappy: GameObj;
   let lives = 3;
-  const pipes: GameObj[] = [];
+  let pipes: GameObj[] = [];
   let playback: AudioPlay;
   const hearts: GameObj[] = [];
   const MOVEMENT = 12;
@@ -154,6 +154,7 @@ export function runGame(
     lives -= 1;
     removeHearts();
     if (lives < 0) {
+      console.log("Score? ", score.value);
       k.go("game_over", { lastScore: score.value });
     }
   };
@@ -205,7 +206,7 @@ export function runGame(
     // Add "Tap to play" text at the top
     k.add([
       "gameText",
-      k.text("Tap to play", { size: 32 }),
+      k.text("Tap to play", { size: 32, width: 320, font: "sans-serif" }),
       k.color(k.Color.WHITE),
       k.pos(k.width() / 2 - 90, 100),
     ]);
@@ -214,7 +215,7 @@ export function runGame(
     k.add([
       "rocketIdle",
       k.scale(0.2),
-      k.sprite("rocket", { anim: "astro" }),
+      k.sprite("rocket", { anim: "fly" }),
       k.pos(200, k.height() / 2),
       k.rotate(-30), // 30 degrees inclination
       k.anchor("center"),
@@ -262,8 +263,9 @@ export function runGame(
       k.pos(k.width() / 2 - 100, k.height() / 4),
       { value: 0 },
     ]);
+
     k.play("game_over");
-    setTimeout(() => setStarted(false), 1000);
+    setTimeout(() => setStarted(false), 5000);
   });
 
   k.scene("game", () => {
@@ -294,7 +296,7 @@ export function runGame(
         flappy.angle += 120 * k.dt();
       }
       const limit = flappy.pos.x;
-      pipes.filter((block) => {
+      pipes = pipes.filter((block) => {
         if (block.pos.x + block.width < limit) {
           score.value += 1;
           score.text = "Blocks: " + score.value;
