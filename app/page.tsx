@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, FormEvent } from "react";
+import { useState, useCallback } from "react";
 import {
   useSendTransaction,
   useAccount,
@@ -42,18 +42,17 @@ export default function Home() {
   const handleSubmit = async () => {
     console.log("handleSubmit called");
     setError("");
-    //if (!isConnected) return setError("Please connect your wallet first");
+    if (!isConnected) return setError("Please connect your wallet first");
     setIsProcessing(true);
-    //setShowGame(true);
-    showGameRef.current = true;
+
     try {
-      // await switchChain({ chainId: celo.id });
-      // await sendTransactionAsync({
-      //   to: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
-      //   value: parseEther("0.01"),
-      // });
-      // if (status === "error") throw new Error("Transaction reverted");
-      // setShowGame(true); // Show the game after payment
+      await switchChain({ chainId: celo.id });
+      await sendTransactionAsync({
+        to: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
+        value: parseEther("0.01"),
+      });
+      if (status === "error") throw new Error("Transaction reverted");
+      showGameRef.current = true;
     } catch (err) {
       setIsProcessing(false);
       if (err instanceof UserRejectedRequestError) {
