@@ -1,8 +1,14 @@
+"use client";
+
 import kaplay, { AudioPlay, GameObj } from "kaplay";
 
 export function runGame(
   canvas: HTMLCanvasElement,
-  setStarted: (started: boolean) => void
+  PaymentFunction: () => Promise<void>,
+  isProcessing: boolean,
+  error: string | null,
+  showGameRef: React.RefObject<boolean>,
+  endGame: () => void
 ) {
   // --- Game logic ---
   const k = kaplay({
@@ -198,6 +204,84 @@ export function runGame(
     drawFloor();
   };
 
+  function addButton(
+    txt = "start game",
+    p = k.vec2(200, 100),
+    f = () => k.debug.log("hello")
+  ) {
+    // add a parent background object
+    const btn = k.add([
+      k.rect(240, 80, { radius: 8 }),
+      k.pos(p),
+      k.area(),
+      k.scale(1),
+      k.anchor("center"),
+      k.outline(4),
+      k.color(255, 255, 255),
+    ]);
+
+    // add a child object that displays the text
+    btn.add([k.text(txt), k.anchor("center"), k.color(0, 0, 0)]);
+
+    // onHoverUpdate() comes from area() component
+    // it runs every frame when the object is being hovered
+    btn.onHoverUpdate(() => {
+      const t = k.time() * 10;
+      btn.color = k.hsl2rgb((t / 10) % 1, 0.6, 0.7);
+      btn.scale = k.vec2(1.2);
+      k.setCursor("pointer");
+    });
+
+    // onHoverEnd() comes from area() component
+    // it runs once when the object stopped being hovered
+    btn.onHoverEnd(() => {
+      btn.scale = k.vec2(1);
+      btn.color = k.rgb();
+    });
+
+    // onClick() comes from area() component
+    // it runs once when the object is clicked
+    btn.onClick(f);
+
+    return btn;
+  }
+
+  k.scene("first", () => {
+    playback = k.play("loop", { volume: 0.2 });
+    bgEffect();
+    drawUi();
+
+    // Add "Tap to play" text at the top
+    k.add([
+      "gameText",
+      k.text("Welcome to Flappy Celo", {
+        size: 32,
+        width: 320,
+        font: "sans-serif",
+        align: "center",
+      }),
+      k.color(k.Color.WHITE),
+      k.pos(k.width() / 2, 200),
+      k.anchor("center"),
+    ]);
+
+    addButton(
+      `${isProcessing ? "Processing" : "Play"}`,
+      k.vec2(k.width() / 2, 400),
+      () => PaymentFunction()
+    );
+    k.loop(1, () => {
+      console.log("showGameref is ", showGameRef);
+      if (showGameRef && showGameRef.current) {
+        // React state changed, handle accordingly
+        console.log("showGame is ", showGameRef.current);
+        k.go("idle");
+      }
+    });
+
+    //showGame == true && k.go("idle");
+  });
+
   k.scene("idle", () => {
     playback = k.play("loop", { volume: 0.2 });
     bgEffect();
@@ -263,9 +347,13 @@ export function runGame(
       k.pos(k.width() / 2 - 100, k.height() / 4),
       { value: 0 },
     ]);
-
+    // k.onCleanup(() => k.quit());
     k.play("game_over");
-    setTimeout(() => setStarted(false), 5000);
+
+    setTimeout(() => {
+      endGame();
+      k.go("first");
+    }, 5000);
   });
 
   k.scene("game", () => {
@@ -324,10 +412,21 @@ export function runGame(
   });
 
   // --- Start the game ---
-  k.go("idle");
+  k.go("first");
 
   // Return cleanup function
   return () => {
-    // Cleanup logic if needed
+    // Destroy all kaplay objects
+    //if (typeof k.destroyAll === "function") k.destroyAll();
+    // Optionally, quit kaplay if supported
+    k.quit();
+    if (canvas.parentNode) {
+      while (canvas.parentNode.firstChild) {
+        canvas.parentNode.removeChild(canvas.parentNode.firstChild);
+      }
+    }
+    // Clear the canvas
+    const ctx = canvas.getContext("2d");
+    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
   };
 }
