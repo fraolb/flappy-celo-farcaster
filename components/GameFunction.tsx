@@ -5,6 +5,7 @@ import kaplay, { AudioPlay, GameObj } from "kaplay";
 export function runGame(
   canvas: HTMLCanvasElement,
   PaymentFunction: () => Promise<void>,
+  handleAddUserScore: (score: number) => Promise<void>,
   isProcessing: boolean,
   error: string | null,
   showGameRef: React.RefObject<boolean>,
@@ -347,7 +348,12 @@ export function runGame(
       k.pos(k.width() / 2 - 100, k.height() / 4),
       { value: 0 },
     ]);
-    // k.onCleanup(() => k.quit());
+
+    // Send user score to backend
+    if (typeof handleAddUserScore === "function") {
+      handleAddUserScore(lastScore);
+    }
+
     k.play("game_over");
 
     setTimeout(() => {
