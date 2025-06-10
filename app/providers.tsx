@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { FrameProvider } from "@/components/providers/FrameProvider";
+import { ScoreProvider } from "@/components/providers/ScoreContext";
 
 const WagmiProvider = dynamic(
   () => import("@/components/providers/WagmiProvider"),
@@ -13,7 +14,9 @@ const WagmiProvider = dynamic(
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider>
-      <FrameProvider>{children}</FrameProvider>
+      <FrameProvider>
+        <ScoreProvider>{children}</ScoreProvider>
+      </FrameProvider>
     </WagmiProvider>
   );
 }
