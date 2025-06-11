@@ -344,18 +344,8 @@ export default function Home() {
       {isGameStarted && (
         <canvas
           ref={canvasRef}
-          width={480}
-          height={640}
           style={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
             zIndex: 100,
-            border: "2px solid rgba(255,255,255,0.2)",
-            borderRadius: "8px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-            background: "#111827",
           }}
         />
       )}

@@ -14,8 +14,6 @@ export function runGame(
   // --- Game logic ---
   const k = kaplay({
     global: false,
-    width: 480,
-    height: 640,
     canvas: canvas,
   });
 
