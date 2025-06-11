@@ -260,13 +260,13 @@ export function runGame(
         align: "center",
       }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2 - 45, 200),
+      k.pos(k.width() / 2 - 90, 200),
       k.anchor("center"),
     ]);
 
     addButton(
       `${isProcessing ? "Processing" : "Play"}`,
-      k.vec2(k.width() / 2 - 45, 400),
+      k.vec2(k.width() / 2 - 90, 400),
       () => PaymentFunction()
     );
     k.loop(1, () => {
@@ -282,7 +282,7 @@ export function runGame(
   });
 
   k.scene("idle", () => {
-    playback = k.play("loop", { volume: 0.2 });
+    // playback = k.play("loop", { volume: 0.2 });
     bgEffect();
     drawUi();
 

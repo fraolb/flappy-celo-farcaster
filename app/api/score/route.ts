@@ -60,6 +60,14 @@ export async function POST(request: Request) {
     };
 
     if (decoded.username !== username || decoded.score !== score) {
+      console.error(
+        "Data mismatch: token username/score does not match request body",
+        token,
+        decoded.username,
+        username,
+        decoded.score,
+        score
+      );
       return NextResponse.json({ error: "Data mismatch" }, { status: 400 });
     }
 
