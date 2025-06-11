@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Score from "@/model/score";
 import dbConnect from "@/lib/mongodb";
+import jwt from "jsonwebtoken";
 
 // GET: Fetch top 5 scores or a specific user's scores (by username query param)
 export async function GET(request: Request) {
@@ -40,6 +41,23 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { username, score } = body;
+
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { error: "Missing auth token" },
+        { status: 401 }
+      );
+    }
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET!) as {
+      username: string;
+      score: number;
+    };
+
+    if (decoded.username !== username || decoded.score !== score) {
+      return NextResponse.json({ error: "Data mismatch" }, { status: 400 });
+    }
 
     if (!username || typeof score !== "number") {
       return NextResponse.json(

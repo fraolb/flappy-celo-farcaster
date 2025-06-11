@@ -43,12 +43,17 @@ export async function getUserScores(username: string) {
  * @param score - The score to be added for the user.
  * @returns The created score document.
  */
-export async function addUserScore(username: string, score: number) {
+export async function addUserScore(
+  username: string,
+  score: number,
+  token: string
+) {
   try {
     const response = await fetch(`${API_BASE_URL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         username,

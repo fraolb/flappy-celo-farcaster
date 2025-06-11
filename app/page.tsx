@@ -17,6 +17,7 @@ import { runGame } from "@/components/GameFunction";
 import { useScoreContext } from "@/components/providers/ScoreContext";
 import { addUserScore } from "@/lib/dbFunctions";
 import { useFrame } from "@/components/providers/FrameProvider";
+import { createScoreToken } from "@/lib/gameAuth";
 
 type SendTransactionArgs = UseSendTransactionParameters & {
   to: `0x${string}`;
@@ -77,7 +78,9 @@ export default function Home() {
     console.log("handleAddUserScore called with score:", score);
     const username = context.user.username;
     try {
-      await addUserScore(username, score);
+      const token = createScoreToken(username, score);
+
+      await addUserScore(username, score, token);
       // Optionally refetch scores to update UI
       refetchScores?.();
     } catch (err) {

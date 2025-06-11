@@ -12,6 +12,7 @@
     "@farcaster/frame-sdk": "^0.0.55",
     "@farcaster/frame-wagmi-connector": "^0.0.44",
     "@tanstack/react-query": "^5.80.3",
+    "jsonwebtoken": "^9.0.2",
     "kaplay": "^3001.0.18",
     "mongoose": "^8.15.1",
     "next": "15.3.3",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
