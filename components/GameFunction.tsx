@@ -355,6 +355,7 @@ export function runGame(
     k.play("game_over");
 
     setTimeout(() => {
+      lives = 3;
       endGame();
       k.go("first");
     }, 5000);
