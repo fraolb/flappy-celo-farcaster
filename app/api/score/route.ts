@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import Score from "@/model/score";
 import dbConnect from "@/lib/mongodb";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 
 // GET: Fetch top 5 scores or a specific user's scores (by username query param)
 export async function GET(request: Request) {
@@ -54,28 +54,21 @@ export async function POST(request: Request) {
     }
 
     const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET!) as {
-      username: string;
-      score: number;
-    };
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+    const { payload } = await jwtVerify(token, secret, {
+      algorithms: ["HS256"],
+    });
 
-    if (decoded.username !== username || decoded.score !== score) {
+    if (payload.username !== username || payload.score !== score) {
       console.error(
         "Data mismatch: token username/score does not match request body",
         token,
-        decoded.username,
+        payload.username,
         username,
-        decoded.score,
+        payload.score,
         score
       );
       return NextResponse.json({ error: "Data mismatch" }, { status: 400 });
-    }
-
-    if (!username || typeof score !== "number") {
-      return NextResponse.json(
-        { message: "Username and score are required" },
-        { status: 400 }
-      );
     }
 
     // Find the user's existing highest score

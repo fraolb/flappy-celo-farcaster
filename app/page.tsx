@@ -78,7 +78,7 @@ export default function Home() {
     console.log("handleAddUserScore called with score:", score);
     const username = context.user.username;
     try {
-      const token = createScoreToken(username, score);
+      const token = await createScoreToken(username, score);
 
       await addUserScore(username, score, token);
       // Optionally refetch scores to update UI
