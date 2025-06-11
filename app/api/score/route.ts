@@ -54,7 +54,9 @@ export async function POST(request: Request) {
     }
 
     const token = authHeader.split(" ")[1];
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+    const secret = new TextEncoder().encode(
+      process.env.NEXT_PUBLIC_JWT_SECRET!
+    );
     const { payload } = await jwtVerify(token, secret, {
       algorithms: ["HS256"],
     });
