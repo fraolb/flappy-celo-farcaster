@@ -20,8 +20,7 @@ import { addUserScore } from "@/lib/dbFunctions";
 import { useFrame } from "@/components/providers/FrameProvider";
 import { createScoreToken } from "@/lib/gameAuth";
 import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
-//import { config } from "@/components/providers/WagmiProvider";
-import { createWalletClient, custom } from "viem";
+import { config } from "@/components/providers/WagmiProvider";
 
 // type SendTransactionArgs = UseSendTransactionParameters & {
 //   to: `0x${string}`;
@@ -50,12 +49,7 @@ export default function Home() {
   const scoresRef = useRef({ scores: scores, topScores: topScores });
   const { context } = useFrame();
   // Setup transaction sending
-  //const { sendTransactionAsync } = useSendTransaction({ config });
-
-  const walletClient = createWalletClient({
-    chain: celo,
-    transport: custom(window.ethereum),
-  });
+  const { sendTransactionAsync } = useSendTransaction({ config });
 
   const endGame = () => {
     showGameRef.current = false;
@@ -79,17 +73,23 @@ export default function Home() {
         console.error("Network switch to celo failed");
         throw new Error("Please complete the network switch to Celo");
       }
-      const [account] = await walletClient.getAddresses();
+
       console.log("Balance:", balance);
 
       // Step 1: Generate the Divvi data suffix
-      const dataSuffix = getDataSuffix({
-        consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
-        providers: [
-          "0x0423189886d7966f0dd7e7d256898daeee625dca",
-          "0xc95876688026be9d6fa7a7c33328bd013effa2bb",
-        ],
-      });
+      let dataSuffix;
+      try {
+        dataSuffix = getDataSuffix({
+          consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
+          providers: [
+            "0x0423189886d7966f0dd7e7d256898daeee625dca",
+            "0xc95876688026be9d6fa7a7c33328bd013effa2bb",
+          ],
+        });
+      } catch (diviError) {
+        console.error("Divvi getDataSuffix error:", diviError);
+        throw new Error("Failed to generate referral data");
+      }
 
       if (chainId !== celo.id) {
         console.error("Network switch to celo failed2");
@@ -97,19 +97,11 @@ export default function Home() {
       }
       console.log("Data suffix generated:", dataSuffix);
       // Step 2: Send transaction with data suffix
-      // const txHash = await sendTransactionAsync({
-      //   to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2",
-      //   value: parseEther("0.000001"),
-      //   data: dataSuffix as `0x${string}`, // Append the data suffix
-      //   gas: BigInt(600000), // More than enough for your tx
-      // });
-
-      const txHash = await walletClient.sendTransaction({
-        account,
-        to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2" as `0x${string}`,
-        data: dataSuffix as `0x${string}`, // Append the data suffix
+      const txHash = await sendTransactionAsync({
+        to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2",
         value: parseEther("0.000001"),
-        // ... other transaction parameters
+        data: dataSuffix as `0x${string}`, // Append the data suffix
+        gas: BigInt(600000), // More than enough for your tx
       });
 
       if (status === "error") throw new Error("Transaction reverted");
