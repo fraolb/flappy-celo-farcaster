@@ -19,7 +19,7 @@ import { useScoreContext } from "@/components/providers/ScoreContext";
 import { addUserScore } from "@/lib/dbFunctions";
 import { useFrame } from "@/components/providers/FrameProvider";
 import { createScoreToken } from "@/lib/gameAuth";
-//import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
+import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
 import { config } from "@/components/providers/WagmiProvider";
 
 // type SendTransactionArgs = UseSendTransactionParameters & {
@@ -77,13 +77,13 @@ export default function Home() {
       console.log("Balance:", balance);
 
       // Step 1: Generate the Divvi data suffix
-      // const dataSuffix = getDataSuffix({
-      //   consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
-      //   providers: [
-      //     "0x0423189886d7966f0dd7e7d256898daeee625dca",
-      //     "0xc95876688026be9d6fa7a7c33328bd013effa2bb",
-      //   ],
-      // }) as `0x${string}`;
+      const dataSuffix = getDataSuffix({
+        consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
+        providers: [
+          "0x0423189886d7966f0dd7e7d256898daeee625dca",
+          "0xc95876688026be9d6fa7a7c33328bd013effa2bb",
+        ],
+      });
 
       if (chainId !== celo.id) {
         console.error("Network switch to celo failed2");
@@ -91,20 +91,24 @@ export default function Home() {
       }
 
       // Step 2: Send transaction with data suffix
-      await sendTransactionAsync({
-        to: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
+      const txHash = await sendTransactionAsync({
+        to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2",
         value: parseEther("0.000001"),
-        // data: dataSuffix, // Append the data suffix
+        data: dataSuffix as `0x${string}`, // Append the data suffix
         gas: BigInt(600000), // More than enough for your tx
       });
 
       if (status === "error") throw new Error("Transaction reverted");
 
       // Step 3: Submit referral after successful transaction
-      // await submitReferral({
-      //   txHash,
-      //   chainId: celo.id, // Using the Celo chain ID
-      // });
+      try {
+        await submitReferral({
+          txHash: txHash,
+          chainId: celo.id,
+        });
+      } catch (referralError) {
+        console.error("Referral submission error:", referralError);
+      }
 
       showGameRef.current = true;
     } catch (err) {
