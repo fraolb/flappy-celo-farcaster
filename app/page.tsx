@@ -19,7 +19,7 @@ import { useScoreContext } from "@/components/providers/ScoreContext";
 import { addUserScore } from "@/lib/dbFunctions";
 import { useFrame } from "@/components/providers/FrameProvider";
 import { createScoreToken } from "@/lib/gameAuth";
-import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
+//import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
 import { config } from "@/components/providers/WagmiProvider";
 
 // type SendTransactionArgs = UseSendTransactionParameters & {
@@ -91,7 +91,7 @@ export default function Home() {
       }
 
       // Step 2: Send transaction with data suffix
-      const txHash = await sendTransactionAsync({
+      await sendTransactionAsync({
         to: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
         value: parseEther("0.000001"),
         // data: dataSuffix, // Append the data suffix
