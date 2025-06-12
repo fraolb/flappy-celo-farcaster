@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import {
   useSendTransaction,
   useAccount,
@@ -8,7 +8,7 @@ import {
   useConnect,
   useSwitchChain,
   useWaitForTransactionReceipt,
-  type UseSendTransactionParameters,
+  // type UseSendTransactionParameters,
 } from "wagmi";
 import { parseEther } from "viem";
 import { UserRejectedRequestError } from "viem";
@@ -20,19 +20,20 @@ import { addUserScore } from "@/lib/dbFunctions";
 import { useFrame } from "@/components/providers/FrameProvider";
 import { createScoreToken } from "@/lib/gameAuth";
 import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
+import { config } from "@/components/providers/WagmiProvider";
 
-type SendTransactionArgs = UseSendTransactionParameters & {
-  to: `0x${string}`;
-  value: bigint;
-  data?: `0x${string}`; // Add data field to your type
-  gasLimit?: bigint; // Optional gas limit
-  gas?: bigint; // Optional gas limit
-};
+// type SendTransactionArgs = UseSendTransactionParameters & {
+//   to: `0x${string}`;
+//   value: bigint;
+//   data?: `0x${string}`; // Add data field to your type
+//   gasLimit?: bigint; // Optional gas limit
+//   gas?: bigint; // Optional gas limit
+// };
 
 export default function Home() {
   const { isConnected, chainId, address } = useAccount();
   const { connect, connectors } = useConnect();
-  const { data: hash, sendTransaction } = useSendTransaction();
+  const { data: hash } = useSendTransaction();
   const { status } = useWaitForTransactionReceipt({
     hash,
   });
@@ -47,6 +48,8 @@ export default function Home() {
   const { scores, topScores, refetchScores } = useScoreContext();
   const scoresRef = useRef({ scores: scores, topScores: topScores });
   const { context } = useFrame();
+  // Setup transaction sending
+  const { sendTransactionAsync } = useSendTransaction({ config });
 
   const endGame = () => {
     showGameRef.current = false;
@@ -92,7 +95,6 @@ export default function Home() {
         to: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
         value: parseEther("0.01"),
         data: dataSuffix, // Append the data suffix
-        gasLimit: BigInt(600000),
         gas: BigInt(600000), // More than enough for your tx
       });
 
@@ -139,17 +141,17 @@ export default function Home() {
     console.log("User score added successfully:");
   };
 
-  const sendTransactionAsync = useCallback(
-    async (tx: SendTransactionArgs): Promise<`0x${string}`> => {
-      return new Promise<`0x${string}`>((resolve, reject) => {
-        sendTransaction(tx, {
-          onSuccess: (hash) => resolve(hash),
-          onError: (err) => reject(err),
-        });
-      });
-    },
-    [sendTransaction]
-  );
+  // const sendTransactionAsync1 = useCallback(
+  //   async (tx: SendTransactionArgs): Promise<`0x${string}`> => {
+  //     return new Promise<`0x${string}`>((resolve, reject) => {
+  //       sendTransaction(tx, {
+  //         onSuccess: (hash) => resolve(hash),
+  //         onError: (err) => reject(err),
+  //       });
+  //     });
+  //   },
+  //   [sendTransaction]
+  // );
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
