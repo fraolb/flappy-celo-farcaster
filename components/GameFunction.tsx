@@ -243,6 +243,11 @@ export function runGame(
       k.setCursor("pointer");
     });
 
+    if (isProcessing.current) {
+      btn.color = k.rgb(180, 180, 180); // gray out
+      // or btn.opacity = 0.5;
+    }
+
     // onHoverEnd() comes from area() component
     // it runs once when the object stopped being hovered
     btn.onHoverEnd(() => {
@@ -252,7 +257,11 @@ export function runGame(
 
     // onClick() comes from area() component
     // it runs once when the object is clicked
-    btn.onClick(f);
+    btn.onClick(() => {
+      if (!isProcessing.current) {
+        f();
+      }
+    });
 
     return btn;
   }
@@ -277,9 +286,9 @@ export function runGame(
     ]);
 
     addButton(
-      `${isProcessing && isProcessing.current ? "Processing" : "Play"}`,
+      isProcessing.current ? "Processing" : "Play",
       k.vec2(k.width() / 2, 350),
-      () => PaymentFunction()
+      PaymentFunction
     );
 
     if (errorRef && errorRef.current) {
