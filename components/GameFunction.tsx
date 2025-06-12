@@ -68,7 +68,7 @@ export function runGame(
   let pipes: GameObj[] = [];
   let playback: AudioPlay;
   const hearts: GameObj[] = [];
-  const MOVEMENT = 12;
+  const MOVEMENT = 14;
 
   const drawScore = (x = k.width() / 1.7, y = 30, lastScore = 0) => {
     score = k.add([
@@ -102,8 +102,8 @@ export function runGame(
   ) => {
     const getBlockSize = () => {
       const sizes = [
-        [k.width() / 7, k.height() / 2.5],
-        [k.width() / 7, k.height() / 2],
+        [k.width() / 8, k.height() / 2.5],
+        [k.width() / 8, k.height() / 2],
       ];
       const index = Math.floor(Math.random() * sizes.length);
       return {
@@ -277,7 +277,7 @@ export function runGame(
     ]);
 
     addButton(
-      `${isProcessing ? "Processing" : "Play"}`,
+      `${isProcessing && isProcessing.current ? "Processing" : "Play"}`,
       k.vec2(k.width() / 2, 350),
       () => PaymentFunction()
     );
@@ -375,8 +375,8 @@ export function runGame(
     bgEffect();
     k.add([
       k.text("GAME OVER", { size: 40 }),
-      k.color(k.Color.WHITE),
-      k.pos(k.width() / 2 - 100, k.height() / 6),
+      k.color(k.Color.RED),
+      k.pos(k.width() / 2 - 90, 400),
     ]);
     //drawScore(k.width() / 2 - 100, k.height() / 3, lastScore);
     drawFloor();
@@ -390,7 +390,7 @@ export function runGame(
     score = k.add([
       k.text(`You scored: ${lastScore}`, { size: 20 }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2 - 100, k.height() / 4),
+      k.pos(k.width() / 2 - 100, 430),
       { value: 0 },
     ]);
 
