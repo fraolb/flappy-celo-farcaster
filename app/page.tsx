@@ -285,62 +285,7 @@ export default function Home() {
               </button>
             ) : null}
           </div>
-          {/* --- Top Scorers and User Score Section --- */}
-          <div style={{ width: "100%", marginBottom: "1.5rem" }}>
-            <h2
-              style={{
-                color: "#fff",
-                fontSize: "1.2rem",
-                fontWeight: 600,
-                marginBottom: "0.5rem",
-                textAlign: "center",
-                letterSpacing: "0.5px",
-              }}
-            >
-              Top 5 Scorers
-            </h2>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {topScores && topScores.length > 0 ? (
-                topScores.map((score, idx) => (
-                  <li
-                    key={score._id || idx}
-                    style={{
-                      color: "#cbd5e1",
-                      textAlign: "center",
-                      fontWeight: idx === 0 ? 700 : 500,
-                      fontSize: idx === 0 ? "1.1rem" : "1rem",
-                      marginBottom: "0.25rem",
-                    }}
-                  >
-                    {idx + 1}. {score.username}: {score.score}
-                  </li>
-                ))
-              ) : (
-                <li style={{ color: "#cbd5e1", textAlign: "center" }}>
-                  No scores yet.
-                </li>
-              )}
-            </ul>
-            <h2
-              style={{
-                color: "#fff",
-                fontSize: "1.1rem",
-                fontWeight: 600,
-                margin: "1rem 0 0.5rem 0",
-                textAlign: "center",
-                letterSpacing: "0.5px",
-              }}
-            >
-              Your Score
-            </h2>
-            <div style={{ color: "#cbd5e1", textAlign: "center" }}>
-              {scores && scores.score > 0 ? (
-                <span>{scores.score}</span>
-              ) : (
-                <span>No score yet.</span>
-              )}
-            </div>
-          </div>
+
           {error && (
             <div
               style={{

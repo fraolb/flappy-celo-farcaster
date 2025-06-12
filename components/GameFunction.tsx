@@ -125,7 +125,7 @@ export function runGame(
       ]);
       pipes.push(block);
     } else if (pos === "bottom") {
-      const n = [5, 6][Math.floor(Math.random() * 2)];
+      const n = [7, 8][Math.floor(Math.random() * 2)];
       const y = (config?.height || 0) + k.height() / n;
       block = k.add([
         "block",
@@ -374,9 +374,9 @@ export function runGame(
     }
     bgEffect();
     k.add([
-      k.text("GAME OVER", { size: 40 }),
+      k.text("GAME OVER", { size: 60 }),
       k.color(k.Color.RED),
-      k.pos(k.width() / 2 - 90, 400),
+      k.pos(k.width() / 2 - 90, 350),
     ]);
     //drawScore(k.width() / 2 - 100, k.height() / 3, lastScore);
     drawFloor();
@@ -390,7 +390,7 @@ export function runGame(
     score = k.add([
       k.text(`You scored: ${lastScore}`, { size: 20 }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2 - 100, 430),
+      k.pos(k.width() / 2 - 90, 450),
       { value: 0 },
     ]);
 
