@@ -376,7 +376,7 @@ export function runGame(
     k.add([
       k.text("GAME OVER", { size: 60 }),
       k.color(k.Color.RED),
-      k.pos(k.width() / 2 - 90, 350),
+      k.pos(k.width() / 2 - 150, 250),
     ]);
     //drawScore(k.width() / 2 - 100, k.height() / 3, lastScore);
     drawFloor();
@@ -384,13 +384,13 @@ export function runGame(
       "rocket",
       k.scale(0.3),
       k.sprite("astronaut", { anim: "astro" }),
-      k.pos(200, k.height() / 1.24),
+      k.pos(180, k.height() / 1.24),
     ]);
 
     score = k.add([
       k.text(`You scored: ${lastScore}`, { size: 20 }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2 - 90, 450),
+      k.pos(k.width() / 2 - 90, 350),
       { value: 0 },
     ]);
 

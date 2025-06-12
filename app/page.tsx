@@ -18,10 +18,12 @@ import { useScoreContext } from "@/components/providers/ScoreContext";
 import { addUserScore } from "@/lib/dbFunctions";
 import { useFrame } from "@/components/providers/FrameProvider";
 import { createScoreToken } from "@/lib/gameAuth";
+import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
 
 type SendTransactionArgs = UseSendTransactionParameters & {
   to: `0x${string}`;
   value: bigint;
+  data?: `0x${string}`; // Add data field to your type
 };
 
 export default function Home() {
@@ -53,18 +55,37 @@ export default function Home() {
     setError("");
     errorRef.current = "";
     if (!isConnected) return setError("Please connect your wallet first");
-    //setIsProcessing(true);
     isProcessingRef.current = true;
+
     try {
       await switchChain({ chainId: celo.id });
-      await sendTransactionAsync({
+
+      // Step 1: Generate the Divvi data suffix
+      const dataSuffix = getDataSuffix({
+        consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
+        providers: [
+          "0x0423189886d7966f0dd7e7d256898daeee625dca",
+          "0xc95876688026be9d6fa7a7c33328bd013effa2bb",
+        ],
+      }) as `0x${string}`;
+
+      // Step 2: Send transaction with data suffix
+      const txHash = await sendTransactionAsync({
         to: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
         value: parseEther("0.01"),
+        data: dataSuffix, // Append the data suffix
       });
+
       if (status === "error") throw new Error("Transaction reverted");
+
+      // Step 3: Submit referral after successful transaction
+      await submitReferral({
+        txHash,
+        chainId: celo.id, // Using the Celo chain ID
+      });
+
       showGameRef.current = true;
     } catch (err) {
-      //setIsProcessing(false);
       isProcessingRef.current = false;
       if (err instanceof UserRejectedRequestError) {
         setError("Payment cancelled");
@@ -75,7 +96,6 @@ export default function Home() {
           err instanceof Error ? err.message : "Transaction failed";
       }
     }
-    //setIsProcessing(false);
     isProcessingRef.current = false;
   };
 
