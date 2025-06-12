@@ -26,6 +26,7 @@ type SendTransactionArgs = UseSendTransactionParameters & {
   value: bigint;
   data?: `0x${string}`; // Add data field to your type
   gasLimit?: bigint; // Optional gas limit
+  gas?: bigint; // Optional gas limit
 };
 
 export default function Home() {
@@ -91,7 +92,8 @@ export default function Home() {
         to: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
         value: parseEther("0.01"),
         data: dataSuffix, // Append the data suffix
-        gasLimit: BigInt(100000),
+        gasLimit: BigInt(600000),
+        gas: BigInt(600000), // More than enough for your tx
       });
 
       if (status === "error") throw new Error("Transaction reverted");
