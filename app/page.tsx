@@ -20,7 +20,8 @@ import { addUserScore } from "@/lib/dbFunctions";
 import { useFrame } from "@/components/providers/FrameProvider";
 import { createScoreToken } from "@/lib/gameAuth";
 import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
-import { config } from "@/components/providers/WagmiProvider";
+//import { config } from "@/components/providers/WagmiProvider";
+import { createWalletClient, custom } from "viem";
 
 // type SendTransactionArgs = UseSendTransactionParameters & {
 //   to: `0x${string}`;
@@ -49,7 +50,12 @@ export default function Home() {
   const scoresRef = useRef({ scores: scores, topScores: topScores });
   const { context } = useFrame();
   // Setup transaction sending
-  const { sendTransactionAsync } = useSendTransaction({ config });
+  //const { sendTransactionAsync } = useSendTransaction({ config });
+
+  const walletClient = createWalletClient({
+    chain: celo,
+    transport: custom(window.ethereum),
+  });
 
   const endGame = () => {
     showGameRef.current = false;
@@ -73,7 +79,7 @@ export default function Home() {
         console.error("Network switch to celo failed");
         throw new Error("Please complete the network switch to Celo");
       }
-
+      const [account] = await walletClient.getAddresses();
       console.log("Balance:", balance);
 
       // Step 1: Generate the Divvi data suffix
@@ -89,13 +95,21 @@ export default function Home() {
         console.error("Network switch to celo failed2");
         throw new Error("Please complete the network switch to Celo");
       }
-
+      console.log("Data suffix generated:", dataSuffix);
       // Step 2: Send transaction with data suffix
-      const txHash = await sendTransactionAsync({
-        to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2",
-        value: parseEther("0.000001"),
+      // const txHash = await sendTransactionAsync({
+      //   to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2",
+      //   value: parseEther("0.000001"),
+      //   data: dataSuffix as `0x${string}`, // Append the data suffix
+      //   gas: BigInt(600000), // More than enough for your tx
+      // });
+
+      const txHash = await walletClient.sendTransaction({
+        account,
+        to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2" as `0x${string}`,
         data: dataSuffix as `0x${string}`, // Append the data suffix
-        gas: BigInt(600000), // More than enough for your tx
+        value: parseEther("0.000001"),
+        // ... other transaction parameters
       });
 
       if (status === "error") throw new Error("Transaction reverted");
