@@ -2,6 +2,14 @@
 
 import kaplay, { AudioPlay, GameObj } from "kaplay";
 
+interface Score {
+  _id: string;
+  username: string;
+  score: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export function runGame(
   canvas: HTMLCanvasElement,
   PaymentFunction: () => Promise<void>,
@@ -9,7 +17,11 @@ export function runGame(
   isProcessing: boolean,
   error: string | null,
   showGameRef: React.RefObject<boolean>,
-  endGame: () => void
+  endGame: () => void,
+  scoresRef: React.RefObject<{
+    scores: Score | null;
+    topScores: Score[] | null;
+  }>
 ) {
   // --- Game logic ---
   const k = kaplay({
@@ -266,19 +278,44 @@ export function runGame(
 
     addButton(
       `${isProcessing ? "Processing" : "Play"}`,
-      k.vec2(k.width() / 2, 400),
+      k.vec2(k.width() / 2, 350),
       () => PaymentFunction()
     );
+
+    // --- Display Top Scores ---
+    const topScores = scoresRef.current?.topScores || [];
+    const yStart = 430;
+    k.add([
+      k.text("Top 5 Scores", { size: 22 }),
+      k.color(k.Color.YELLOW),
+      k.pos(k.width() / 2, yStart),
+      k.anchor("center"),
+    ]);
+    topScores.slice(0, 5).forEach((score, idx) => {
+      k.add([
+        k.text(`${idx + 1}. ${score.username}: ${score.score}`, { size: 18 }),
+        k.color(k.Color.WHITE),
+        k.pos(k.width() / 2, yStart + 30 + idx * 24),
+        k.anchor("center"),
+      ]);
+    });
+
+    // --- Display User Score ---
+    const userScore = scoresRef.current?.scores;
+    k.add([
+      k.text(`Your Score: ${userScore ? userScore.score : "No score yet"}`, {
+        size: 20,
+      }),
+      k.color(k.Color.CYAN),
+      k.pos(k.width() / 2, yStart + 170),
+      k.anchor("center"),
+    ]);
+
     k.loop(1, () => {
-      console.log("showGameref is ", showGameRef);
       if (showGameRef && showGameRef.current) {
-        // React state changed, handle accordingly
-        console.log("showGame is ", showGameRef.current);
         k.go("idle");
       }
     });
-
-    //showGame == true && k.go("idle");
   });
 
   k.scene("idle", () => {
@@ -334,14 +371,9 @@ export function runGame(
       k.sprite("astronaut", { anim: "astro" }),
       k.pos(200, k.height() / 1.24),
     ]);
-    const record = localStorage.getItem("record")
-      ? Number(localStorage.getItem("record"))
-      : 0;
-    if (lastScore > record) {
-      localStorage.setItem("record", String(lastScore));
-    }
+
     score = k.add([
-      k.text(`Record: ${record}`, { size: 20 }),
+      k.text(`You scored: ${localStorage}`, { size: 20 }),
       k.color(k.Color.WHITE),
       k.pos(k.width() / 2 - 100, k.height() / 4),
       { value: 0 },

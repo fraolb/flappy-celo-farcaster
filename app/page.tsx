@@ -38,6 +38,7 @@ export default function Home() {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const showGameRef = useRef(false);
   const { scores, topScores, refetchScores } = useScoreContext();
+  const scoresRef = useRef({ scores: scores, topScores: topScores });
   const { context } = useFrame();
 
   const endGame = () => {
@@ -105,6 +106,10 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
+    scoresRef.current = { scores, topScores };
+  }, [scores, topScores]);
+
+  useEffect(() => {
     if (!isConnected || chainId !== celo.id || !isGameStarted) {
       // When game is not showing, ensure canvas ref is null
       canvasRef.current = null;
@@ -131,7 +136,8 @@ export default function Home() {
         isProcessing,
         error,
         showGameRef,
-        endGame
+        endGame,
+        scoresRef
       );
     } catch (err) {
       console.error("Game initialization failed:", err);
@@ -267,7 +273,7 @@ export default function Home() {
                 }}
                 onClick={() => setIsGameStarted(true)}
               >
-                Start Game
+                Load Game
               </button>
             ) : null}
           </div>
