@@ -77,13 +77,13 @@ export default function Home() {
       console.log("Balance:", balance);
 
       // Step 1: Generate the Divvi data suffix
-      const dataSuffix = getDataSuffix({
-        consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
-        providers: [
-          "0x0423189886d7966f0dd7e7d256898daeee625dca",
-          "0xc95876688026be9d6fa7a7c33328bd013effa2bb",
-        ],
-      }) as `0x${string}`;
+      // const dataSuffix = getDataSuffix({
+      //   consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
+      //   providers: [
+      //     "0x0423189886d7966f0dd7e7d256898daeee625dca",
+      //     "0xc95876688026be9d6fa7a7c33328bd013effa2bb",
+      //   ],
+      // }) as `0x${string}`;
 
       if (chainId !== celo.id) {
         console.error("Network switch to celo failed2");
@@ -94,17 +94,17 @@ export default function Home() {
       const txHash = await sendTransactionAsync({
         to: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
         value: parseEther("0.000001"),
-        data: dataSuffix, // Append the data suffix
+        // data: dataSuffix, // Append the data suffix
         gas: BigInt(600000), // More than enough for your tx
       });
 
       if (status === "error") throw new Error("Transaction reverted");
 
       // Step 3: Submit referral after successful transaction
-      await submitReferral({
-        txHash,
-        chainId: celo.id, // Using the Celo chain ID
-      });
+      // await submitReferral({
+      //   txHash,
+      //   chainId: celo.id, // Using the Celo chain ID
+      // });
 
       showGameRef.current = true;
     } catch (err) {
