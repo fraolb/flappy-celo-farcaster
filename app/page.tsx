@@ -96,12 +96,12 @@ export default function Home() {
         throw new Error("Please complete the network switch to Celo");
       }
       console.log("Data suffix generated:", dataSuffix);
+      const data = dataSuffix.startsWith("0x") ? dataSuffix : `0x${dataSuffix}`;
       // Step 2: Send transaction with data suffix
       const txHash = await sendTransactionAsync({
         to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2" as `0x${string}`,
-        data: dataSuffix as `0x${string}`, // Append the data suffix
+        data: data as `0x${string}`, // Append the data suffix
         value: parseEther("0.000001"),
-        chainId: celo.id,
         maxFeePerGas: parseUnits("100", 9),
         maxPriorityFeePerGas: parseUnits("100", 9),
       });
@@ -112,7 +112,7 @@ export default function Home() {
       try {
         await submitReferral({
           txHash: txHash,
-          chainId: celo.id,
+          chainId: 42220,
         });
       } catch (referralError) {
         console.error("Referral submission error:", referralError);
