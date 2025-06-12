@@ -10,7 +10,7 @@ import {
   useWaitForTransactionReceipt,
   // type UseSendTransactionParameters,
 } from "wagmi";
-import { parseEther } from "viem";
+import { parseEther, parseUnits } from "viem";
 import { UserRejectedRequestError } from "viem";
 import { celo } from "wagmi/chains";
 import { useRef, useEffect } from "react";
@@ -98,10 +98,12 @@ export default function Home() {
       console.log("Data suffix generated:", dataSuffix);
       // Step 2: Send transaction with data suffix
       const txHash = await sendTransactionAsync({
-        to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2",
-        value: parseEther("0.000001"),
+        to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2" as `0x${string}`,
         data: dataSuffix as `0x${string}`, // Append the data suffix
-        gas: BigInt(600000), // More than enough for your tx
+        value: parseEther("0.000001"),
+        chainId: celo.id,
+        maxFeePerGas: parseUnits("100", 9),
+        maxPriorityFeePerGas: parseUnits("100", 9),
       });
 
       if (status === "error") throw new Error("Transaction reverted");
