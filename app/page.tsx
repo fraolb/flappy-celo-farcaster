@@ -33,10 +33,12 @@ export default function Home() {
   });
   const { switchChain } = useSwitchChain();
   const [error, setError] = useState<string>("");
-  const [isProcessing, setIsProcessing] = useState(false);
+  //const [isProcessing, setIsProcessing] = useState(false);
   // const [showGame, setShowGame] = useState(false);
   const [isGameStarted, setIsGameStarted] = useState(false);
   const showGameRef = useRef(false);
+  const isProcessingRef = useRef(false);
+  const errorRef = useRef<string>("");
   const { scores, topScores, refetchScores } = useScoreContext();
   const scoresRef = useRef({ scores: scores, topScores: topScores });
   const { context } = useFrame();
@@ -49,9 +51,10 @@ export default function Home() {
   const handleSubmit = async () => {
     console.log("handleSubmit called");
     setError("");
+    errorRef.current = "";
     if (!isConnected) return setError("Please connect your wallet first");
-    setIsProcessing(true);
-
+    //setIsProcessing(true);
+    isProcessingRef.current = true;
     try {
       await switchChain({ chainId: celo.id });
       await sendTransactionAsync({
@@ -61,14 +64,19 @@ export default function Home() {
       if (status === "error") throw new Error("Transaction reverted");
       showGameRef.current = true;
     } catch (err) {
-      setIsProcessing(false);
+      //setIsProcessing(false);
+      isProcessingRef.current = false;
       if (err instanceof UserRejectedRequestError) {
         setError("Payment cancelled");
+        errorRef.current = "Payment cancelled";
       } else {
         setError(err instanceof Error ? err.message : "Transaction failed");
+        errorRef.current =
+          err instanceof Error ? err.message : "Transaction failed";
       }
     }
-    setIsProcessing(false);
+    //setIsProcessing(false);
+    isProcessingRef.current = false;
   };
 
   const handleAddUserScore = async (score: number) => {
@@ -133,8 +141,8 @@ export default function Home() {
         canvas,
         handleSubmit,
         handleAddUserScore,
-        isProcessing,
-        error,
+        isProcessingRef,
+        errorRef,
         showGameRef,
         endGame,
         scoresRef

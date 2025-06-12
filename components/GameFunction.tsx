@@ -14,8 +14,8 @@ export function runGame(
   canvas: HTMLCanvasElement,
   PaymentFunction: () => Promise<void>,
   handleAddUserScore: (score: number) => Promise<void>,
-  isProcessing: boolean,
-  error: string | null,
+  isProcessing: React.RefObject<boolean>,
+  errorRef: React.RefObject<string | null>,
   showGameRef: React.RefObject<boolean>,
   endGame: () => void,
   scoresRef: React.RefObject<{
@@ -31,7 +31,7 @@ export function runGame(
 
   // Load assets
   k.loadSprite("bg", "/assets/bg.png");
-  k.loadSprite("rocket", "/assets/rocket.png", {
+  k.loadSprite("rocket", "/assets/rock.png", {
     sliceX: 3,
     sliceY: 1,
     anims: {
@@ -282,6 +282,21 @@ export function runGame(
       () => PaymentFunction()
     );
 
+    if (errorRef && errorRef.current) {
+      k.add([
+        "errorText",
+        k.text(errorRef.current, {
+          size: 18,
+          width: 320,
+          font: "sans-serif",
+          align: "center",
+        }),
+        k.color(k.Color.RED),
+        k.pos(k.width() / 2, 400),
+        k.anchor("center"),
+      ]);
+    }
+
     // --- Display Top Scores ---
     const topScores = scoresRef.current?.topScores || [];
     const yStart = 430;
@@ -361,9 +376,9 @@ export function runGame(
     k.add([
       k.text("GAME OVER", { size: 40 }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2 - 120, k.height() / 6),
+      k.pos(k.width() / 2 - 100, k.height() / 6),
     ]);
-    drawScore(k.width() / 2 - 100, k.height() / 3, lastScore);
+    //drawScore(k.width() / 2 - 100, k.height() / 3, lastScore);
     drawFloor();
     k.add([
       "rocket",
@@ -373,7 +388,7 @@ export function runGame(
     ]);
 
     score = k.add([
-      k.text(`You scored: ${localStorage}`, { size: 20 }),
+      k.text(`You scored: ${lastScore}`, { size: 20 }),
       k.color(k.Color.WHITE),
       k.pos(k.width() / 2 - 100, k.height() / 4),
       { value: 0 },
