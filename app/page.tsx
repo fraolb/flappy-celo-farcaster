@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import {
   useSendTransaction,
   useAccount,
+  useBalance,
   useConnect,
   useSwitchChain,
   useWaitForTransactionReceipt,
@@ -27,7 +28,7 @@ type SendTransactionArgs = UseSendTransactionParameters & {
 };
 
 export default function Home() {
-  const { isConnected, chainId } = useAccount();
+  const { isConnected, chainId, address } = useAccount();
   const { connect, connectors } = useConnect();
   const { data: hash, sendTransaction } = useSendTransaction();
   const { status } = useWaitForTransactionReceipt({
@@ -59,6 +60,15 @@ export default function Home() {
 
     try {
       await switchChain({ chainId: celo.id });
+      if (chainId !== celo.id) {
+        console.error("Network switch to celo failed");
+        throw new Error("Please complete the network switch to Celo");
+      }
+
+      const balance = useBalance({
+        address,
+      });
+      console.log("Balance:", balance);
 
       // Step 1: Generate the Divvi data suffix
       const dataSuffix = getDataSuffix({
@@ -68,6 +78,11 @@ export default function Home() {
           "0xc95876688026be9d6fa7a7c33328bd013effa2bb",
         ],
       }) as `0x${string}`;
+
+      if (chainId !== celo.id) {
+        console.error("Network switch to celo failed2");
+        throw new Error("Please complete the network switch to Celo");
+      }
 
       // Step 2: Send transaction with data suffix
       const txHash = await sendTransactionAsync({
