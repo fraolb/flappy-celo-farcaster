@@ -51,6 +51,10 @@ export default function Home() {
     //setIsGameStarted(false); // If you want to hide the canvas and fully reset
   };
 
+  const balance = useBalance({
+    address,
+  });
+
   const handleSubmit = async () => {
     console.log("handleSubmit called");
     setError("");
@@ -65,9 +69,6 @@ export default function Home() {
         throw new Error("Please complete the network switch to Celo");
       }
 
-      const balance = useBalance({
-        address,
-      });
       console.log("Balance:", balance);
 
       // Step 1: Generate the Divvi data suffix
