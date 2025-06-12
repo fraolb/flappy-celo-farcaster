@@ -51,7 +51,7 @@ export default function Home() {
     //setIsGameStarted(false); // If you want to hide the canvas and fully reset
   };
 
-  const balance = useBalance({
+  const { data: balance } = useBalance({
     address,
   });
 
@@ -300,25 +300,32 @@ export default function Home() {
                 </button>
               </div>
             ) : !isGameStarted ? (
-              <button
-                style={{
-                  width: "100%",
-                  padding: "1rem",
-                  fontSize: "1.2rem",
-                  marginTop: "1rem",
-                  borderRadius: "8px",
-                  background: "linear-gradient(to right, #6366f1, #a21caf)",
-                  color: "#fff",
-                  border: "none",
-                  cursor: "pointer",
-                  fontWeight: 700,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                  transition: "background 0.2s",
-                }}
-                onClick={() => setIsGameStarted(true)}
-              >
-                Load Game
-              </button>
+              <div>
+                <button
+                  style={{
+                    width: "100%",
+                    padding: "1rem",
+                    fontSize: "1.2rem",
+                    marginTop: "1rem",
+                    borderRadius: "8px",
+                    background: "linear-gradient(to right, #6366f1, #a21caf)",
+                    color: "#fff",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: 700,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    transition: "background 0.2s",
+                  }}
+                  onClick={() => setIsGameStarted(true)}
+                >
+                  Load Game
+                </button>
+                {balance && (
+                  <div>
+                    Balance: {balance.formatted} {balance.symbol}
+                  </div>
+                )}
+              </div>
             ) : null}
           </div>
 
