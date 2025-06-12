@@ -93,7 +93,7 @@ export default function Home() {
       // Step 2: Send transaction with data suffix
       const txHash = await sendTransactionAsync({
         to: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
-        value: parseEther("0.01"),
+        value: parseEther("0.000001"),
         data: dataSuffix, // Append the data suffix
         gas: BigInt(600000), // More than enough for your tx
       });
