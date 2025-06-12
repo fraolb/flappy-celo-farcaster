@@ -20,11 +20,13 @@ import { addUserScore } from "@/lib/dbFunctions";
 import { useFrame } from "@/components/providers/FrameProvider";
 import { createScoreToken } from "@/lib/gameAuth";
 import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
+import { usePublicClient } from "wagmi";
 
 type SendTransactionArgs = UseSendTransactionParameters & {
   to: `0x${string}`;
   value: bigint;
   data?: `0x${string}`; // Add data field to your type
+  gas?: bigint; // Optional gas limit
 };
 
 export default function Home() {
@@ -55,6 +57,8 @@ export default function Home() {
     address,
   });
 
+  const publicClient = usePublicClient();
+
   const handleSubmit = async () => {
     console.log("handleSubmit called");
     setError("");
@@ -84,6 +88,16 @@ export default function Home() {
         console.error("Network switch to celo failed2");
         throw new Error("Please complete the network switch to Celo");
       }
+
+      // Estimate gas first
+      const gasEstimate = await publicClient?.estimateGas({
+        account: address!,
+        to: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
+        value: parseEther("0.01"),
+        data: dataSuffix,
+      });
+
+      console.log("Gas estimate:", gasEstimate?.toString());
 
       // Step 2: Send transaction with data suffix
       const txHash = await sendTransactionAsync({
