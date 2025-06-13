@@ -9,6 +9,8 @@ import {
   useSwitchChain,
   useWaitForTransactionReceipt,
 } from "wagmi";
+import Image from "next/image";
+import backgroundImage from "@/public/assets/bg.webp";
 
 import { parseEther, parseUnits } from "viem";
 import { UserRejectedRequestError } from "viem";
@@ -211,20 +213,15 @@ export default function App() {
   }, [isGameStarted]);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        minWidth: "100vw",
-        backgroundImage: "url('/assets/bg.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
-      }}
-    >
+    <div className="relative h-screen w-full">
+      <Image
+        src={backgroundImage}
+        alt="Game background"
+        fill
+        priority
+        quality={85}
+        className="object-cover"
+      />
       {!isGameStarted && (
         <div
           style={{
@@ -240,26 +237,26 @@ export default function App() {
               color: "#fff",
               fontSize: "2.2rem",
               fontWeight: 700,
-              marginBottom: "1.5rem",
+              marginBottom: "1rem",
               letterSpacing: "1px",
               textAlign: "center",
             }}
           >
             Flappy Bird Game
           </h1>
-          <div
+          <h1
             style={{
-              marginTop: 16,
-              marginBottom: 24,
               color: "#fff",
-              fontSize: 18,
+              fontSize: "1.8rem",
+              fontWeight: 700,
+              marginBottom: "1.5rem",
+              letterSpacing: "1px",
               textAlign: "center",
             }}
           >
-            Flappy Celo is a fun game where you compete for weekly rewards on
-            the Celo blockchain. Play, climb the leaderboard, and win Celo every
-            week!
-          </div>
+            Weekly competition coming soon!
+          </h1>
+
           <div style={{ width: "100%", marginBottom: "1.5rem" }}>
             {!isConnected ? (
               <div style={{ textAlign: "center" }}>
@@ -338,6 +335,21 @@ export default function App() {
                 </button>
               </div>
             ) : null}
+          </div>
+
+          <div
+            style={{
+              marginTop: 16,
+              marginBottom: 24,
+              fontWeight: 300,
+              color: "#fff",
+              fontSize: 15,
+              textAlign: "center",
+            }}
+          >
+            Flappy Celo is a fun game where you compete for weekly rewards on
+            the Celo blockchain. Play, climb the leaderboard, and win Celo every
+            week!
           </div>
 
           {error && (
