@@ -266,6 +266,7 @@ export function runGame(
 
     return btn;
   }
+
   function shareButton(
     txt = "start game",
     p = k.vec2(200, 100),
@@ -273,7 +274,7 @@ export function runGame(
   ) {
     // add a parent background object
     const btn = k.add([
-      k.rect(200, 60, { radius: 8 }),
+      k.rect(240, 60, { radius: 8 }),
       k.pos(p),
       k.area(),
       k.scale(1),
@@ -283,21 +284,16 @@ export function runGame(
     ]);
 
     // add a child object that displays the text
-    btn.add([k.text(txt), k.anchor("center"), k.color(0, 0, 0)]);
+    btn.add([k.text(txt, { size: 24 }), k.anchor("center"), k.color(0, 0, 0)]);
 
     // onHoverUpdate() comes from area() component
     // it runs every frame when the object is being hovered
     btn.onHoverUpdate(() => {
       const t = k.time() * 10;
       btn.color = k.hsl2rgb((t / 10) % 1, 0.6, 0.7);
-      btn.scale = k.vec2(1.2);
+      btn.scale = k.vec2(1.1);
       k.setCursor("pointer");
     });
-
-    if (isProcessing.current) {
-      btn.color = k.rgb(180, 180, 180); // gray out
-      // or btn.opacity = 0.5;
-    }
 
     // onHoverEnd() comes from area() component
     // it runs once when the object stopped being hovered
@@ -446,7 +442,7 @@ export function runGame(
     k.add([
       k.text("GAME OVER", { size: 40 }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2, k.height() / 6),
+      k.pos(k.width() / 2, k.height() / 4),
       k.anchor("center"),
     ]);
     //drawScore(k.width() / 2 - 100, k.height() / 3, lastScore);
@@ -461,12 +457,12 @@ export function runGame(
     score = k.add([
       k.text(`You scored: ${lastScore}`, { size: 20 }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2 - 90, k.height() / 4),
+      k.pos(k.width() / 2 - 90, k.height() / 3),
       { value: 0 },
     ]);
     // Play Again button
     addButton(
-      "🔄 Play Again",
+      "▶ Play Again",
       k.vec2(k.width() / 2, k.height() / 2 + 60),
       () => {
         k.go("first");
@@ -474,14 +470,9 @@ export function runGame(
     );
     shareButton(
       "🎮 Share Score",
-      k.vec2(k.width() / 2, k.height() / 2 + 130),
+      k.vec2(k.width() / 2, k.height() / 2 + 180),
       lastScore
     );
-
-    // Close button
-    addButton("❌ Close", k.vec2(k.width() / 2, k.height() / 2 + 200), () => {
-      endGame();
-    });
 
     // Send user score to backend
     if (typeof handleAddUserScore === "function") {
