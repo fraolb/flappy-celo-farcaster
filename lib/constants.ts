@@ -5,7 +5,7 @@ export const APP_PRIMARY_CATEGORY =
   process.env.NEXT_PUBLIC_FRAME_PRIMARY_CATEGORY;
 export const APP_TAGS = process.env.NEXT_PUBLIC_FRAME_TAGS?.split(",");
 export const APP_ICON_URL = `${APP_URL}/icon.png`;
-export const APP_OG_IMAGE_URL = `${APP_URL}/api/opengraph-image`;
+export const APP_OG_IMAGE_URL = `${APP_URL}/splash.png`;
 export const APP_SPLASH_URL = `${APP_URL}/splash.png`;
 export const APP_SPLASH_BACKGROUND_COLOR = "#000000";
 export const APP_BUTTON_TEXT = process.env.NEXT_PUBLIC_FRAME_BUTTON_TEXT;
