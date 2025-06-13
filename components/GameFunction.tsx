@@ -14,6 +14,7 @@ export function runGame(
   canvas: HTMLCanvasElement,
   PaymentFunction: () => Promise<void>,
   handleAddUserScore: (score: number) => Promise<void>,
+  shareScore: (score: number) => Promise<void>,
   isProcessing: React.RefObject<boolean>,
   errorRef: React.RefObject<string | null>,
   showGameRef: React.RefObject<boolean>,
@@ -265,6 +266,54 @@ export function runGame(
 
     return btn;
   }
+  function shareButton(
+    txt = "start game",
+    p = k.vec2(200, 100),
+    lastscore = 0
+  ) {
+    // add a parent background object
+    const btn = k.add([
+      k.rect(240, 80, { radius: 8 }),
+      k.pos(p),
+      k.area(),
+      k.scale(1),
+      k.anchor("center"),
+      k.outline(4),
+      k.color(255, 255, 255),
+    ]);
+
+    // add a child object that displays the text
+    btn.add([k.text(txt), k.anchor("center"), k.color(0, 0, 0)]);
+
+    // onHoverUpdate() comes from area() component
+    // it runs every frame when the object is being hovered
+    btn.onHoverUpdate(() => {
+      const t = k.time() * 10;
+      btn.color = k.hsl2rgb((t / 10) % 1, 0.6, 0.7);
+      btn.scale = k.vec2(1.2);
+      k.setCursor("pointer");
+    });
+
+    if (isProcessing.current) {
+      btn.color = k.rgb(180, 180, 180); // gray out
+      // or btn.opacity = 0.5;
+    }
+
+    // onHoverEnd() comes from area() component
+    // it runs once when the object stopped being hovered
+    btn.onHoverEnd(() => {
+      btn.scale = k.vec2(1);
+      btn.color = k.rgb();
+    });
+
+    // onClick() comes from area() component
+    // it runs once when the object is clicked
+    btn.onClick(() => {
+      shareScore(lastscore);
+    });
+
+    return btn;
+  }
 
   k.scene("first", () => {
     playback = k.play("loop", { volume: 0.2 });
@@ -291,6 +340,18 @@ export function runGame(
       PaymentFunction
     );
 
+    k.add([
+      k.text("Pay 0.1 CELO to play", {
+        size: 15,
+        width: 320,
+        font: "sans-serif",
+        align: "center",
+      }),
+      k.color(k.Color.WHITE),
+      k.pos(k.width() / 2, 400),
+      k.anchor("center"),
+    ]);
+
     if (errorRef && errorRef.current) {
       k.add([
         "errorText",
@@ -301,7 +362,7 @@ export function runGame(
           align: "center",
         }),
         k.color(k.Color.RED),
-        k.pos(k.width() / 2, 400),
+        k.pos(k.width() / 2, 420),
         k.anchor("center"),
       ]);
     }
@@ -402,6 +463,7 @@ export function runGame(
       k.pos(k.width() / 2 - 90, 350),
       { value: 0 },
     ]);
+    shareButton("SHARE", k.vec2(k.width() / 2, 400), lastScore);
 
     // Send user score to backend
     if (typeof handleAddUserScore === "function") {
@@ -409,12 +471,17 @@ export function runGame(
     }
 
     k.play("game_over");
-
-    setTimeout(() => {
+    k.onClick(() => {
       lives = 3;
       endGame();
       k.go("first");
-    }, 5000);
+    });
+
+    // setTimeout(() => {
+    //   lives = 3;
+    //   endGame();
+    //   k.go("first");
+    // }, 5000);
   });
 
   k.scene("game", () => {

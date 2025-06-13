@@ -21,6 +21,7 @@ import { useFrame } from "@/components/providers/FrameProvider";
 import { createScoreToken } from "@/lib/gameAuth";
 import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
 import { config } from "@/components/providers/WagmiProvider";
+import sdk from "@farcaster/frame-sdk";
 
 // type SendTransactionArgs = UseSendTransactionParameters & {
 //   to: `0x${string}`;
@@ -165,6 +166,15 @@ export default function Home() {
   //   [sendTransaction]
   // );
 
+  const shareScore = async (score: number) => {
+    await sdk.actions.composeCast({
+      text:
+        `🎮 I just scored ${score} playing Flappy Celo! 🏆\n` +
+        `🚀 Play and earn Celo now!\n`,
+      embeds: ["https://flappy-farcaster.vercel.app"],
+    });
+  };
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -195,6 +205,7 @@ export default function Home() {
         canvas,
         handleSubmit,
         handleAddUserScore,
+        shareScore,
         isProcessingRef,
         errorRef,
         showGameRef,
@@ -338,11 +349,6 @@ export default function Home() {
                 >
                   Load Game
                 </button>
-                {balance && (
-                  <div>
-                    Balance: {balance.formatted} {balance.symbol}
-                  </div>
-                )}
               </div>
             ) : null}
           </div>
