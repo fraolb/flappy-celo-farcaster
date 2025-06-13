@@ -232,7 +232,12 @@ export default function App() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              justifyContent: "center",
               minWidth: 350,
+              height: "100vh",
+              position: "relative",
+              zIndex: 10,
+              boxSizing: "border-box",
             }}
           >
             <h1
@@ -250,8 +255,8 @@ export default function App() {
             <h1
               style={{
                 color: "#fff",
-                fontSize: "1.8rem",
-                fontWeight: 700,
+                fontSize: "1.5rem",
+                fontWeight: 500,
                 marginBottom: "1.5rem",
                 letterSpacing: "1px",
                 textAlign: "center",
@@ -351,8 +356,7 @@ export default function App() {
               }}
             >
               Flappy Celo is a fun game where you compete for weekly rewards on
-              the Celo blockchain. Play, climb the leaderboard, and win Celo
-              every week!
+              the Celo blockchain.
             </div>
 
             {error && (
