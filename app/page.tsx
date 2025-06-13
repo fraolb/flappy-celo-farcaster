@@ -8,8 +8,12 @@ import {
   useConnect,
   useSwitchChain,
   useWaitForTransactionReceipt,
-  // type UseSendTransactionParameters,
 } from "wagmi";
+
+import { Metadata } from "next";
+import { APP_NAME, APP_DESCRIPTION, APP_OG_IMAGE_URL } from "@/lib/constants";
+import { getFrameEmbedMetadata } from "@/lib/utils";
+
 import { parseEther, parseUnits } from "viem";
 import { UserRejectedRequestError } from "viem";
 import { celo } from "wagmi/chains";
@@ -23,13 +27,21 @@ import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
 import { config } from "@/components/providers/WagmiProvider";
 import sdk from "@farcaster/frame-sdk";
 
-// type SendTransactionArgs = UseSendTransactionParameters & {
-//   to: `0x${string}`;
-//   value: bigint;
-//   data?: `0x${string}`; // Add data field to your type
-//   gasLimit?: bigint; // Optional gas limit
-//   gas?: bigint; // Optional gas limit
-// };
+export const revalidate = 300;
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: APP_NAME,
+    openGraph: {
+      title: APP_NAME,
+      description: APP_DESCRIPTION,
+      images: [APP_OG_IMAGE_URL],
+    },
+    other: {
+      "fc:frame": JSON.stringify(getFrameEmbedMetadata()),
+    },
+  };
+}
 
 export default function Home() {
   const { isConnected, chainId, address } = useAccount();
@@ -40,8 +52,6 @@ export default function Home() {
   });
   const { switchChain } = useSwitchChain();
   const [error, setError] = useState<string>("");
-  //const [isProcessing, setIsProcessing] = useState(false);
-  // const [showGame, setShowGame] = useState(false);
   const [isGameStarted, setIsGameStarted] = useState(false);
   const showGameRef = useRef(false);
   const isProcessingRef = useRef(false);
@@ -54,7 +64,6 @@ export default function Home() {
 
   const endGame = () => {
     showGameRef.current = false;
-    //setIsGameStarted(false); // If you want to hide the canvas and fully reset
   };
 
   const { data: balance } = useBalance({
@@ -154,18 +163,6 @@ export default function Home() {
     console.log("User score added successfully:");
   };
 
-  // const sendTransactionAsync1 = useCallback(
-  //   async (tx: SendTransactionArgs): Promise<`0x${string}`> => {
-  //     return new Promise<`0x${string}`>((resolve, reject) => {
-  //       sendTransaction(tx, {
-  //         onSuccess: (hash) => resolve(hash),
-  //         onError: (err) => reject(err),
-  //       });
-  //     });
-  //   },
-  //   [sendTransaction]
-  // );
-
   const shareScore = async (score: number) => {
     await sdk.actions.composeCast({
       text:
@@ -251,9 +248,6 @@ export default function Home() {
       {!isGameStarted && (
         <div
           style={{
-            background: "rgba(30, 41, 59, 0.85)",
-            borderRadius: "16px",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
             padding: "2rem 2.5rem",
             display: "flex",
             flexDirection: "column",
@@ -273,6 +267,19 @@ export default function Home() {
           >
             Flappy Bird Game
           </h1>
+          <div
+            style={{
+              marginTop: 16,
+              marginBottom: 24,
+              color: "#fff",
+              fontSize: 18,
+              textAlign: "center",
+            }}
+          >
+            Flappy Celo is a fun game where you compete for weekly rewards on
+            the Celo blockchain. Play, climb the leaderboard, and win Celo every
+            week!
+          </div>
           <div style={{ width: "100%", marginBottom: "1.5rem" }}>
             {!isConnected ? (
               <div style={{ textAlign: "center" }}>
