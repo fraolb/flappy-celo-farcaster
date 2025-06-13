@@ -273,7 +273,7 @@ export function runGame(
   ) {
     // add a parent background object
     const btn = k.add([
-      k.rect(240, 80, { radius: 8 }),
+      k.rect(200, 60, { radius: 8 }),
       k.pos(p),
       k.area(),
       k.scale(1),
@@ -336,7 +336,7 @@ export function runGame(
 
     addButton(
       isProcessing.current ? "Processing" : "Play",
-      k.vec2(k.width() / 2, 350),
+      k.vec2(k.width() / 2, 310),
       PaymentFunction
     );
 
@@ -348,7 +348,7 @@ export function runGame(
         align: "center",
       }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2, 400),
+      k.pos(k.width() / 2, 370),
       k.anchor("center"),
     ]);
 
@@ -444,9 +444,10 @@ export function runGame(
     }
     bgEffect();
     k.add([
-      k.text("GAME OVER", { size: 60 }),
-      k.color(k.Color.RED),
-      k.pos(k.width() / 2 - 150, 250),
+      k.text("GAME OVER", { size: 40 }),
+      k.color(k.Color.WHITE),
+      k.pos(k.width() / 2, k.height() / 6),
+      k.anchor("center"),
     ]);
     //drawScore(k.width() / 2 - 100, k.height() / 3, lastScore);
     drawFloor();
@@ -460,10 +461,27 @@ export function runGame(
     score = k.add([
       k.text(`You scored: ${lastScore}`, { size: 20 }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2 - 90, 350),
+      k.pos(k.width() / 2 - 90, k.height() / 4),
       { value: 0 },
     ]);
-    shareButton("SHARE", k.vec2(k.width() / 2, 400), lastScore);
+    // Play Again button
+    addButton(
+      "🔄 Play Again",
+      k.vec2(k.width() / 2, k.height() / 2 + 60),
+      () => {
+        k.go("first");
+      }
+    );
+    shareButton(
+      "🎮 Share Score",
+      k.vec2(k.width() / 2, k.height() / 2 + 130),
+      lastScore
+    );
+
+    // Close button
+    addButton("❌ Close", k.vec2(k.width() / 2, k.height() / 2 + 200), () => {
+      endGame();
+    });
 
     // Send user score to backend
     if (typeof handleAddUserScore === "function") {
@@ -471,11 +489,11 @@ export function runGame(
     }
 
     k.play("game_over");
-    k.onClick(() => {
-      lives = 3;
-      endGame();
-      k.go("first");
-    });
+    // k.onClick(() => {
+    //   lives = 3;
+    //   endGame();
+    //   k.go("first");
+    // });
 
     // setTimeout(() => {
     //   lives = 3;
