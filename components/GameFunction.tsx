@@ -31,7 +31,7 @@ export function runGame(
   });
 
   // Load assets
-  k.loadSprite("bg", "/assets/bg.png");
+  k.loadSprite("bg", "/assets/bg.webp");
   k.loadSprite("rocket", "/assets/rock.png", {
     sliceX: 3,
     sliceY: 1,
