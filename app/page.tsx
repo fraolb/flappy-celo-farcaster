@@ -170,7 +170,7 @@ export default function Home() {
     await sdk.actions.composeCast({
       text:
         `🎮 I just scored ${score} playing Flappy Celo! 🏆\n` +
-        `🚀 Play and earn Celo now!\n`,
+        `🚀 Play and win Celo Weekly!\n`,
       embeds: ["https://flappy-farcaster.vercel.app"],
     });
   };
