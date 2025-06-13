@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { mnemonicToAccount } from "viem/accounts";
 import {
   APP_BUTTON_TEXT,
   APP_DESCRIPTION,
@@ -102,45 +101,14 @@ export async function getFarcasterMetadata(): Promise<FrameManifest> {
     );
   }
 
-  let accountAssociation;
-  if (secretEnvVars) {
-    // Generate account from seed phrase
-    const account = mnemonicToAccount(secretEnvVars.seedPhrase);
-    const custodyAddress = account.address;
-
-    const header = {
-      fid: parseInt(secretEnvVars.fid),
-      type: "custody",
-      key: custodyAddress,
-    };
-    const encodedHeader = Buffer.from(JSON.stringify(header), "utf-8").toString(
-      "base64"
-    );
-
-    const payload = {
-      domain,
-    };
-    const encodedPayload = Buffer.from(
-      JSON.stringify(payload),
-      "utf-8"
-    ).toString("base64url");
-
-    const signature = await account.signMessage({
-      message: `${encodedHeader}.${encodedPayload}`,
-    });
-    const encodedSignature = Buffer.from(signature, "utf-8").toString(
-      "base64url"
-    );
-
-    accountAssociation = {
-      header: encodedHeader,
-      payload: encodedPayload,
-      signature: encodedSignature,
-    };
-  }
-
   return {
-    accountAssociation,
+    accountAssociation: {
+      header:
+        "eyJmaWQiOjg1OTE0OCwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweEQ3OTI4NzlFMTZDNWU4N0VDRDUzMzE5RTEzNDcxMTQ3NTczMjZGNjIifQ",
+      payload: "eyJkb21haW4iOiJmbGFwcHktZmFyY2FzdGVyLnZlcmNlbC5hcHAifQ",
+      signature:
+        "MHhhN2JjOGRkMDg1OTY3ZGFkZmY4YzBjMzg5ZWVhODk4YWU1YjEzYjMzMTFkZmU4NzNjYjZlNjQzOTg3NzM1Y2QwMjY1MzFhMDJlMDFhMjAxYmE0NmFkMjZlMmJlNDAwYWI4Njg5ZmU4NjNjNDM4MDJjNDk3YmM5ZmY0NzgyOWM2ZjFi",
+    },
     frame: {
       version: "1",
       name: APP_NAME ?? "Frames v2 Demo",
