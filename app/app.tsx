@@ -214,166 +214,170 @@ export default function App() {
 
   return (
     <div className="relative h-screen w-full">
-      <Image
-        src={backgroundImage}
-        alt="Game background"
-        fill
-        priority
-        quality={85}
-        className="object-cover"
-      />
-      {!isGameStarted && (
-        <div
-          style={{
-            padding: "2rem 2.5rem",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            minWidth: 350,
-          }}
-        >
-          <h1
-            style={{
-              color: "#fff",
-              fontSize: "2.2rem",
-              fontWeight: 700,
-              marginBottom: "1rem",
-              letterSpacing: "1px",
-              textAlign: "center",
-            }}
-          >
-            Flappy Bird Game
-          </h1>
-          <h1
-            style={{
-              color: "#fff",
-              fontSize: "1.8rem",
-              fontWeight: 700,
-              marginBottom: "1.5rem",
-              letterSpacing: "1px",
-              textAlign: "center",
-            }}
-          >
-            Weekly competition coming soon!
-          </h1>
-
-          <div style={{ width: "100%", marginBottom: "1.5rem" }}>
-            {!isConnected ? (
-              <div style={{ textAlign: "center" }}>
-                <p
-                  className="mb-6 text-gray-300"
-                  style={{
-                    color: "#cbd5e1",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  Connect your wallet
-                </p>
-                <button
-                  type="button"
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem 1rem",
-                    fontSize: "1rem",
-                    borderRadius: "8px",
-                    background: "linear-gradient(to right, #6366f1, #a21caf)",
-                    color: "#fff",
-                    border: "none",
-                    cursor: "pointer",
-                    fontWeight: 600,
-                  }}
-                  onClick={() => connect({ connector: connectors[0] })}
-                >
-                  Connect Wallet
-                </button>
-              </div>
-            ) : chainId !== celo.id ? (
-              <div style={{ textAlign: "center" }}>
-                <p style={{ color: "#cbd5e1", marginBottom: "1rem" }}>
-                  Switch to Celo network
-                </p>
-                <button
-                  type="button"
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem 1rem",
-                    fontSize: "1rem",
-                    borderRadius: "8px",
-                    background: "linear-gradient(to right, #6366f1, #a21caf)",
-                    color: "#fff",
-                    border: "none",
-                    cursor: "pointer",
-                    fontWeight: 600,
-                  }}
-                  onClick={() => switchChain?.({ chainId: celo.id })}
-                >
-                  Switch to Celo
-                </button>
-              </div>
-            ) : !isGameStarted ? (
-              <div>
-                <button
-                  style={{
-                    width: "100%",
-                    padding: "1rem",
-                    fontSize: "1.2rem",
-                    marginTop: "1rem",
-                    borderRadius: "8px",
-                    background: "linear-gradient(to right, #6366f1, #a21caf)",
-                    color: "#fff",
-                    border: "none",
-                    cursor: "pointer",
-                    fontWeight: 700,
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                    transition: "background 0.2s",
-                  }}
-                  onClick={() => setIsGameStarted(true)}
-                >
-                  Load Game
-                </button>
-              </div>
-            ) : null}
-          </div>
-
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src={backgroundImage}
+          alt="Game background"
+          fill
+          priority
+          quality={85}
+          className="object-cover"
+        />
+      </div>
+      <div className="relative z-10 h-full w-full">
+        {!isGameStarted && (
           <div
             style={{
-              marginTop: 16,
-              marginBottom: 24,
-              fontWeight: 300,
-              color: "#fff",
-              fontSize: 15,
-              textAlign: "center",
+              padding: "2rem 2.5rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              minWidth: 350,
             }}
           >
-            Flappy Celo is a fun game where you compete for weekly rewards on
-            the Celo blockchain. Play, climb the leaderboard, and win Celo every
-            week!
-          </div>
-
-          {error && (
-            <div
+            <h1
               style={{
-                color: "#f87171",
-                marginTop: "1.2rem",
+                color: "#fff",
+                fontSize: "2.2rem",
+                fontWeight: 700,
+                marginBottom: "1rem",
+                letterSpacing: "1px",
                 textAlign: "center",
-                fontWeight: 500,
               }}
             >
-              {error}
+              Flappy Bird Game
+            </h1>
+            <h1
+              style={{
+                color: "#fff",
+                fontSize: "1.8rem",
+                fontWeight: 700,
+                marginBottom: "1.5rem",
+                letterSpacing: "1px",
+                textAlign: "center",
+              }}
+            >
+              Weekly competition coming soon!
+            </h1>
+
+            <div style={{ width: "100%", marginBottom: "1.5rem" }}>
+              {!isConnected ? (
+                <div style={{ textAlign: "center" }}>
+                  <p
+                    className="mb-6 text-gray-300"
+                    style={{
+                      color: "#cbd5e1",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    Connect your wallet
+                  </p>
+                  <button
+                    type="button"
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition"
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem 1rem",
+                      fontSize: "1rem",
+                      borderRadius: "8px",
+                      background: "linear-gradient(to right, #6366f1, #a21caf)",
+                      color: "#fff",
+                      border: "none",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                    onClick={() => connect({ connector: connectors[0] })}
+                  >
+                    Connect Wallet
+                  </button>
+                </div>
+              ) : chainId !== celo.id ? (
+                <div style={{ textAlign: "center" }}>
+                  <p style={{ color: "#cbd5e1", marginBottom: "1rem" }}>
+                    Switch to Celo network
+                  </p>
+                  <button
+                    type="button"
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition"
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem 1rem",
+                      fontSize: "1rem",
+                      borderRadius: "8px",
+                      background: "linear-gradient(to right, #6366f1, #a21caf)",
+                      color: "#fff",
+                      border: "none",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                    onClick={() => switchChain?.({ chainId: celo.id })}
+                  >
+                    Switch to Celo
+                  </button>
+                </div>
+              ) : !isGameStarted ? (
+                <div>
+                  <button
+                    style={{
+                      width: "100%",
+                      padding: "1rem",
+                      fontSize: "1.2rem",
+                      marginTop: "1rem",
+                      borderRadius: "8px",
+                      background: "linear-gradient(to right, #6366f1, #a21caf)",
+                      color: "#fff",
+                      border: "none",
+                      cursor: "pointer",
+                      fontWeight: 700,
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                      transition: "background 0.2s",
+                    }}
+                    onClick={() => setIsGameStarted(true)}
+                  >
+                    Load Game
+                  </button>
+                </div>
+              ) : null}
             </div>
-          )}
-        </div>
-      )}
-      {isGameStarted && (
-        <canvas
-          ref={canvasRef}
-          style={{
-            zIndex: 100,
-          }}
-        />
-      )}
+
+            <div
+              style={{
+                marginTop: 16,
+                marginBottom: 24,
+                fontWeight: 300,
+                color: "#fff",
+                fontSize: 15,
+                textAlign: "center",
+              }}
+            >
+              Flappy Celo is a fun game where you compete for weekly rewards on
+              the Celo blockchain. Play, climb the leaderboard, and win Celo
+              every week!
+            </div>
+
+            {error && (
+              <div
+                style={{
+                  color: "#f87171",
+                  marginTop: "1.2rem",
+                  textAlign: "center",
+                  fontWeight: 500,
+                }}
+              >
+                {error}
+              </div>
+            )}
+          </div>
+        )}
+        {isGameStarted && (
+          <canvas
+            ref={canvasRef}
+            style={{
+              zIndex: 100,
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }
