@@ -69,7 +69,7 @@ export function runGame(
   let pipes: GameObj[] = [];
   let playback: AudioPlay;
   const hearts: GameObj[] = [];
-  const MOVEMENT = 14;
+  const MOVEMENT = 12;
 
   const drawScore = (x = k.width() / 1.7, y = 30, lastScore = 0) => {
     score = k.add([
@@ -507,9 +507,11 @@ export function runGame(
     ]);
     // Play Again button
     playAgainButton(
-      "▶Play Again",
+      "▶ Play Again",
       k.vec2(k.width() / 2, k.height() / 2 + 40),
       () => {
+        lives = 3;
+        endGame();
         k.go("first");
       }
     );
@@ -525,17 +527,6 @@ export function runGame(
     }
 
     k.play("game_over");
-    // k.onClick(() => {
-    //   lives = 3;
-    //   endGame();
-    //   k.go("first");
-    // });
-
-    // setTimeout(() => {
-    //   lives = 3;
-    //   endGame();
-    //   k.go("first");
-    // }, 5000);
   });
 
   k.scene("game", () => {
