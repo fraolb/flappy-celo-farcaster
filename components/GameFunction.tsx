@@ -75,6 +75,7 @@ export function runGame(
     score = k.add([
       k.text(`Blocks: ${lastScore}`, {
         size: 20,
+        font: "vt323",
       }),
       k.color(k.Color.WHITE),
       k.pos(x, y),
@@ -234,7 +235,7 @@ export function runGame(
 
     // add a child object that displays the text
     btn.add([
-      k.text(isProcessing.current ? txt : "Processing"),
+      k.text(txt, { font: "vt323" }),
       k.anchor("center"),
       k.color(0, 0, 0),
     ]);
@@ -287,7 +288,11 @@ export function runGame(
     ]);
 
     // add a child object that displays the text
-    btn.add([k.text(txt, { size: 24 }), k.anchor("center"), k.color(0, 0, 0)]);
+    btn.add([
+      k.text(txt, { size: 24, font: "vt323" }),
+      k.anchor("center"),
+      k.color(0, 0, 0),
+    ]);
 
     // onHoverUpdate() comes from area() component
     // it runs every frame when the object is being hovered
@@ -333,7 +338,11 @@ export function runGame(
     ]);
 
     // add a child object that displays the text
-    btn.add([k.text(txt, { size: 24 }), k.anchor("center"), k.color(0, 0, 0)]);
+    btn.add([
+      k.text(txt, { size: 24, font: "vt323" }),
+      k.anchor("center"),
+      k.color(0, 0, 0),
+    ]);
 
     // onHoverUpdate() comes from area() component
     // it runs every frame when the object is being hovered
@@ -368,9 +377,10 @@ export function runGame(
     // Add "Tap to play" text at the top
     k.add([
       "gameText",
-      k.text("Welcome to Flappy Rocket", {
+      k.text("Flappy Rocket", {
         size: 32,
         width: 320,
+        font: "vt323",
         align: "center",
       }),
       k.color(k.Color.WHITE),
@@ -388,6 +398,7 @@ export function runGame(
       k.text("Pay 0.1 CELO to play", {
         size: 15,
         width: 320,
+        font: "vt323",
         align: "center",
       }),
       k.color(k.Color.WHITE),
@@ -400,6 +411,7 @@ export function runGame(
         "errorText",
         k.text(errorRef.current, {
           size: 18,
+          font: "vt323",
           width: 320,
           align: "center",
         }),
@@ -413,14 +425,17 @@ export function runGame(
     const topScores = scoresRef.current?.topScores || [];
     const yStart = 430;
     k.add([
-      k.text("Top 5 Scores", { size: 22 }),
+      k.text("Top 5 Scores", { size: 22, font: "vt323" }),
       k.color(k.Color.YELLOW),
       k.pos(k.width() / 2, yStart),
       k.anchor("center"),
     ]);
     topScores.slice(0, 5).forEach((score, idx) => {
       k.add([
-        k.text(`${idx + 1}. ${score.username}: ${score.score}`, { size: 18 }),
+        k.text(`${idx + 1}. ${score.username}: ${score.score}`, {
+          size: 18,
+          font: "vt323",
+        }),
         k.color(k.Color.WHITE),
         k.pos(k.width() / 2, yStart + 30 + idx * 24),
         k.anchor("center"),
@@ -432,6 +447,7 @@ export function runGame(
     k.add([
       k.text(`Your Score: ${userScore ? userScore.score : "No score yet"}`, {
         size: 20,
+        font: "vt323",
       }),
       k.color(k.Color.CYAN),
       k.pos(k.width() / 2, yStart + 170),
@@ -453,7 +469,7 @@ export function runGame(
     // Add "Tap to play" text at the top
     k.add([
       "gameText",
-      k.text("Tap to start", { size: 32, width: 320 }),
+      k.text("Tap to start", { size: 32, width: 320, font: "vt323" }),
       k.color(k.Color.WHITE),
       k.pos(k.width() / 2 - 90, 100),
     ]);
@@ -486,7 +502,7 @@ export function runGame(
     }
     bgEffect();
     k.add([
-      k.text("GAME OVER", { size: 40 }),
+      k.text("GAME OVER", { size: 40, font: "vt323" }),
       k.color(k.Color.WHITE),
       k.pos(k.width() / 2, k.height() / 4),
       k.anchor("center"),
@@ -501,7 +517,7 @@ export function runGame(
     ]);
 
     score = k.add([
-      k.text(`You scored: ${lastScore}`, { size: 20 }),
+      k.text(`You scored: ${lastScore}`, { size: 20, font: "vt323" }),
       k.color(k.Color.WHITE),
       k.pos(k.width() / 2 - 90, k.height() / 3),
       { value: 0 },

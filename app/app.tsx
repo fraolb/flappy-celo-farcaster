@@ -239,11 +239,11 @@ export default function App() {
           <div className="font-vt323 flex flex-col items-center justify-center p-8 min-w-[350px] h-screen relative z-10 box-border">
             <h1 className="font-press-start text-4xl text-white [text-shadow:_3px_3px_0_#000]">
               FLAPPY ROCKET
-              <span className="block text-xl font-vt323 text-gray-300">
+              <span className="block text-sm font-vt323 text-gray-300">
                 Powered by Celo
               </span>
             </h1>
-            <h2 className="text-gray-200 text-2xl md:text-3xl mb-8 tracking-wide text-center [text-shadow:_2px_2px_0_#000]">
+            <h2 className="text-gray-200 text-base md:text-base mb-8 tracking-wide text-center [text-shadow:_2px_2px_0_#000]">
               Weekly competition!
             </h2>
 
