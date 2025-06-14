@@ -260,7 +260,11 @@ export default function App() {
                     Connect your wallet
                   </p>
                   <button
-                    className="font-vt323 w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xl mb-2"
+                    className="font-vt323 w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xl mb-2
+             transition-all duration-200 ease-in-out
+             hover:border-2 hover:border-white hover:-translate-y-0.5 hover:shadow-lg
+             active:scale-95 active:bg-white/10 active:border-2 active:border-white/80
+             relative overflow-hidden"
                     onClick={() => connect({ connector: connectors[0] })}
                   >
                     CONNECT WALLET
@@ -279,7 +283,11 @@ export default function App() {
                   </p>
                   <button
                     type="button"
-                    className="font-vt323 w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xl mb-2"
+                    className="font-vt323 w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xl mb-2
+             transition-all duration-200 ease-in-out
+             hover:border-2 hover:border-white hover:-translate-y-0.5 hover:shadow-lg
+             active:scale-95 active:bg-white/10 active:border-2 active:border-white/80
+             relative overflow-hidden"
                     onClick={() => switchChain?.({ chainId: celo.id })}
                   >
                     SWITCH TO CELO
@@ -288,7 +296,11 @@ export default function App() {
               ) : !isGameStarted ? (
                 <div>
                   <button
-                    className="font-press-start w-full py-4 px-4 rounded-lg bg-gradient-to-r from-green-400 to-blue-500 text-white text-2xl mt-4 [text-shadow:_2px_2px_0_#000]"
+                    className="font-vt323 w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xl mb-2
+             transition-all duration-200 ease-in-out
+             hover:border-2 hover:border-white hover:-translate-y-0.5 hover:shadow-lg
+             active:scale-95 active:bg-white/10 active:border-2 active:border-white/80
+             relative overflow-hidden"
                     onClick={() => setIsGameStarted(true)}
                   >
                     Load Game
