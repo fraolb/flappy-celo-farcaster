@@ -519,7 +519,7 @@ export function runGame(
     score = k.add([
       k.text(`You scored: ${lastScore}`, { size: 25, font: "vt323" }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2, k.height() / 3),
+      k.pos(k.width() / 2 - 90, k.height() / 3),
       { value: 0 },
     ]);
     // Play Again button
