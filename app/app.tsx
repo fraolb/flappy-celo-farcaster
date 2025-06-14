@@ -161,6 +161,17 @@ export default function App() {
   }, [scores, topScores]);
 
   useEffect(() => {
+    const add = async () => {
+      try {
+        await sdk.actions.addMiniApp();
+      } catch (err) {
+        console.error("Failed to add mini app:", err);
+      }
+    };
+    add();
+  }, []);
+
+  useEffect(() => {
     if (!isConnected || chainId !== celo.id || !isGameStarted) {
       // When game is not showing, ensure canvas ref is null
       canvasRef.current = null;

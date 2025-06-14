@@ -46,7 +46,7 @@ export function runGame(
     sliceX: 3,
     sliceY: 1,
     anims: {
-      astro: { from: 0, to: 2, loop: true, speed: 3 },
+      astro: { from: 0, to: 2, loop: true, speed: 2 },
     },
   });
   k.loadSprite("heart", "/assets/heart.png", {
@@ -513,7 +513,7 @@ export function runGame(
       "rocket",
       k.scale(0.3),
       k.sprite("astronaut", { anim: "astro" }),
-      k.pos(180, k.height() / 1.24),
+      k.pos(30, k.height() / 1.24),
     ]);
 
     score = k.add([
