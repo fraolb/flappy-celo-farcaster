@@ -224,6 +224,7 @@ export function runGame(
   ) {
     // add a parent background object
     const btn = k.add([
+      "playBtn",
       k.rect(240, 80, { radius: 8 }),
       k.pos(p),
       k.area(),
@@ -393,6 +394,15 @@ export function runGame(
       k.vec2(k.width() / 2, 310),
       PaymentFunction
     );
+
+    k.loop(1, () => {
+      if (showGameRef && showGameRef.current) {
+        const btn = k.get("playBtn")[0];
+        if (btn) {
+          btn.text = "Processing";
+        }
+      }
+    });
 
     k.add([
       k.text("Pay 0.1 CELO to play", {
