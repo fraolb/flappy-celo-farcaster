@@ -148,7 +148,7 @@ export default function App() {
   const shareScore = async (score: number) => {
     await sdk.actions.composeCast({
       text:
-        `🎮 I just scored ${score} playing Flappy Celo! 🏆\n` +
+        `🎮 I just scored ${score} playing Flappy Rocket! 🏆\n` +
         `🚀 Play and win Celo Weekly!\n`,
       embeds: ["https://flappy-farcaster.vercel.app"],
     });
@@ -173,8 +173,18 @@ export default function App() {
       canvas.width = 480;
       canvas.height = 640;
       canvasRef.current = canvas;
-    }
 
+      // Get the 2D rendering context
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new Error("Could not get 2D context");
+      }
+
+      // Set font and draw text
+      ctx.font = '20px "Press Start 2P"';
+      ctx.fillStyle = "white";
+      ctx.fillText("Score: 100", 10, 50);
+    }
     const canvas = canvasRef.current;
     let gameCleanup: (() => void) | undefined;
 
@@ -226,117 +236,59 @@ export default function App() {
       </div>
       <div className="relative z-10 h-full w-full">
         {!isGameStarted && (
-          <div
-            style={{
-              padding: "2rem 2.5rem",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              minWidth: 350,
-              height: "100vh",
-              position: "relative",
-              zIndex: 10,
-              boxSizing: "border-box",
-            }}
-          >
-            <h1
-              style={{
-                color: "#fff",
-                fontSize: "2.2rem",
-                fontWeight: 700,
-                marginBottom: "1rem",
-                letterSpacing: "1px",
-                textAlign: "center",
-              }}
-            >
-              Flappy Bird Game
+          <div className="font-vt323 flex flex-col items-center justify-center p-8 min-w-[350px] h-screen relative z-10 box-border">
+            <h1 className="font-press-start text-4xl text-white [text-shadow:_3px_3px_0_#000]">
+              FLAPPY ROCKET
+              <span className="block text-xl font-vt323 text-gray-300">
+                Powered by Celo
+              </span>
             </h1>
-            <h1
-              style={{
-                color: "#fff",
-                fontSize: "1.5rem",
-                fontWeight: 500,
-                marginBottom: "1.5rem",
-                letterSpacing: "1px",
-                textAlign: "center",
-              }}
-            >
-              Weekly competition coming soon!
-            </h1>
+            <h2 className="text-gray-200 text-2xl md:text-3xl mb-8 tracking-wide text-center [text-shadow:_2px_2px_0_#000]">
+              Weekly competition!
+            </h2>
 
-            <div style={{ width: "100%", marginBottom: "1.5rem" }}>
+            <div style={{ width: "100%", marginBottom: "2rem" }}>
               {!isConnected ? (
                 <div style={{ textAlign: "center" }}>
                   <p
-                    className="mb-6 text-gray-300"
                     style={{
                       color: "#cbd5e1",
-                      marginBottom: "1rem",
+                      marginBottom: "1.5rem",
+                      fontSize: "1.3rem",
                     }}
                   >
                     Connect your wallet
                   </p>
                   <button
-                    type="button"
-                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition"
-                    style={{
-                      width: "100%",
-                      padding: "0.75rem 1rem",
-                      fontSize: "1rem",
-                      borderRadius: "8px",
-                      background: "linear-gradient(to right, #6366f1, #a21caf)",
-                      color: "#fff",
-                      border: "none",
-                      cursor: "pointer",
-                      fontWeight: 600,
-                    }}
+                    className="font-vt323 w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xl mb-2"
                     onClick={() => connect({ connector: connectors[0] })}
                   >
-                    Connect Wallet
+                    CONNECT WALLET
                   </button>
                 </div>
               ) : chainId !== celo.id ? (
                 <div style={{ textAlign: "center" }}>
-                  <p style={{ color: "#cbd5e1", marginBottom: "1rem" }}>
+                  <p
+                    style={{
+                      color: "#cbd5e1",
+                      marginBottom: "1.5rem",
+                      fontSize: "1.3rem",
+                    }}
+                  >
                     Switch to Celo network
                   </p>
                   <button
                     type="button"
-                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition"
-                    style={{
-                      width: "100%",
-                      padding: "0.75rem 1rem",
-                      fontSize: "1rem",
-                      borderRadius: "8px",
-                      background: "linear-gradient(to right, #6366f1, #a21caf)",
-                      color: "#fff",
-                      border: "none",
-                      cursor: "pointer",
-                      fontWeight: 600,
-                    }}
+                    className="font-vt323 w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xl mb-2"
                     onClick={() => switchChain?.({ chainId: celo.id })}
                   >
-                    Switch to Celo
+                    SWITCH TO CELO
                   </button>
                 </div>
               ) : !isGameStarted ? (
                 <div>
                   <button
-                    style={{
-                      width: "100%",
-                      padding: "1rem",
-                      fontSize: "1.2rem",
-                      marginTop: "1rem",
-                      borderRadius: "8px",
-                      background: "linear-gradient(to right, #6366f1, #a21caf)",
-                      color: "#fff",
-                      border: "none",
-                      cursor: "pointer",
-                      fontWeight: 700,
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                      transition: "background 0.2s",
-                    }}
+                    className="font-press-start w-full py-4 px-4 rounded-lg bg-gradient-to-r from-green-400 to-blue-500 text-white text-2xl mt-4 [text-shadow:_2px_2px_0_#000]"
                     onClick={() => setIsGameStarted(true)}
                   >
                     Load Game
@@ -349,24 +301,34 @@ export default function App() {
               style={{
                 marginTop: 16,
                 marginBottom: 24,
-                fontWeight: 300,
                 color: "#fff",
-                fontSize: 15,
+                fontSize: "1.2rem",
                 textAlign: "center",
+                lineHeight: "1.5",
+                maxWidth: "400px",
+                textShadow: "1px 1px 0 #000",
               }}
             >
-              Flappy Celo is a fun game where you compete for weekly rewards on
-              the Celo blockchain.
+              Compete for weekly rewards on the Celo blockchain.
+              <br />
+              Play → Score → Win!
             </div>
 
             {error && (
               <div
                 style={{
-                  color: "#f87171",
+                  color: "#ff6b6b",
                   marginTop: "1.2rem",
                   textAlign: "center",
-                  fontWeight: 500,
+                  fontSize: "1.1rem",
+                  textShadow: "1px 1px 0 #000",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  maxWidth: "100%",
+                  padding: "0 1rem",
                 }}
+                title={error}
               >
                 {error}
               </div>
