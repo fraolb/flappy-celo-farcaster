@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 
 import "@/app/globals.css";
 import { Providers } from "@/app/providers";
@@ -32,7 +33,9 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${pressStart.variable} ${vt323.variable}`}>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children} <Analytics />
+        </Providers>
       </body>
     </html>
   );
