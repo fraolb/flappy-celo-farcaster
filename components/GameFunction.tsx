@@ -395,15 +395,6 @@ export function runGame(
       PaymentFunction
     );
 
-    k.loop(1, () => {
-      if (showGameRef && showGameRef.current) {
-        const btn = k.get("playBtn")[0];
-        if (btn) {
-          btn.text = "Processing";
-        }
-      }
-    });
-
     k.add([
       k.text("Pay 0.1 CELO to play", {
         size: 15,
