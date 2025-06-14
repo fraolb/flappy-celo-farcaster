@@ -92,8 +92,8 @@ export default function App() {
       // Step 2: Send transaction with data suffix
       const txHash = await sendTransactionAsync({
         to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2" as `0x${string}`,
-        data: data as `0x${string}`, // Append the data suffix
-        value: parseEther("0.000001"),
+        data: data as `0x${string}`,
+        value: parseEther("0.1"),
         maxFeePerGas: parseUnits("100", 9),
         maxPriorityFeePerGas: parseUnits("100", 9),
       });

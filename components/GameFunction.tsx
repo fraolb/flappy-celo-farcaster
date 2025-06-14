@@ -32,21 +32,21 @@ export function runGame(
 
   // Load assets
   k.loadSprite("bg", "/assets/bg.webp");
-  k.loadSprite("rocket", "/assets/rock.png", {
+  k.loadSprite("rocket", "/assets/rock.webp", {
     sliceX: 3,
     sliceY: 1,
     anims: {
       fly: { from: 0, to: 2, loop: true, speed: 6, pingpong: true },
     },
   });
-  k.loadSprite("floor", "/assets/floor.png");
-  k.loadSprite("top-block", "/assets/block2.png");
-  k.loadSprite("bottom-block", "/assets/block.png");
-  k.loadSprite("astronaut", "/assets/astronaut.png", {
-    sliceX: 5,
+  k.loadSprite("floor", "/assets/floor.webp");
+  k.loadSprite("top-block", "/assets/block2.webp");
+  k.loadSprite("bottom-block", "/assets/block.webp");
+  k.loadSprite("astronaut", "/assets/astro.webp", {
+    sliceX: 3,
     sliceY: 1,
     anims: {
-      astro: { from: 0, to: 4, loop: true, speed: 3 },
+      astro: { from: 0, to: 2, loop: true, speed: 3 },
     },
   });
   k.loadSprite("heart", "/assets/heart.png", {
@@ -517,9 +517,9 @@ export function runGame(
     ]);
 
     score = k.add([
-      k.text(`You scored: ${lastScore}`, { size: 20, font: "vt323" }),
+      k.text(`You scored: ${lastScore}`, { size: 25, font: "vt323" }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2 - 90, k.height() / 3),
+      k.pos(k.width() / 2, k.height() / 3),
       { value: 0 },
     ]);
     // Play Again button
