@@ -233,7 +233,11 @@ export function runGame(
     ]);
 
     // add a child object that displays the text
-    btn.add([k.text(txt), k.anchor("center"), k.color(0, 0, 0)]);
+    btn.add([
+      k.text(isProcessing.current ? txt : "Processing"),
+      k.anchor("center"),
+      k.color(0, 0, 0),
+    ]);
 
     // onHoverUpdate() comes from area() component
     // it runs every frame when the object is being hovered
@@ -364,10 +368,9 @@ export function runGame(
     // Add "Tap to play" text at the top
     k.add([
       "gameText",
-      k.text("Welcome to Flappy Celo", {
+      k.text("Welcome to Flappy Rocket", {
         size: 32,
         width: 320,
-        font: "sans-serif",
         align: "center",
       }),
       k.color(k.Color.WHITE),
@@ -385,7 +388,6 @@ export function runGame(
       k.text("Pay 0.1 CELO to play", {
         size: 15,
         width: 320,
-        font: "sans-serif",
         align: "center",
       }),
       k.color(k.Color.WHITE),
@@ -399,7 +401,6 @@ export function runGame(
         k.text(errorRef.current, {
           size: 18,
           width: 320,
-          font: "sans-serif",
           align: "center",
         }),
         k.color(k.Color.RED),
@@ -452,7 +453,7 @@ export function runGame(
     // Add "Tap to play" text at the top
     k.add([
       "gameText",
-      k.text("Tap to play", { size: 32, width: 320, font: "sans-serif" }),
+      k.text("Tap to start", { size: 32, width: 320 }),
       k.color(k.Color.WHITE),
       k.pos(k.width() / 2 - 90, 100),
     ]);
