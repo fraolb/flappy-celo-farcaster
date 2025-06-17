@@ -1,37 +1,41 @@
-# Flappy Rocket 🚀
+# Flappy Rocket
 
-Flappy Rocket is a skill-based arcade game and Farcaster mini app launched on the Celo blockchain network.
+Flappy Rocket is a fun and competitive web mini-game built on the **Celo network** and designed for the Farcaster ecosystem. The game is developed using [kaplay](https://github.com/kaplayjs/kaplay), a modern JavaScript game engine, to deliver smooth and engaging gameplay right in your browser.
 
-Compete for weekly rewards by playing, climbing the leaderboard, and sharing your score with friends! Connect your Celo wallet, pay a small entry fee, and try to achieve the highest score. Top players win Celo prizes every week.
+## 🚀 About the Game
 
-## Getting Started
+Guide your rocket through obstacles and aim for the highest score! Each week, players compete for the top spots on the leaderboard. The best scorers win weekly rewards in CELO, making every run exciting and rewarding.
 
-First, run the development server:
+## 🏆 Weekly Competition
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Compete**: Play as many times as you want to improve your score.
+- **Leaderboard**: The top 5 scores are displayed for all to see.
+- **Rewards**: At the end of each week, the highest scorers win CELO prizes.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to play Flappy Rocket.
+## 🌐 Powered by Celo
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+All game rewards and transactions are handled on the Celo blockchain, ensuring transparency and real ownership of your winnings.
 
-## Features
+## 🎮 Built with Kaplay
 
-- Play-to-win arcade gameplay
-- Weekly Celo rewards for top scorers
-- Farcaster mini app integration
-- Wallet connect and on-chain payments
-- Share your score with friends
+The game leverages the [kaplay](https://github.com/kaplayjs/kaplay) engine for fast, interactive, and enjoyable gameplay.
 
-## Deploy on Vercel
+## 📲 How to Play
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Connect your Farcaster wallet and change network to Celo**.
+2. **Pay 0.1 CELO to play the game**
+3. **Start the game** and tap to fly your rocket.
+4. **Avoid obstacles** and try to beat your high score.
+5. **Share your score** and challenge friends!
+6. **Check the leaderboard** to see if you’re among the weekly winners.
 
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠️ Tech Stack
+
+- **Celo blockchain** for rewards and wallet integration
+- **Kaplay** for game development
+- **Next.js** for the web app
+- **Farcaster** mini app integration
+
+## 📢 Join the Competition!
+
+Play now, climb the leaderboard, and win CELO every week!
