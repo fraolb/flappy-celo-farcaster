@@ -7,4 +7,12 @@ libs = ["lib", "dependencies"]
 forge-std = "1.9.7"
 "@openzeppelin-contracts" = "5.0.2"
 
+[rpc_endpoints]
+alfajores = "https://alfajores-forno.celo-testnet.org"
+mainnet = "https://forno.celo.org"
+
+[etherscan]
+alfajores = { key = "", url = "https://alfajores.celoscan.io/" }
+mainnet = { key = "", url = "https://celoscan.io/" }
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
