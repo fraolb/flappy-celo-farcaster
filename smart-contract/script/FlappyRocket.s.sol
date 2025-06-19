@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Script.sol";
-import {FlappyRocketGameTest} from "../src/FlappyRocket.sol";
+import {FlappyRocketGame} from "../src/FlappyRocket.sol";
 
 contract DeployFlappyRocketWithArgs is Script {
     function run(uint256 minDeposit) external {
@@ -10,7 +10,7 @@ contract DeployFlappyRocketWithArgs is Script {
 
         vm.startBroadcast();
 
-        FlappyRocketGameTest game = new FlappyRocketGameTest(minDeposit);
+        FlappyRocketGame game = new FlappyRocketGame(minDeposit);
 
         vm.stopBroadcast();
 

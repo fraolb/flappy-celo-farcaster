@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/token/ERC20/IERC20.sol";
 import "@openzeppelin/access/Ownable.sol";
 
-contract FlappyRocketGameTest is Ownable {
+contract FlappyRocketGame is Ownable {
     // Player deposits and balances
     mapping(address => uint256) public playerCELODeposits;
     uint256 public totalCELOBalance;
