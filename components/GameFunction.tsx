@@ -88,6 +88,7 @@ export function runGame(
   let playback: AudioPlay;
   const hearts: GameObj[] = [];
   const MOVEMENT = 12;
+  let demoRocket: GameObj;
 
   const drawScore = (x = k.width() / 1.7, y = 30, lastScore = 0) => {
     score = k.add([
@@ -587,7 +588,6 @@ export function runGame(
     bgEffect();
     let currentInstruction = 1;
     let instructionElements: GameObj[] = [];
-    let demoRocket: GameObj;
     let collisionBlocks: GameObj[] = [];
 
     // Demo rocket (with collision area)
