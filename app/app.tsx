@@ -12,7 +12,7 @@ import {
 import Image from "next/image";
 import backgroundImage from "@/public/assets/bg.webp";
 
-import { parseEther, parseUnits } from "viem";
+import { parseEther, parseUnits, encodeFunctionData } from "viem";
 import { UserRejectedRequestError } from "viem";
 import { celo } from "wagmi/chains";
 import { useRef, useEffect } from "react";
@@ -24,6 +24,9 @@ import { createScoreToken } from "@/lib/gameAuth";
 import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
 import { config } from "@/components/providers/WagmiProvider";
 import sdk from "@farcaster/frame-sdk";
+import FlappyRocketGameABI from "@/ABI/FlappyRocket.json";
+
+const FlappyRocketGameAddress = "0x883D06cc70BE8c3E018EA35f7BB7671B044b4Beb";
 
 export default function App() {
   const { isConnected, chainId, address } = useAccount();
@@ -87,12 +90,19 @@ export default function App() {
         console.error("Network switch to celo failed2");
         throw new Error("Please complete the network switch to Celo");
       }
-      console.log("Data suffix generated:", dataSuffix);
-      const data = dataSuffix.startsWith("0x") ? dataSuffix : `0x${dataSuffix}`;
+
+      const gameData = encodeFunctionData({
+        abi: FlappyRocketGameABI,
+        functionName: "depositCELO",
+      });
+
+      const combinedData = dataSuffix ? gameData + dataSuffix : gameData;
+
+      //const data = dataSuffix.startsWith("0x") ? dataSuffix : `0x${dataSuffix}`;
       // Step 2: Send transaction with data suffix
       const txHash = await sendTransactionAsync({
-        to: "0xF3805e6d1320FDcD2FceD1aFc827D44E55cA0ca2" as `0x${string}`,
-        data: data as `0x${string}`,
+        to: FlappyRocketGameAddress as `0x${string}`,
+        data: combinedData as `0x${string}`,
         value: parseEther("0.1"),
         maxFeePerGas: parseUnits("100", 9),
         maxPriorityFeePerGas: parseUnits("100", 9),
