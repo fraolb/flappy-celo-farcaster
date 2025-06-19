@@ -56,6 +56,24 @@ export function runGame(
       one: { from: 0, to: 0 },
     },
   });
+  k.loadSprite("hand", "/assets/hand.webp", {
+    sliceX: 4,
+    sliceY: 1,
+    anims: {
+      touch: { from: 0, to: 3, loop: true, speed: 1, pingpong: true },
+    },
+  });
+  k.loadSprite("mouse", "/assets/mouse.png", {
+    sliceX: 2,
+    sliceY: 1,
+    anims: {
+      touch: { from: 0, to: 1, loop: true, speed: 1, pingpong: true },
+    },
+  });
+  k.loadSprite("gameInstruction1", "/assets/intro1.webp");
+  k.loadSprite("gameInstruction2", "/assets/intro2.webp");
+  k.loadSprite("gameInstruction3", "/assets/intro3.webp");
+
   k.loadSound("jump", "/assets/jump.mp3");
   k.loadSound("punch", "/assets/punch.mp3");
   k.loadSound("game_over", "/assets/game_over.mp3");
@@ -272,6 +290,109 @@ export function runGame(
 
     return btn;
   }
+
+  function skipButton(
+    txt = "skip intro",
+    p = k.vec2(200, 100),
+    f = () => k.debug.log("hello")
+  ) {
+    // add a parent background object
+    const btn = k.add([
+      k.rect(150, 40, { radius: 8 }),
+      k.pos(p),
+      k.area(),
+      k.scale(1),
+      k.anchor("center"),
+      k.outline(4),
+      k.z(100),
+      k.color(255, 255, 255),
+    ]);
+
+    // add a child object that displays the text
+    btn.add([
+      k.text(txt, { size: 20, font: "vt323" }),
+      k.anchor("center"),
+      k.color(0, 0, 0),
+    ]);
+
+    // onHoverUpdate() comes from area() component
+    // it runs every frame when the object is being hovered
+    btn.onHoverUpdate(() => {
+      const t = k.time() * 10;
+      btn.color = k.hsl2rgb((t / 10) % 1, 0.6, 0.7);
+      btn.scale = k.vec2(1.2);
+      k.setCursor("pointer");
+    });
+
+    // onHoverEnd() comes from area() component
+    // it runs once when the object stopped being hovered
+    btn.onHoverEnd(() => {
+      btn.scale = k.vec2(1);
+      btn.color = k.rgb();
+    });
+
+    // onClick() comes from area() component
+    // it runs once when the object is clicked
+    btn.onClick(() => {
+      if (!isProcessing.current) {
+        f();
+      }
+    });
+
+    return btn;
+  }
+
+  function nextButton(
+    txt = "next intro",
+    p = k.vec2(200, 100),
+    f = () => k.debug.log("hello")
+  ) {
+    // add a parent background object
+    const btn = k.add([
+      k.rect(150, 40, { radius: 8 }),
+      k.pos(p),
+      k.area(),
+      k.scale(1),
+      k.anchor("center"),
+      k.outline(4),
+      k.z(100),
+      k.color(255, 255, 255),
+    ]);
+
+    // add a child object that displays the text
+    btn.add([
+      k.text(txt, { size: 20, font: "vt323" }),
+      k.anchor("center"),
+      k.color(0, 0, 0),
+    ]);
+
+    // onHoverUpdate() comes from area() component
+    // it runs every frame when the object is being hovered
+    btn.onHoverUpdate(() => {
+      const t = k.time() * 10;
+      btn.color = k.hsl2rgb((t / 10) % 1, 0.6, 0.7);
+      btn.scale = k.vec2(1.2);
+      k.setCursor("pointer");
+    });
+
+    // onHoverEnd() comes from area() component
+    // it runs once when the object stopped being hovered
+    btn.onHoverEnd(() => {
+      btn.scale = k.vec2(1);
+      btn.color = k.rgb();
+    });
+
+    // onClick() comes from area() component
+    // it runs once when the object is clicked
+    btn.onClick(() => {
+      if (!isProcessing.current) {
+        f();
+      }
+    });
+
+    return btn;
+  }
+
   function playAgainButton(
     txt = "start game",
     p = k.vec2(200, 100),
@@ -457,8 +578,182 @@ export function runGame(
 
     k.loop(1, () => {
       if (showGameRef && showGameRef.current) {
-        k.go("idle");
+        k.go("intro");
       }
+    });
+  });
+
+  k.scene("intro", () => {
+    bgEffect();
+    let currentInstruction = 1;
+    let instructionElements: GameObj[] = [];
+    let demoRocket: GameObj;
+    let collisionBlocks: GameObj[] = [];
+
+    // Demo rocket (with collision area)
+    demoRocket = k.add([
+      "demoRocket",
+      k.sprite("rocket", { anim: "fly" }),
+      k.scale(0.2),
+      k.pos(100, k.height() / 2),
+      k.area(),
+      k.anchor("center"),
+    ]);
+
+    // Add game title
+    k.add([
+      k.text("Game Play\nInstruction", { size: 32, width: 320, font: "vt323" }),
+      k.color(k.Color.WHITE),
+      k.pos(k.width() / 2 - 60, 100),
+      k.z(100),
+    ]);
+
+    // Instruction controls
+    const updateInstructions = () => {
+      // Clear previous elements
+      instructionElements.forEach((e) => e.destroy());
+      collisionBlocks.forEach((b) => b.destroy());
+      instructionElements = [];
+      collisionBlocks = [];
+
+      if (currentInstruction === 1 || currentInstruction === 2) {
+        // For instructions 1 & 2, show normal blocks
+        const blockX = 300;
+        const blockGap = 200;
+
+        collisionBlocks.push(
+          k.add([
+            k.sprite("top-block", {
+              width: k.width() / 8,
+              height: k.height() / 2.5,
+            }),
+            k.pos(blockX, 0),
+            k.anchor("topleft"),
+          ]),
+          k.add([
+            k.sprite("bottom-block", {
+              width: k.width() / 8,
+              height: k.height() / 3,
+            }),
+            k.pos(blockX, k.height() / 2 + blockGap / 3),
+            k.anchor("topleft"),
+          ])
+        );
+      }
+
+      // Add current instruction
+      if (currentInstruction === 1) {
+        // Mobile controls
+        const hand = k.add([
+          k.sprite("hand", { anim: "touch" }),
+          k.pos(k.width() / 2, k.height() / 2 + 80),
+          k.anchor("center"),
+          k.scale(0.5),
+        ]);
+        instructionElements.push(hand);
+
+        instructionElements.push(
+          k.add([
+            "gameInstruction1",
+            k.scale(0.5),
+            k.sprite("gameInstruction1"),
+            k.pos(k.width() / 2 + 80, k.height() / 2),
+            k.anchor("center"),
+          ])
+        );
+      } else if (currentInstruction === 2) {
+        const mouse = k.add([
+          k.sprite("mouse", { anim: "touch" }),
+          k.pos(k.width() / 2, k.height() / 2 + 100),
+          k.anchor("center"),
+          k.scale(1),
+        ]);
+        instructionElements.push(mouse);
+
+        instructionElements.push(
+          k.add([
+            "gameInstruction2",
+            k.scale(0.5),
+            k.sprite("gameInstruction2"),
+            k.pos(k.width() / 2 + 80, k.height() / 2),
+            k.anchor("center"),
+          ])
+        );
+      } else if (currentInstruction === 3) {
+        // For instruction 3, create collision blocks closer to rocket
+        const crashX = 120; // Same X as rocket
+
+        collisionBlocks.push(
+          k.add([
+            "block",
+            k.sprite("top-block", {
+              width: k.width() / 8,
+              height: k.height() / 2.8,
+            }),
+            k.pos(crashX - 40, 0), // Overlap with rocket
+            k.anchor("topleft"),
+            k.area(),
+            "block",
+          ]),
+          k.add([
+            "block",
+            k.sprite("bottom-block", {
+              width: k.width() / 8,
+              height: k.height() / 3.2,
+            }),
+            k.pos(crashX - 40, k.height() / 2 + 60), // Overlap with rocket
+            k.anchor("topleft"),
+            k.area(),
+            "block",
+          ])
+        );
+
+        instructionElements.push(
+          k.add([
+            "gameInstruction3",
+            k.scale(0.5),
+            k.sprite("gameInstruction3"),
+            k.pos(k.width() / 2 + 80, k.height() / 2),
+            k.anchor("center"),
+          ])
+        );
+
+        // Trigger collision effect immediately
+
+        demoRocket.onCollide("block", () => {
+          k.addKaboom(demoRocket.pos, { scale: 0.5, speed: 1.5 });
+          k.shake(2);
+          k.play("punch", { volume: 0.2 });
+        });
+      }
+    };
+
+    // Next button
+    nextButton("Next", k.vec2(k.width() / 2 - 90, k.height() - 60), () => {
+      advanceInstruction();
+    });
+    // Close button
+    skipButton("Skip Tutorial", k.vec2(k.width() - 90, k.height() - 60), () => {
+      k.go("idle");
+    });
+
+    // Navigation handlers
+    const advanceInstruction = () => {
+      currentInstruction = currentInstruction < 3 ? currentInstruction + 1 : 1;
+      updateInstructions();
+    };
+
+    k.onClick(() => {
+      advanceInstruction();
+    });
+
+    // Initialize first instruction
+    updateInstructions();
+
+    // Rocket animation
+    k.onUpdate(() => {
+      const rocketY = k.height() / 2 + Math.sin(k.time() * 3.7) * 60;
+      demoRocket.pos.y = rocketY;
     });
   });
 
@@ -591,7 +886,7 @@ export function runGame(
       k.play("punch");
     });
     k.onKeyDown("space", () => {
-      flappy.jump(220);
+      flappy.jump(150);
       flappy.angle = -45;
       k.play("jump", { volume: 0.1 });
     });
