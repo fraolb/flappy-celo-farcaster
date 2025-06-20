@@ -729,13 +729,17 @@ export function runGame(
     };
 
     // Next button
-    nextButton("Next", k.vec2(k.width() / 2 - 90, k.height() - 60), () => {
+    nextButton("Next", k.vec2(k.width() / 2 - 90, k.height() - 100), () => {
       advanceInstruction();
     });
     // Close button
-    skipButton("Skip Tutorial", k.vec2(k.width() - 90, k.height() - 60), () => {
-      k.go("idle");
-    });
+    skipButton(
+      "Skip Tutorial",
+      k.vec2(k.width() - 90, k.height() - 100),
+      () => {
+        k.go("idle");
+      }
+    );
 
     // Navigation handlers
     const advanceInstruction = () => {
