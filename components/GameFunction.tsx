@@ -813,9 +813,19 @@ export function runGame(
     ]);
 
     score = k.add([
+      k.text(`You have passed ${lastScore} blocks!`, {
+        size: 20,
+        font: "vt323",
+      }),
+      k.color(k.Color.WHITE),
+      k.pos(k.width() / 2 - 110, k.height() / 3 - 25),
+      { value: 0 },
+    ]);
+
+    score = k.add([
       k.text(`You scored: ${lastScore}`, { size: 25, font: "vt323" }),
       k.color(k.Color.WHITE),
-      k.pos(k.width() / 2 - 60, k.height() / 3),
+      k.pos(k.width() / 2 - 70, k.height() / 3),
       { value: 0 },
     ]);
     // Play Again button
