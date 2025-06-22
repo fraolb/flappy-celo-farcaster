@@ -90,6 +90,12 @@ export function runGame(
   const MOVEMENT = 12;
   let demoRocket: GameObj;
 
+  const BASE_GRAVITY = 600;
+  const MAX_GRAVITY = 1000;
+  const MIN_GAP_HEIGHT = k.height() / 8; // Minimum gap when gravity is highest
+  const MAX_GAP_HEIGHT = k.height() / 5; // Maximum gap when gravity is lowest
+  const GRAVITY_INCREMENT = 50;
+
   const drawScore = (x = k.width() / 1.7, y = 30, lastScore = 0) => {
     score = k.add([
       k.text(`Blocks: ${lastScore}`, {
@@ -121,6 +127,13 @@ export function runGame(
     pos: "top" | "bottom",
     config?: { width?: number; height: number }
   ) => {
+    // Calculate dynamic gap based on current gravity
+    const currentGravity = k.getGravity();
+    const gapRatio =
+      1 - (currentGravity - BASE_GRAVITY) / (MAX_GRAVITY - BASE_GRAVITY);
+    const dynamicGapHeight =
+      MIN_GAP_HEIGHT + (MAX_GAP_HEIGHT - MIN_GAP_HEIGHT) * gapRatio;
+
     const getBlockSize = () => {
       const sizes = [
         [k.width() / 8, k.height() / 2.5],
@@ -146,8 +159,8 @@ export function runGame(
       ]);
       pipes.push(block);
     } else if (pos === "bottom") {
-      const n = [7, 8][Math.floor(Math.random() * 2)];
-      const y = (config?.height || 0) + k.height() / n;
+      // const n = [7, 8][Math.floor(Math.random() * 2)];
+      const y = (config?.height || 0) + dynamicGapHeight;
       block = k.add([
         "block",
         k.sprite("bottom-block", getBlockSize()),
@@ -862,7 +875,11 @@ export function runGame(
     }
     playback = k.play("action", { volume: 0.3 });
     bgEffect();
-    k.setGravity(1000);
+
+    // Difficulty variables
+    let scoreBlock = 0;
+    k.setGravity(BASE_GRAVITY);
+
     if (flappy) {
       flappy.destroy();
     }
@@ -879,20 +896,35 @@ export function runGame(
     ]);
     spawnBlocks();
     drawUi();
+
     flappy.onUpdate(() => {
+      // Rocket rotation
       if (flappy.angle < 90) {
-        flappy.angle += 120 * k.dt();
+        flappy.angle += 90 * k.dt();
       }
+
+      // Score and difficulty tracking
       const limit = flappy.pos.x;
       pipes = pipes.filter((block) => {
         if (block.pos.x + block.width < limit) {
           score.value += 1;
           score.text = "Blocks: " + score.value;
+
+          // Increase gravity every 10 blocks
+          if (score.value - scoreBlock == 5) {
+            const newGravity = Math.min(
+              MAX_GRAVITY,
+              k.getGravity() + GRAVITY_INCREMENT
+            );
+            k.setGravity(newGravity);
+            scoreBlock = score.value;
+          }
           return false;
         }
         return true;
       });
     });
+
     flappy.onCollide("block", () => {
       k.addKaboom(flappy.pos, { scale: 0.5, speed: 1.5 });
       k.shake(4);
