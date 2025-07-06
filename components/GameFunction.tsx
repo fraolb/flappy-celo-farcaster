@@ -925,7 +925,7 @@ export function runGame(
       });
     });
 
-    const topBoundary = k.add([
+    k.add([
       "top-boundary",
       k.rect(k.width(), 4), // 4px tall, full width
       k.pos(0, 0), // at the very top
