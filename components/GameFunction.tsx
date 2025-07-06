@@ -925,6 +925,22 @@ export function runGame(
       });
     });
 
+    const topBoundary = k.add([
+      "top-boundary",
+      k.rect(k.width(), 4), // 4px tall, full width
+      k.pos(0, 0), // at the very top
+      k.area(),
+      k.body({ isStatic: true }),
+      k.opacity(0), // invisible
+    ]);
+
+    flappy.onCollide("top-boundary", () => {
+      k.addKaboom(flappy.pos, { scale: 0.5, speed: 1.5 });
+      k.shake(4);
+      handleIsGameOverOrReduceHearts();
+      k.play("punch");
+    });
+
     flappy.onCollide("block", () => {
       k.addKaboom(flappy.pos, { scale: 0.5, speed: 1.5 });
       k.shake(4);
