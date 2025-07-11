@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@divvi/referral-sdk": "^1.0.0",
+    "@divvi/referral-sdk": "^2.2.0",
     "@farcaster/frame-sdk": "^0.0.55",
     "@farcaster/frame-wagmi-connector": "^0.0.44",
     "@next/font": "^14.2.15",
