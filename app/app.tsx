@@ -21,7 +21,7 @@ import { useScoreContext } from "@/components/providers/ScoreContext";
 import { addUserScore } from "@/lib/dbFunctions";
 import { useFrame } from "@/components/providers/FrameProvider";
 import { createScoreToken } from "@/lib/gameAuth";
-import { getDataSuffix, submitReferral } from "@divvi/referral-sdk";
+import { getReferralTag, submitReferral } from "@divvi/referral-sdk";
 import { config } from "@/components/providers/WagmiProvider";
 import sdk from "@farcaster/frame-sdk";
 import FlappyRocketGameABI from "@/ABI/FlappyRocket.json";
@@ -59,7 +59,8 @@ export default function App() {
     console.log("handleSubmit called");
     setError("");
     errorRef.current = "";
-    if (!isConnected) return setError("Please connect your wallet first");
+    if (!isConnected || !address)
+      return setError("Please connect your wallet first");
     isProcessingRef.current = true;
 
     try {
@@ -72,52 +73,66 @@ export default function App() {
       console.log("Balance:", balance);
 
       // Step 1: Generate the Divvi data suffix
-      let dataSuffix;
-      try {
-        dataSuffix = getDataSuffix({
-          consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
-          providers: [
-            "0x0423189886d7966f0dd7e7d256898daeee625dca",
-            "0xc95876688026be9d6fa7a7c33328bd013effa2bb",
-          ],
+      let referralTag;
+
+      if (balance?.formatted && Number(balance?.formatted) >= 1) {
+        try {
+          referralTag = getReferralTag({
+            user: address, // The user address making the transaction
+            consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551", // Your Divvi Identifier
+          });
+        } catch (diviError) {
+          console.error("Divvi getDataSuffix error:", diviError);
+          throw new Error("Failed to generate referral data");
+        }
+
+        const gameData = encodeFunctionData({
+          abi: FlappyRocketGameABI,
+          functionName: "depositCELO",
         });
-      } catch (diviError) {
-        console.error("Divvi getDataSuffix error:", diviError);
-        throw new Error("Failed to generate referral data");
-      }
 
-      if (chainId !== celo.id) {
-        console.error("Network switch to celo failed2");
-        throw new Error("Please complete the network switch to Celo");
-      }
+        const combinedData = referralTag ? gameData + referralTag : gameData;
 
-      const gameData = encodeFunctionData({
-        abi: FlappyRocketGameABI,
-        functionName: "depositCELO",
-      });
+        if (chainId !== celo.id) {
+          console.error("Network switch to celo failed2");
+          throw new Error("Please complete the network switch to Celo");
+        }
 
-      const combinedData = dataSuffix ? gameData + dataSuffix : gameData;
-
-      //const data = dataSuffix.startsWith("0x") ? dataSuffix : `0x${dataSuffix}`;
-      // Step 2: Send transaction with data suffix
-      const txHash = await sendTransactionAsync({
-        to: FlappyRocketGameAddress as `0x${string}`,
-        data: combinedData as `0x${string}`,
-        value: parseEther("0.1"),
-        maxFeePerGas: parseUnits("100", 9),
-        maxPriorityFeePerGas: parseUnits("100", 9),
-      });
-
-      if (status === "error") throw new Error("Transaction reverted");
-
-      // Step 3: Submit referral after successful transaction
-      try {
-        await submitReferral({
-          txHash: txHash,
-          chainId: 42220,
+        // Step 2: Send transaction with data suffix
+        const txHash = await sendTransactionAsync({
+          to: FlappyRocketGameAddress as `0x${string}`,
+          data: combinedData as `0x${string}`,
+          value: parseEther("0.1"),
+          maxFeePerGas: parseUnits("100", 9),
+          maxPriorityFeePerGas: parseUnits("100", 9),
         });
-      } catch (referralError) {
-        console.error("Referral submission error:", referralError);
+
+        if (status === "error") throw new Error("Transaction reverted");
+
+        //Step 3: Submit referral after successful transaction
+        try {
+          await submitReferral({
+            txHash: txHash,
+            chainId: 42220,
+          });
+        } catch (referralError) {
+          console.error("Referral submission error:", referralError);
+        }
+      } else {
+        console.log("user has no celo, paying for user!");
+
+        const response = await fetch("/api/play", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to process claim");
+        }
+
+        const result = await response.json();
+        console.log("Transaction result:", result);
       }
 
       showGameRef.current = true;
