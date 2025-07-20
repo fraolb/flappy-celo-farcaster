@@ -1,5 +1,7 @@
-import { Scene, GameObjects } from 'phaser';
-import { AudioManager } from '../AudioManager';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { Scene, GameObjects } from "phaser";
+import { AudioManager } from "../AudioManager";
 
 interface Score {
   _id: string;
@@ -41,9 +43,9 @@ export class MainMenu extends Scene {
     scoresRef: React.RefObject<{
       userScore: Score | null;
       topScores: Score[] | null;
-    }>,
+    }>
   ) {
-    super('MainMenu');
+    super("MainMenu");
     this.onPaymentRequested = onPaymentRequested;
     this.isProcessing = isProcessing;
     this.errorRef = errorRef;
@@ -62,7 +64,7 @@ export class MainMenu extends Scene {
     const centerY = gameHeight / 2;
 
     // Background with enhanced styling
-    this.background = this.add.image(0, 0, 'background');
+    this.background = this.add.image(0, 0, "background");
     this.background.setOrigin(0);
 
     // Add a subtle gradient overlay for depth
@@ -72,7 +74,7 @@ export class MainMenu extends Scene {
       gameWidth,
       gameHeight,
       0x000000,
-      0.2,
+      0.2
     );
     gradient.setOrigin(0.5);
 
@@ -83,17 +85,17 @@ export class MainMenu extends Scene {
     const titleFontSize = Math.floor(32 * scaleFactor);
     const titleY = centerY - Math.floor(80 * scaleFactor);
 
-    this.title = this.add.text(centerX, titleY, 'FLAPPY ROCKET', {
-      fontFamily: 'Arial Black',
+    this.title = this.add.text(centerX, titleY, "FLAPPY ROCKET", {
+      fontFamily: "Arial Black",
       fontSize: titleFontSize,
-      color: '#FFD700', // Bright gold
-      stroke: '#FF4500', // Orange-red stroke
+      color: "#FFD700", // Bright gold
+      stroke: "#FF4500", // Orange-red stroke
       strokeThickness: Math.max(2, Math.floor(4 * scaleFactor)),
-      align: 'center',
+      align: "center",
       shadow: {
         offsetX: Math.floor(1 * scaleFactor),
         offsetY: Math.floor(1 * scaleFactor),
-        color: '#000000',
+        color: "#000000",
         blur: Math.floor(2 * scaleFactor),
         fill: true,
       },
@@ -106,7 +108,7 @@ export class MainMenu extends Scene {
       scaleX: 1.05,
       scaleY: 1.05,
       duration: 2000,
-      ease: 'Sine.inOut',
+      ease: "Sine.inOut",
       yoyo: true,
       repeat: -1,
     });
@@ -121,21 +123,21 @@ export class MainMenu extends Scene {
     buttonGraphics.lineStyle(
       Math.max(1, Math.floor(2 * scaleFactor)),
       0xcccccc,
-      1,
+      1
     );
     buttonGraphics.fillRoundedRect(
       centerX - playButtonWidth / 2,
       playButtonY - playButtonHeight / 2,
       playButtonWidth,
       playButtonHeight,
-      borderRadius,
+      borderRadius
     );
     buttonGraphics.strokeRoundedRect(
       centerX - playButtonWidth / 2,
       playButtonY - playButtonHeight / 2,
       playButtonWidth,
       playButtonHeight,
-      borderRadius,
+      borderRadius
     );
     buttonGraphics.setDepth(1);
     buttonGraphics.setInteractive(
@@ -143,23 +145,23 @@ export class MainMenu extends Scene {
         centerX - playButtonWidth / 2,
         playButtonY - playButtonHeight / 2,
         playButtonWidth,
-        playButtonHeight,
+        playButtonHeight
       ),
-      Phaser.Geom.Rectangle.Contains,
+      Phaser.Geom.Rectangle.Contains
     );
 
     this.playButtonText = this.add
-      .text(centerX, playButtonY, 'PLAY', {
-        fontFamily: 'Arial Black',
+      .text(centerX, playButtonY, "PLAY", {
+        fontFamily: "Arial Black",
         fontSize: Math.floor(24 * scaleFactor),
-        color: '#000000',
-        stroke: '#cccccc',
+        color: "#000000",
+        stroke: "#cccccc",
         strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
-        align: 'center',
+        align: "center",
         shadow: {
           offsetX: Math.floor(1 * scaleFactor),
           offsetY: Math.floor(1 * scaleFactor),
-          color: '#000000',
+          color: "#000000",
           blur: Math.floor(2 * scaleFactor),
           fill: true,
         },
@@ -171,11 +173,11 @@ export class MainMenu extends Scene {
     const paymentInfoY =
       playButtonY + playButtonHeight / 2 + Math.floor(30 * scaleFactor);
     this.add
-      .text(centerX, paymentInfoY, 'Pay 0.1 CELO to play', {
-        fontFamily: 'Arial',
+      .text(centerX, paymentInfoY, "Pay 0.1 CELO to play", {
+        fontFamily: "Arial",
         fontSize: paymentInfoFontSize,
-        color: '#ffffffff',
-        align: 'center',
+        color: "#ffffffff",
+        align: "center",
       })
       .setOrigin(0.5);
 
@@ -185,98 +187,98 @@ export class MainMenu extends Scene {
       .text(
         centerX,
         playButtonY + playButtonHeight / 2 + Math.floor(12 * scaleFactor),
-        '',
+        "",
         {
-          fontFamily: 'Arial',
+          fontFamily: "Arial",
           fontSize: errorFontSize,
-          color: '#FF3333',
-          align: 'center',
+          color: "#FF3333",
+          align: "center",
           wordWrap: { width: playButtonWidth + 10 },
-        },
+        }
       )
       .setOrigin(0.5);
 
     // Button hover effect
-    buttonGraphics.on('pointerover', () => {
+    buttonGraphics.on("pointerover", () => {
       buttonGraphics.clear();
       buttonGraphics.fillStyle(0xfff700, 1); // yellow
       buttonGraphics.lineStyle(
         Math.max(1, Math.floor(2 * scaleFactor)),
         0xcccccc,
-        1,
+        1
       );
       buttonGraphics.fillRoundedRect(
         centerX - playButtonWidth / 2,
         playButtonY - playButtonHeight / 2,
         playButtonWidth,
         playButtonHeight,
-        borderRadius,
+        borderRadius
       );
       buttonGraphics.strokeRoundedRect(
         centerX - playButtonWidth / 2,
         playButtonY - playButtonHeight / 2,
         playButtonWidth,
         playButtonHeight,
-        borderRadius,
+        borderRadius
       );
-      this.playButtonText.setColor('#000000'); // black text
+      this.playButtonText.setColor("#000000"); // black text
     });
-    buttonGraphics.on('pointerout', () => {
+    buttonGraphics.on("pointerout", () => {
       buttonGraphics.clear();
       buttonGraphics.fillStyle(0xffffff, 1); // white
       buttonGraphics.lineStyle(
         Math.max(1, Math.floor(2 * scaleFactor)),
         0xcccccc,
-        1,
+        1
       );
       buttonGraphics.fillRoundedRect(
         centerX - playButtonWidth / 2,
         playButtonY - playButtonHeight / 2,
         playButtonWidth,
         playButtonHeight,
-        borderRadius,
+        borderRadius
       );
       buttonGraphics.strokeRoundedRect(
         centerX - playButtonWidth / 2,
         playButtonY - playButtonHeight / 2,
         playButtonWidth,
         playButtonHeight,
-        borderRadius,
+        borderRadius
       );
-      this.playButtonText.setColor('#000000'); // black text
+      this.playButtonText.setColor("#000000"); // black text
     });
 
     // Button click triggers payment request (only once)
     let playClicked = false;
-    buttonGraphics.on('pointerdown', async () => {
+    buttonGraphics.on("pointerdown", async () => {
       if (playClicked || this.isProcessing.current) return;
       playClicked = true;
       buttonGraphics.disableInteractive();
-      this.audioManager.playSound('menuSelect');
-      this.playButtonText.setText('Processing...');
-      this.errorDisplay.setText(''); // Clear error on new attempt
+      this.audioManager.playSound("menuSelect");
+      this.playButtonText.setText("Processing...");
+      this.errorDisplay.setText(""); // Clear error on new attempt
 
       try {
         await this.onPaymentRequested();
         playClicked = false;
       } catch (err) {
         // Payment failed or was rejected
-        this.playButtonText.setText('PLAY');
+        this.playButtonText.setText("PLAY");
         buttonGraphics.setInteractive(
           new Phaser.Geom.Rectangle(
             centerX - playButtonWidth / 2,
             playButtonY - playButtonHeight / 2,
             playButtonWidth,
-            playButtonHeight,
+            playButtonHeight
           ),
-          Phaser.Geom.Rectangle.Contains,
+          Phaser.Geom.Rectangle.Contains
         );
         playClicked = false;
-        console.log('the err is ', err);
+        console.log("the err is ", err);
         // Show error message (up to first period)
-        let errorMsg = 'Payment was cancelled or failed.';
-        if (typeof errorMsg === 'string') {
-          const periodIdx = errorMsg.indexOf('.');
+        let errorMsg = "Payment was cancelled or failed.";
+        if (typeof errorMsg === "string") {
+          const periodIdx = errorMsg.indexOf(".");
           if (periodIdx !== -1) {
             errorMsg = errorMsg.slice(0, periodIdx + 1);
           }
@@ -291,26 +293,26 @@ export class MainMenu extends Scene {
       loop: true,
       callback: () => {
         if (this.isProcessing.current && !this.showGameRef.current) {
-          this.playButtonText.setText('Processing...');
+          this.playButtonText.setText("Processing...");
         }
         if (this.showGameRef.current) {
-          this.scene.start('Game');
+          this.scene.start("Game");
         }
         // Update error display if errorRef changes
         if (this.errorRef.current) {
-          this.playButtonText.setText('PLAY');
+          this.playButtonText.setText("PLAY");
           buttonGraphics.setInteractive(
             new Phaser.Geom.Rectangle(
               centerX - playButtonWidth / 2,
               playButtonY - playButtonHeight / 2,
               playButtonWidth,
-              playButtonHeight,
+              playButtonHeight
             ),
-            Phaser.Geom.Rectangle.Contains,
+            Phaser.Geom.Rectangle.Contains
           );
-          const periodIdx = this.errorRef.current.indexOf('.');
+          const periodIdx = this.errorRef.current.indexOf(".");
           const errText = this.errorRef.current.slice(0, periodIdx + 1);
-          console.log('Error text:', errText, this.errorRef.current);
+          console.log("Error text:", errText, this.errorRef.current);
           this.errorDisplay.setText(errText);
         }
       },
@@ -320,24 +322,24 @@ export class MainMenu extends Scene {
     const highScoreFontSize = Math.floor(24 * scaleFactor);
     const highScoreY = playButtonY + Math.floor(78 * scaleFactor);
 
-    this.highScoreText = this.add.text(centerX, highScoreY, 'Top 5 Scores', {
-      fontFamily: 'Arial Black',
+    this.highScoreText = this.add.text(centerX, highScoreY, "Top 5 Scores", {
+      fontFamily: "Arial Black",
       fontSize: highScoreFontSize,
-      color: '#FFD700', // Yellow
-      stroke: '#FF4500', // Orange-red stroke
+      color: "#FFD700", // Yellow
+      stroke: "#FF4500", // Orange-red stroke
       strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
-      align: 'center',
+      align: "center",
       shadow: {
         offsetX: Math.floor(1 * scaleFactor),
         offsetY: Math.floor(1 * scaleFactor),
-        color: '#000000',
+        color: "#000000",
         blur: Math.floor(2 * scaleFactor),
         fill: true,
       },
     });
     this.highScoreText.setOrigin(0.5);
 
-    console.log('Scores:', this.scoresRef.current);
+    console.log("Scores:", this.scoresRef.current);
     // Top scores list
     const topScores = this.scoresRef?.current?.topScores || [];
     const topScoreFontSize = Math.floor(16 * scaleFactor);
@@ -350,12 +352,12 @@ export class MainMenu extends Scene {
           topScoreStartY + idx * Math.floor(20 * scaleFactor),
           scoreText,
           {
-            fontFamily: 'Arial',
+            fontFamily: "Arial",
             fontSize: topScoreFontSize,
-            color: '#FFFFFF',
-            align: 'center',
+            color: "#FFFFFF",
+            align: "center",
             wordWrap: { width: Math.floor(180 * scaleFactor) },
-          },
+          }
         )
         .setOrigin(0.5);
     });
@@ -370,10 +372,10 @@ export class MainMenu extends Scene {
         Math.floor(10 * scaleFactor);
       this.add
         .text(centerX, userScoreY, `Your Score: ${userScore.score}`, {
-          fontFamily: 'Arial',
+          fontFamily: "Arial",
           fontSize: userScoreFontSize,
-          color: '#FFD700',
-          align: 'center',
+          color: "#FFD700",
+          align: "center",
           wordWrap: { width: Math.floor(180 * scaleFactor) },
         })
         .setOrigin(0.5);

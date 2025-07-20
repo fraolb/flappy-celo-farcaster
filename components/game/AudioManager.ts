@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export class AudioManager {
   private scene: Phaser.Scene;
   private audioContext: AudioContext;
@@ -15,11 +17,11 @@ export class AudioManager {
 
   private initializeSounds() {
     // Initialize sound effects
-    this.createSound('flap', 200, 'sine', 0.3);
-    this.createSound('score', 800, 'square', 0.2);
-    this.createSound('collision', 150, 'sawtooth', 0.4);
-    this.createSound('gameOver', 300, 'triangle', 0.5);
-    this.createSound('menuSelect', 400, 'sine', 0.2);
+    this.createSound("flap", 200, "sine", 0.3);
+    this.createSound("score", 800, "square", 0.2);
+    this.createSound("collision", 150, "sawtooth", 0.4);
+    this.createSound("gameOver", 300, "triangle", 0.5);
+    this.createSound("menuSelect", 400, "sine", 0.2);
   }
 
   private createSound(
@@ -50,7 +52,7 @@ export class AudioManager {
       gainNode: gainNode,
       frequency: frequency,
       type: type,
-      volume: volume
+      volume: volume,
     });
   }
 
@@ -61,7 +63,7 @@ export class AudioManager {
     if (!sound) return;
 
     // Resume audio context if suspended
-    if (this.audioContext.state === 'suspended') {
+    if (this.audioContext.state === "suspended") {
       this.audioContext.resume();
     }
 
@@ -100,7 +102,7 @@ export class AudioManager {
     oscillator.connect(gainNode);
     gainNode.connect(this.audioContext.destination);
 
-    oscillator.type = 'sine';
+    oscillator.type = "sine";
     oscillator.frequency.setValueAtTime(220, this.audioContext.currentTime); // A3 note
 
     gainNode.gain.setValueAtTime(

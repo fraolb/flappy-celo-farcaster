@@ -1,16 +1,18 @@
-import { Scene } from 'phaser';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { Scene } from "phaser";
 
 export class Preloader extends Scene {
   private progressBar!: Phaser.GameObjects.Rectangle;
   private progressText!: Phaser.GameObjects.Text;
 
   constructor() {
-    super('Preloader');
+    super("Preloader");
   }
 
   init() {
     //  We loaded this image in our Boot Scene, so we can display it here
-    this.add.image(400, 300, 'background');
+    this.add.image(400, 300, "background");
 
     // Create improved loading UI
     this.createLoadingUI();
@@ -22,18 +24,18 @@ export class Preloader extends Scene {
     const isMobile = width < 600;
 
     // Responsive font sizes
-    const titleFontSize = isMobile ? '22px' : '32px';
-    const progressFontSize = isMobile ? '16px' : '24px';
+    const titleFontSize = isMobile ? "22px" : "32px";
+    const progressFontSize = isMobile ? "16px" : "24px";
     const barWidth = Math.floor(width * 0.7);
     const barHeight = isMobile ? 18 : 30;
 
     // Loading title
     this.add
-      .text(width / 2, height * 0.25, 'Loading Flappy Rocket', {
+      .text(width / 2, height * 0.25, "Loading Flappy Rocket", {
         fontSize: titleFontSize,
-        fontFamily: 'Arial Black',
-        color: '#FFD700',
-        stroke: '#FF4500',
+        fontFamily: "Arial Black",
+        color: "#FFD700",
+        stroke: "#FF4500",
         strokeThickness: isMobile ? 2 : 4,
       })
       .setOrigin(0.5);
@@ -51,54 +53,54 @@ export class Preloader extends Scene {
         height / 2,
         0,
         barHeight - 4,
-        0x00ff00,
+        0x00ff00
       )
       .setOrigin(0, 0.5);
 
     // Progress text
     this.progressText = this.add
-      .text(width / 2, height / 2 + barHeight + (isMobile ? 12 : 20), '0%', {
+      .text(width / 2, height / 2 + barHeight + (isMobile ? 12 : 20), "0%", {
         fontSize: progressFontSize,
-        fontFamily: 'Arial',
-        color: '#FFFFFF',
+        fontFamily: "Arial",
+        color: "#FFFFFF",
       })
       .setOrigin(0.5);
   }
 
   preload() {
     //  Load the assets for the game - Replace with your own assets
-    this.load.setPath('assets');
+    this.load.setPath("assets");
 
     // Core game assets
-    this.load.image('bird', '2rocket.png');
-    this.load.image('birdSprite', 'birdSprite.png');
-    this.load.image('pipe', 'block.webp');
-    this.load.image('pipe2', 'block2.webp');
-    this.load.image('background', 'bg.png');
-    this.load.spritesheet('rocket', 'rock.webp', {
+    this.load.image("bird", "2rocket.png");
+    this.load.image("birdSprite", "birdSprite.png");
+    this.load.image("pipe", "block.webp");
+    this.load.image("pipe2", "block2.webp");
+    this.load.image("background", "bg.png");
+    this.load.spritesheet("rocket", "rock.webp", {
       frameWidth: 100,
       frameHeight: 50,
     });
-    this.load.image('heart', '1heart.png');
+    this.load.image("heart", "1heart.png");
 
     // UI assets
-    this.load.image('platform', 'platform.png');
-    this.load.image('star', 'star.png');
-    this.load.image('pause', 'pause.png');
-    this.load.image('back', 'back.png');
+    this.load.image("platform", "platform.png");
+    this.load.image("star", "star.png");
+    this.load.image("pause", "pause.png");
+    this.load.image("back", "back.png");
 
     //audio assets
-    this.load.audio('punch', 'punch.mp3');
-    this.load.audio('jump', 'jump.mp3');
-    this.load.audio('game_over', 'game_over.mp3');
+    this.load.audio("punch", "punch.mp3");
+    this.load.audio("jump", "jump.mp3");
+    this.load.audio("game_over", "game_over.mp3");
 
     // Set up progress tracking
-    this.load.on('progress', (progress: number) => {
+    this.load.on("progress", (progress: number) => {
       this.updateProgress(progress);
     });
 
-    this.load.on('complete', () => {
-      this.progressText.setText('100%');
+    this.load.on("complete", () => {
+      this.progressText.setText("100%");
     });
 
     // Generate audio files using Web Audio API
@@ -119,17 +121,17 @@ export class Preloader extends Scene {
 
   generateAudioFiles() {
     // Generate simple audio files using Web Audio API
-    this.generateSound('flap', 200, 'sine', 0.3);
-    this.generateSound('score', 800, 'square', 0.2);
-    this.generateSound('collision', 150, 'sawtooth', 0.4);
-    this.generateSound('gameOver', 300, 'triangle', 0.5);
+    this.generateSound("flap", 200, "sine", 0.3);
+    this.generateSound("score", 800, "square", 0.2);
+    this.generateSound("collision", 150, "sawtooth", 0.4);
+    this.generateSound("gameOver", 300, "triangle", 0.5);
   }
 
   generateSound(
     key: string,
     frequency: number,
     type: OscillatorType,
-    volume: number,
+    volume: number
   ) {
     const audioContext = new (window.AudioContext ||
       (window as any).webkitAudioContext)();
@@ -145,7 +147,7 @@ export class Preloader extends Scene {
     gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(
       0.01,
-      audioContext.currentTime + 0.5,
+      audioContext.currentTime + 0.5
     );
 
     // Store the audio context and nodes for later use
@@ -167,8 +169,8 @@ export class Preloader extends Scene {
 
     // Create animations
     this.anims.create({
-      key: 'fly',
-      frames: this.anims.generateFrameNumbers('rocket', {
+      key: "fly",
+      frames: this.anims.generateFrameNumbers("rocket", {
         start: 0,
         end: 2,
       }),
@@ -179,7 +181,7 @@ export class Preloader extends Scene {
 
     // Add a small delay for better UX
     this.time.delayedCall(500, () => {
-      this.scene.start('MainMenu');
+      this.scene.start("MainMenu");
     });
   }
 }

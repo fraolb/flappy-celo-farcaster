@@ -1,5 +1,7 @@
-import { Scene } from 'phaser';
-import { AudioManager } from '../AudioManager';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { Scene } from "phaser";
+import { AudioManager } from "../AudioManager";
 import {
   FLAP_VELOCITY,
   MAX_VELOCITY,
@@ -16,7 +18,7 @@ import {
   MOBILE_PIPE_SPEED,
   TOUCH_DEAD_ZONE,
   TOUCH_COOLDOWN,
-} from '../constants';
+} from "../constants";
 
 export class Game extends Scene {
   camera!: Phaser.Cameras.Scene2D.Camera;
@@ -63,9 +65,9 @@ export class Game extends Scene {
 
   constructor(
     endGame: () => void,
-    handleAddUserScore: (score: number) => Promise<void>,
+    handleAddUserScore: (score: number) => Promise<void>
   ) {
-    super('Game');
+    super("Game");
     this.endGame = endGame;
     this.handleAddUserScore = handleAddUserScore;
     this.heart = 3;
@@ -77,7 +79,7 @@ export class Game extends Scene {
     if (!this.bird.body || this.isPaused) return;
 
     // Play flap sound
-    this.sound.play('jump');
+    this.sound.play("jump");
 
     // Set upward velocity
     this.bird.setVelocityY(FLAP_VELOCITY);
@@ -167,7 +169,7 @@ export class Game extends Scene {
     const gapY = Phaser.Math.Between(minGapY, maxGapY);
 
     // Create top pipe as regular image (spawns from top, extends downward)
-    const topPipe = this.add.image(gameWidth + PIPE_WIDTH / 2, 0, 'pipe2');
+    const topPipe = this.add.image(gameWidth + PIPE_WIDTH / 2, 0, "pipe2");
     topPipe.setOrigin(0.5, 0); // Anchor to top center
     topPipe.setDisplaySize(PIPE_WIDTH, gapY - pipeGap / 2); // Scale height to reach gap
 
@@ -175,7 +177,7 @@ export class Game extends Scene {
     const bottomPipe = this.add.image(
       gameWidth + PIPE_WIDTH / 2,
       gameHeight,
-      'pipe',
+      "pipe"
     );
     bottomPipe.setOrigin(0.5, 1); // Anchor to bottom center
     bottomPipe.setDisplaySize(PIPE_WIDTH, gameHeight - (gapY + pipeGap / 2)); // Scale height to reach gap
@@ -201,21 +203,21 @@ export class Game extends Scene {
       scaleX: 1.3,
       scaleY: 1.3,
       duration: 200,
-      ease: 'Power2',
+      ease: "Power2",
       yoyo: true,
     });
 
     // Update high score if current score is higher
     if (this.score > this.highScore) {
       this.highScore = this.score;
-      localStorage.setItem('flappyBirdHighScore', this.highScore.toString());
+      localStorage.setItem("flappyBirdHighScore", this.highScore.toString());
 
       // Add special animation for new high score
       this.tweens.add({
         targets: this.scoreText,
         tint: 0xffd700, // Gold tint
         duration: 500,
-        ease: 'Power2',
+        ease: "Power2",
         yoyo: true,
         repeat: 2,
       });
@@ -252,22 +254,22 @@ export class Game extends Scene {
     this.startText = this.add.text(
       gameWidth / 2,
       this.sys.canvas.height / 2 + Math.floor(30 * scaleFactor),
-      'Tap the screen to start',
+      "Tap the screen to start",
       {
         fontSize: startFontSize,
-        fontFamily: 'Arial Black',
-        color: '#FFD700',
-        stroke: '#FF4500',
+        fontFamily: "Arial Black",
+        color: "#FFD700",
+        stroke: "#FF4500",
         strokeThickness: Math.max(2, Math.floor(4 * scaleFactor)),
-        align: 'center',
+        align: "center",
         shadow: {
           offsetX: Math.floor(1 * scaleFactor),
           offsetY: Math.floor(1 * scaleFactor),
-          color: '#000000',
+          color: "#000000",
           blur: Math.floor(2 * scaleFactor),
           fill: true,
         },
-      },
+      }
     );
     this.startText.setOrigin(0.5);
     this.startText.setDepth(10);
@@ -287,25 +289,25 @@ export class Game extends Scene {
     // Initialize scoring system
     this.score = 0;
     this.highScore = parseInt(
-      localStorage.getItem('flappyBirdHighScore') || '0',
+      localStorage.getItem("flappyBirdHighScore") || "0"
     );
     this.scoredPipes = new Set();
 
-    this.background = this.add.image(0, 0, 'background');
+    this.background = this.add.image(0, 0, "background");
     this.background.setOrigin(0);
 
     // Create score display with responsive styling
     const scoreFontSize = Math.floor(18 * scaleFactor);
-    this.scoreText = this.add.text(12, 12, 'Score: 0', {
+    this.scoreText = this.add.text(12, 12, "Score: 0", {
       fontSize: scoreFontSize,
-      fontFamily: 'Arial Black',
-      color: '#FFD700', // Bright gold
-      stroke: '#FF4500', // Orange-red stroke
+      fontFamily: "Arial Black",
+      color: "#FFD700", // Bright gold
+      stroke: "#FF4500", // Orange-red stroke
       strokeThickness: Math.max(2, Math.floor(3 * scaleFactor)),
       shadow: {
         offsetX: Math.floor(1 * scaleFactor),
         offsetY: Math.floor(1 * scaleFactor),
-        color: '#000000',
+        color: "#000000",
         blur: Math.floor(2 * scaleFactor),
         fill: true,
       },
@@ -319,18 +321,18 @@ export class Game extends Scene {
     const pauseButtonX = gameWidth - pauseButtonMargin - 10;
     const pauseButtonY = pauseButtonMargin + 10;
 
-    this.pauseButton = this.add.image(pauseButtonX, pauseButtonY, 'pause');
+    this.pauseButton = this.add.image(pauseButtonX, pauseButtonY, "pause");
     this.pauseButton.setScale(pauseButtonScale);
     this.pauseButton.setScrollFactor(0);
     this.pauseButton.setDepth(2);
     this.pauseButton.setInteractive();
     this.pauseButton.setTint(0x87ceeb); // Light blue tint
-    this.pauseButton.on('pointerdown', this.togglePause, this);
-    this.pauseButton.on('pointerover', () => {
+    this.pauseButton.on("pointerdown", this.togglePause, this);
+    this.pauseButton.on("pointerover", () => {
       this.pauseButton.setTint(0x00ffff); // Cyan on hover
       this.pauseButton.setScale(pauseButtonScale * 1.1);
     });
-    this.pauseButton.on('pointerout', () => {
+    this.pauseButton.on("pointerout", () => {
       this.pauseButton.setTint(0x87ceeb); // Back to light blue
       this.pauseButton.setScale(pauseButtonScale);
     });
@@ -347,7 +349,7 @@ export class Game extends Scene {
       overlayWidth,
       overlayHeight,
       0x000000,
-      0.8,
+      0.8
     );
     this.pauseOverlay.setScrollFactor(0);
     this.pauseOverlay.setDepth(3);
@@ -360,7 +362,7 @@ export class Game extends Scene {
       overlayWidth,
       overlayHeight,
       0x4169e1,
-      0.3,
+      0.3
     );
     this.pauseGradient.setScrollFactor(0);
     this.pauseGradient.setDepth(3);
@@ -371,22 +373,22 @@ export class Game extends Scene {
     this.pauseText = this.add.text(
       overlayX,
       overlayY - Math.floor(28 * scaleFactor),
-      '⏸️ PAUSED ⏸️',
+      "⏸️ PAUSED ⏸️",
       {
-        fontFamily: 'Arial Black',
+        fontFamily: "Arial Black",
         fontSize: pauseFontSize,
-        color: '#FFD700', // Bright gold
-        stroke: '#FF4500', // Orange-red stroke
+        color: "#FFD700", // Bright gold
+        stroke: "#FF4500", // Orange-red stroke
         strokeThickness: Math.max(2, Math.floor(4 * scaleFactor)),
-        align: 'center',
+        align: "center",
         shadow: {
           offsetX: Math.floor(1 * scaleFactor),
           offsetY: Math.floor(1 * scaleFactor),
-          color: '#000000',
+          color: "#000000",
           blur: Math.floor(2 * scaleFactor),
           fill: true,
         },
-      },
+      }
     );
     this.pauseText.setOrigin(0.5);
     this.pauseText.setScrollFactor(0);
@@ -396,27 +398,27 @@ export class Game extends Scene {
     // Resume instruction with responsive styling
     const resumeFontSize = Math.floor(12 * scaleFactor);
     const resumeText = IS_MOBILE
-      ? '🎮 Tap Pause to Resume 🎮'
-      : '🎮 Tap Pause Button to Resume 🎮';
+      ? "🎮 Tap Pause to Resume 🎮"
+      : "🎮 Tap Pause Button to Resume 🎮";
     this.resumeText = this.add.text(
       overlayX,
       overlayY + Math.floor(28 * scaleFactor),
       resumeText,
       {
-        fontFamily: 'Arial Black',
+        fontFamily: "Arial Black",
         fontSize: resumeFontSize,
-        color: '#00FFFF', // Cyan
-        stroke: '#000080', // Navy blue stroke
+        color: "#00FFFF", // Cyan
+        stroke: "#000080", // Navy blue stroke
         strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
-        align: 'center',
+        align: "center",
         shadow: {
           offsetX: Math.floor(1 * scaleFactor),
           offsetY: Math.floor(1 * scaleFactor),
-          color: '#000000',
+          color: "#000000",
           blur: Math.floor(2 * scaleFactor),
           fill: true,
         },
-      },
+      }
     );
     this.resumeText.setOrigin(0.5);
     this.resumeText.setScrollFactor(0);
@@ -427,7 +429,7 @@ export class Game extends Scene {
     this.bird = this.physics.add.sprite(
       this.sys.canvas.width / 4,
       this.sys.canvas.height / 2,
-      'bird',
+      "bird"
     );
     this.bird.setScale(0.2);
     this.bird.setOrigin(0.5);
@@ -451,31 +453,31 @@ export class Game extends Scene {
     this.pipeSpawnTime = INITIAL_PIPE_SPAWN_INTERVAL;
 
     // Add input handling - support both mouse/keyboard and touch
-    this.input.on('pointerdown', this.flap, this);
-    this.input.keyboard?.on('keydown-SPACE', this.flap, this);
-    this.input.keyboard?.on('keydown-P', this.togglePause, this);
+    this.input.on("pointerdown", this.flap, this);
+    this.input.keyboard?.on("keydown-SPACE", this.flap, this);
+    this.input.keyboard?.on("keydown-P", this.togglePause, this);
 
     // Add touch-specific input handling for mobile
     if (IS_TOUCH_DEVICE) {
       this.input.on(
-        'pointerdown',
+        "pointerdown",
         (pointer: Phaser.Input.Pointer) => {
           this.handleTouchInput(pointer);
         },
-        this,
+        this
       );
 
       this.input.on(
-        'pointerup',
+        "pointerup",
         (pointer: Phaser.Input.Pointer) => {
           this.handleTouchInput(pointer);
         },
-        this,
+        this
       );
     }
 
     // Start the game on first input
-    this.input.once('pointerdown', () => {
+    this.input.once("pointerdown", () => {
       if (!this.isGameStarted) {
         this.isGameStarted = true;
         this.startText.setVisible(false);
@@ -485,7 +487,7 @@ export class Game extends Scene {
         this.flap();
       }
     });
-    this.input.keyboard?.once('keydown-SPACE', () => {
+    this.input.keyboard?.once("keydown-SPACE", () => {
       if (!this.isGameStarted) {
         this.isGameStarted = true;
         this.startText.setVisible(false);
@@ -505,7 +507,7 @@ export class Game extends Scene {
       this.sys.canvas.width / 2 - totalWidth / 2 + heartSpacing / 2;
     const heartY = 30;
     for (let i = 0; i < 3; i++) {
-      const heart = this.add.image(startX + i * heartSpacing, heartY, 'heart');
+      const heart = this.add.image(startX + i * heartSpacing, heartY, "heart");
       heart.setScale(heartScale);
       heart.setDepth(2);
       heart.setScrollFactor(0);
@@ -525,7 +527,7 @@ export class Game extends Scene {
     this.bird.rotation = Phaser.Math.Linear(
       this.bird.rotation,
       targetRotation,
-      ROTATION_SPEED,
+      ROTATION_SPEED
     );
 
     // Update game time and speed progression
@@ -534,7 +536,7 @@ export class Game extends Scene {
 
       // Increase speed every 20 seconds
       const speedIncreaseCount = Math.floor(
-        this.gameTime / SPEED_INCREASE_INTERVAL,
+        this.gameTime / SPEED_INCREASE_INTERVAL
       );
       this.currentPipeSpeed =
         (IS_MOBILE ? MOBILE_PIPE_SPEED : PIPE_SPEED) *
@@ -581,8 +583,8 @@ export class Game extends Scene {
     if (collided && now - this.lastCollisionTime > this.collisionCooldown) {
       this.lastCollisionTime = now;
       // Play collision sound
-      this.sound.play('punch');
-      console.log('heart level is ', this.heart);
+      this.sound.play("punch");
+      console.log("heart level is ", this.heart);
       if (this.heart > 1) {
         this.heart -= 1;
         this.updateHeartDisplay();
@@ -591,12 +593,12 @@ export class Game extends Scene {
         this.heart = 0;
         if (this.endGame) this.endGame();
         // Play game over sound and transition to GameOver scene
-        this.sound.play('game_over');
-        this.handleAddUserScore(this.score).catch(err => {
-          console.error('Error adding user score:', err);
+        this.sound.play("game_over");
+        this.handleAddUserScore(this.score).catch((err) => {
+          console.error("Error adding user score:", err);
         });
 
-        this.scene.start('GameOver', {
+        this.scene.start("GameOver", {
           score: this.score,
           highScore: this.highScore,
         });
@@ -609,8 +611,8 @@ export class Game extends Scene {
       this.bird.body.position.y <= -50;
     if (gameOver) {
       if (this.endGame) this.endGame();
-      this.sound.play('game_over');
-      this.scene.start('GameOver', {
+      this.sound.play("game_over");
+      this.scene.start("GameOver", {
         score: this.score,
         highScore: this.highScore,
       });
@@ -619,7 +621,7 @@ export class Game extends Scene {
 
   checkCollision(
     bird: Phaser.Physics.Arcade.Sprite,
-    pipe: Phaser.GameObjects.Image,
+    pipe: Phaser.GameObjects.Image
   ): boolean {
     // Use reliable bounds checking
     const birdBounds = bird.getBounds();

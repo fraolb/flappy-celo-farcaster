@@ -1,5 +1,7 @@
-import { Scene } from 'phaser';
-import { AudioManager } from '../AudioManager';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { Scene } from "phaser";
+import { AudioManager } from "../AudioManager";
 
 interface GameOverData {
   score: number;
@@ -20,7 +22,7 @@ export class GameOver extends Scene {
   shareScore: (score: number) => Promise<void>;
 
   constructor(shareScore: (score: number) => Promise<void>) {
-    super('GameOver');
+    super("GameOver");
     this.shareScore = shareScore;
   }
 
@@ -37,7 +39,7 @@ export class GameOver extends Scene {
     this.camera = this.cameras.main;
     //this.camera.setBackgroundColor(0x1e90ff); // Dodger blue background
 
-    this.background = this.add.image(centerX, centerY, 'background');
+    this.background = this.add.image(centerX, centerY, "background");
     //this.background.setAlpha(0.2);
 
     // Add gradient overlay for depth
@@ -47,7 +49,7 @@ export class GameOver extends Scene {
       gameWidth,
       gameHeight,
       0x000000,
-      0.3,
+      0.3
     );
     gradient.setOrigin(0.5);
 
@@ -58,17 +60,17 @@ export class GameOver extends Scene {
     const gameOverFontSize = Math.floor(36 * scaleFactor);
     const gameOverY = centerY - Math.floor(50 * scaleFactor);
 
-    this.gameover_text = this.add.text(centerX, gameOverY, 'GAME OVER', {
-      fontFamily: 'Arial Black',
+    this.gameover_text = this.add.text(centerX, gameOverY, "GAME OVER", {
+      fontFamily: "Arial Black",
       fontSize: gameOverFontSize,
-      color: '#FF4500', // Orange-red
-      stroke: '#8B0000', // Dark red stroke
+      color: "#FF4500", // Orange-red
+      stroke: "#8B0000", // Dark red stroke
       strokeThickness: Math.max(2, Math.floor(4 * scaleFactor)),
-      align: 'center',
+      align: "center",
       shadow: {
         offsetX: Math.floor(2 * scaleFactor),
         offsetY: Math.floor(2 * scaleFactor),
-        color: '#000000',
+        color: "#000000",
         blur: Math.floor(4 * scaleFactor),
         fill: true,
       },
@@ -80,16 +82,16 @@ export class GameOver extends Scene {
     const scoreY = gameOverY + Math.floor(32 * scaleFactor);
 
     this.score_text = this.add.text(centerX, scoreY, `Score: ${data.score}`, {
-      fontFamily: 'Arial Black',
+      fontFamily: "Arial Black",
       fontSize: scoreFontSize,
-      color: '#FFD700', // Bright gold
-      stroke: '#FF4500', // Orange-red stroke
+      color: "#FFD700", // Bright gold
+      stroke: "#FF4500", // Orange-red stroke
       strokeThickness: Math.max(2, Math.floor(3 * scaleFactor)),
-      align: 'center',
+      align: "center",
       shadow: {
         offsetX: Math.floor(1 * scaleFactor),
         offsetY: Math.floor(1 * scaleFactor),
-        color: '#000000',
+        color: "#000000",
         blur: Math.floor(2 * scaleFactor),
         fill: true,
       },
@@ -107,22 +109,22 @@ export class GameOver extends Scene {
       const newRecordText = this.add.text(
         centerX,
         newRecordY,
-        'NEW RECORD! 🎉',
+        "NEW RECORD! 🎉",
         {
-          fontFamily: 'Arial Black',
+          fontFamily: "Arial Black",
           fontSize: newRecordFontSize,
-          color: '#FF1493', // Deep pink
-          stroke: '#8B0000', // Dark red stroke
+          color: "#FF1493", // Deep pink
+          stroke: "#8B0000", // Dark red stroke
           strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
-          align: 'center',
+          align: "center",
           shadow: {
             offsetX: Math.floor(1 * scaleFactor),
             offsetY: Math.floor(1 * scaleFactor),
-            color: '#000000',
+            color: "#000000",
             blur: Math.floor(2 * scaleFactor),
             fill: true,
           },
-        },
+        }
       );
       newRecordText.setOrigin(0.5);
 
@@ -132,7 +134,7 @@ export class GameOver extends Scene {
         scaleX: 1.2,
         scaleY: 1.2,
         duration: 500,
-        ease: 'Power2',
+        ease: "Power2",
         yoyo: true,
         repeat: 3,
       });
@@ -148,21 +150,21 @@ export class GameOver extends Scene {
     playAgainGraphics.lineStyle(
       Math.max(1, Math.floor(2 * scaleFactor)),
       0xffd700, // yellow border
-      1,
+      1
     );
     playAgainGraphics.fillRoundedRect(
       centerX - buttonWidth / 2,
       buttonY - buttonHeight / 2,
       buttonWidth,
       buttonHeight,
-      borderRadius,
+      borderRadius
     );
     playAgainGraphics.strokeRoundedRect(
       centerX - buttonWidth / 2,
       buttonY - buttonHeight / 2,
       buttonWidth,
       buttonHeight,
-      borderRadius,
+      borderRadius
     );
     playAgainGraphics.setDepth(1);
     playAgainGraphics.setInteractive(
@@ -170,23 +172,23 @@ export class GameOver extends Scene {
         centerX - buttonWidth / 2,
         buttonY - buttonHeight / 2,
         buttonWidth,
-        buttonHeight,
+        buttonHeight
       ),
-      Phaser.Geom.Rectangle.Contains,
+      Phaser.Geom.Rectangle.Contains
     );
 
     const playAgainText = this.add
-      .text(centerX, buttonY, 'PLAY AGAIN', {
-        fontFamily: 'Arial Black',
+      .text(centerX, buttonY, "PLAY AGAIN", {
+        fontFamily: "Arial Black",
         fontSize: Math.floor(14 * scaleFactor),
-        color: '#000000', // black text
-        stroke: '#ffea31ff',
+        color: "#000000", // black text
+        stroke: "#ffea31ff",
         strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
-        align: 'center',
+        align: "center",
         shadow: {
           offsetX: Math.floor(1 * scaleFactor),
           offsetY: Math.floor(1 * scaleFactor),
-          color: '#000000',
+          color: "#000000",
           blur: Math.floor(2 * scaleFactor),
           fill: true,
         },
@@ -194,57 +196,57 @@ export class GameOver extends Scene {
       .setOrigin(0.5)
       .setDepth(2);
 
-    playAgainGraphics.on('pointerover', () => {
+    playAgainGraphics.on("pointerover", () => {
       playAgainGraphics.clear();
       playAgainGraphics.fillStyle(0xffd700, 1); // yellow bg
       playAgainGraphics.lineStyle(
         Math.max(1, Math.floor(2 * scaleFactor)),
         0xffd700, // yellow border
-        1,
+        1
       );
       playAgainGraphics.fillRoundedRect(
         centerX - buttonWidth / 2,
         buttonY - buttonHeight / 2,
         buttonWidth,
         buttonHeight,
-        borderRadius,
+        borderRadius
       );
       playAgainGraphics.strokeRoundedRect(
         centerX - buttonWidth / 2,
         buttonY - buttonHeight / 2,
         buttonWidth,
         buttonHeight,
-        borderRadius,
+        borderRadius
       );
-      playAgainText.setColor('#000000'); // black text
+      playAgainText.setColor("#000000"); // black text
     });
-    playAgainGraphics.on('pointerout', () => {
+    playAgainGraphics.on("pointerout", () => {
       playAgainGraphics.clear();
       playAgainGraphics.fillStyle(0xffffff, 1); // white bg
       playAgainGraphics.lineStyle(
         Math.max(1, Math.floor(2 * scaleFactor)),
         0xffd700, // yellow border
-        1,
+        1
       );
       playAgainGraphics.fillRoundedRect(
         centerX - buttonWidth / 2,
         buttonY - buttonHeight / 2,
         buttonWidth,
         buttonHeight,
-        borderRadius,
+        borderRadius
       );
       playAgainGraphics.strokeRoundedRect(
         centerX - buttonWidth / 2,
         buttonY - buttonHeight / 2,
         buttonWidth,
         buttonHeight,
-        borderRadius,
+        borderRadius
       );
-      playAgainText.setColor('#000000'); // black text
+      playAgainText.setColor("#000000"); // black text
     });
-    playAgainGraphics.on('pointerdown', () => {
-      this.audioManager.playSound('menuSelect');
-      this.scene.start('MainMenu');
+    playAgainGraphics.on("pointerdown", () => {
+      this.audioManager.playSound("menuSelect");
+      this.scene.start("MainMenu");
     });
 
     // Add 'Share Score' rounded button below Play Again
@@ -257,21 +259,21 @@ export class GameOver extends Scene {
     shareGraphics.lineStyle(
       Math.max(1, Math.floor(2 * scaleFactor)),
       0xffd700,
-      1,
+      1
     ); // Gold border
     shareGraphics.fillRoundedRect(
       centerX - shareButtonWidth / 2,
       shareButtonY - shareButtonHeight / 2,
       shareButtonWidth,
       shareButtonHeight,
-      shareBorderRadius,
+      shareBorderRadius
     );
     shareGraphics.strokeRoundedRect(
       centerX - shareButtonWidth / 2,
       shareButtonY - shareButtonHeight / 2,
       shareButtonWidth,
       shareButtonHeight,
-      shareBorderRadius,
+      shareBorderRadius
     );
     shareGraphics.setDepth(1);
     shareGraphics.setInteractive(
@@ -279,23 +281,23 @@ export class GameOver extends Scene {
         centerX - shareButtonWidth / 2,
         shareButtonY - shareButtonHeight / 2,
         shareButtonWidth,
-        shareButtonHeight,
+        shareButtonHeight
       ),
-      Phaser.Geom.Rectangle.Contains,
+      Phaser.Geom.Rectangle.Contains
     );
 
     const shareText = this.add
-      .text(centerX, shareButtonY, 'SHARE SCORE', {
-        fontFamily: 'Arial Black',
+      .text(centerX, shareButtonY, "SHARE SCORE", {
+        fontFamily: "Arial Black",
         fontSize: Math.floor(14 * scaleFactor),
-        color: '#FFFFFF',
-        stroke: '#FFD700',
+        color: "#FFFFFF",
+        stroke: "#FFD700",
         strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
-        align: 'center',
+        align: "center",
         shadow: {
           offsetX: Math.floor(1 * scaleFactor),
           offsetY: Math.floor(1 * scaleFactor),
-          color: '#000000',
+          color: "#000000",
           blur: Math.floor(2 * scaleFactor),
           fill: true,
         },
@@ -303,68 +305,68 @@ export class GameOver extends Scene {
       .setOrigin(0.5)
       .setDepth(2);
 
-    shareGraphics.on('pointerover', () => {
+    shareGraphics.on("pointerover", () => {
       shareGraphics.clear();
       shareGraphics.fillStyle(0xffd700, 1); // Gold
       shareGraphics.lineStyle(
         Math.max(1, Math.floor(2 * scaleFactor)),
         0x1e90ff,
-        1,
+        1
       ); // Blue border
       shareGraphics.fillRoundedRect(
         centerX - shareButtonWidth / 2,
         shareButtonY - shareButtonHeight / 2,
         shareButtonWidth,
         shareButtonHeight,
-        shareBorderRadius,
+        shareBorderRadius
       );
       shareGraphics.strokeRoundedRect(
         centerX - shareButtonWidth / 2,
         shareButtonY - shareButtonHeight / 2,
         shareButtonWidth,
         shareButtonHeight,
-        shareBorderRadius,
+        shareBorderRadius
       );
-      shareText.setColor('#0d0d0eff');
+      shareText.setColor("#0d0d0eff");
     });
-    shareGraphics.on('pointerout', () => {
+    shareGraphics.on("pointerout", () => {
       shareGraphics.clear();
       shareGraphics.fillStyle(0x1e90ff, 0.95); // Dodger blue
       shareGraphics.lineStyle(
         Math.max(1, Math.floor(2 * scaleFactor)),
         0xffd700,
-        1,
+        1
       ); // Gold border
       shareGraphics.fillRoundedRect(
         centerX - shareButtonWidth / 2,
         shareButtonY - shareButtonHeight / 2,
         shareButtonWidth,
         shareButtonHeight,
-        shareBorderRadius,
+        shareBorderRadius
       );
       shareGraphics.strokeRoundedRect(
         centerX - shareButtonWidth / 2,
         shareButtonY - shareButtonHeight / 2,
         shareButtonWidth,
         shareButtonHeight,
-        shareBorderRadius,
+        shareBorderRadius
       );
-      shareText.setColor('#FFFFFF');
+      shareText.setColor("#FFFFFF");
     });
-    shareGraphics.on('pointerdown', () => {
-      this.audioManager.playSound('menuSelect');
+    shareGraphics.on("pointerdown", () => {
+      this.audioManager.playSound("menuSelect");
       // TODO: Implement share logic here
       // For now, just show a message or call a share function
       //alert(`Share your score: ${data.score}`);
-      this.shareScore(data.score).catch(err => {
-        console.error('Error sharing score:', err);
+      this.shareScore(data.score).catch((err) => {
+        console.error("Error sharing score:", err);
       });
     });
 
     // Keyboard support for main menu
-    this.input.keyboard?.once('keydown-M', () => {
-      this.audioManager.playSound('menuSelect');
-      this.scene.start('MainMenu');
+    this.input.keyboard?.once("keydown-M", () => {
+      this.audioManager.playSound("menuSelect");
+      this.scene.start("MainMenu");
     });
   }
 }
