@@ -1,91 +1,124 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { getReferralTag, submitReferral } from "@divvi/referral-sdk";
+import sdk from "@farcaster/frame-sdk";
+import { useMiniApp } from "@neynar/react";
+import { parseEther, parseUnits, encodeFunctionData, formatGwei } from "viem";
+import { UserRejectedRequestError } from "viem";
+import { createPublicClient, http } from "viem";
 import {
   useSendTransaction,
   useAccount,
   useBalance,
   useConnect,
   useSwitchChain,
-  useWaitForTransactionReceipt,
 } from "wagmi";
-import Image from "next/image";
-import backgroundImage from "@/public/assets/bg.webp";
-
-import { parseEther, parseUnits, encodeFunctionData } from "viem";
-import { UserRejectedRequestError } from "viem";
 import { celo } from "wagmi/chains";
-import { useRef, useEffect } from "react";
-import { runGame } from "@/components/GameFunction";
-import { useScoreContext } from "@/components/providers/ScoreContext";
-import { addUserScore } from "@/lib/dbFunctions";
-import { useFrame } from "@/components/providers/FrameProvider";
-import { createScoreToken } from "@/lib/gameAuth";
-import { getReferralTag, submitReferral } from "@divvi/referral-sdk";
-import { config } from "@/components/providers/WagmiProvider";
-import sdk from "@farcaster/frame-sdk";
-import FlappyRocketGameABI from "@/ABI/FlappyRocket.json";
+import FlappyRocketGameABI from "../ABI/FlappyRocket.json";
+import { addUserScore } from "../lib/dbFunctions";
+import { createScoreToken } from "../lib/gameAuth";
+import { IRefPhaserGame, PhaserGame } from "../components/PhaserGame";
+import { useScoreContext } from "../components/providers/ScoreContext";
+import { config } from "../components/providers/WagmiProvider";
 
 const FlappyRocketGameAddress = "0x883D06cc70BE8c3E018EA35f7BB7671B044b4Beb";
 
-export default function App() {
-  const { isConnected, chainId, address } = useAccount();
-  const { connect, connectors } = useConnect();
-  const { data: hash } = useSendTransaction();
-  const { status } = useWaitForTransactionReceipt({
-    hash,
-  });
-  const { switchChain } = useSwitchChain();
-  const [error, setError] = useState<string>("");
-  const [isGameStarted, setIsGameStarted] = useState(false);
-  const showGameRef = useRef(false);
-  const isProcessingRef = useRef(false);
-  const errorRef = useRef<string>("");
-  const { scores, topScores, refetchScores } = useScoreContext();
-  const scoresRef = useRef({ scores: scores, topScores: topScores });
-  const { context } = useFrame();
-  // Setup transaction sending
-  const { sendTransactionAsync } = useSendTransaction({ config });
+function App() {
+  // The sprite can only be moved in the MainMenu Scene
+  const [canMoveSprite, setCanMoveSprite] = useState(true);
 
-  const endGame = () => {
-    showGameRef.current = false;
+  const { context } = useMiniApp();
+  const { userScore, topScores, refetchScores } = useScoreContext();
+  const scoresRef = useRef({ userScore: userScore, topScores: topScores });
+
+  //  References to the PhaserGame component (game and scene are exposed)
+  const phaserRef = useRef<IRefPhaserGame | null>(null);
+
+  // Event emitted from the PhaserGame component
+  const currentScene = (scene: Phaser.Scene) => {
+    setCanMoveSprite(scene.scene.key !== "MainMenu");
   };
 
+  const isProcessingRef = useRef(false);
+  const showGameRef = useRef(false);
+  const errorRef = useRef<string>("");
+  const [error, setError] = useState<string>("");
+
+  console.log("ts test ", error, canMoveSprite);
+
+  const { isConnected, chainId, address } = useAccount();
+  const { connectAsync } = useConnect();
+  const { switchChain } = useSwitchChain();
   const { data: balance } = useBalance({
     address,
   });
+
+  const publicClient = createPublicClient({
+    chain: celo,
+    transport: http(),
+  });
+
+  // Setup transaction sending
+  const { sendTransactionAsync } = useSendTransaction({ config });
 
   const handleSubmit = async () => {
     console.log("handleSubmit called");
     setError("");
     errorRef.current = "";
-    if (!isConnected || !address)
-      return setError("Please connect your wallet first");
+    // if (!isConnected || !address)
+    //   return setError("Please connect your wallet first");
     isProcessingRef.current = true;
 
+    if (!isConnected) {
+      await connectAsync({
+        chainId: celo.id,
+        connector: config.connectors[0],
+      });
+    }
+    if (!address) {
+      console.error("No address found, please connect your wallet");
+      return setError("Please connect your wallet first");
+    }
+
+    console.log("isConnected:", isConnected);
+
     try {
-      await switchChain({ chainId: celo.id });
+      switchChain({ chainId: celo.id });
       if (chainId !== celo.id) {
         console.error("Network switch to celo failed");
-        throw new Error("Please complete the network switch to Celo");
+        //throw new Error('Please complete the network switch to Celo');
       }
+      console.log("Switched to Celo chain", chainId);
 
       console.log("Balance:", balance);
 
       // Step 1: Generate the Divvi data suffix
       let referralTag;
 
-      if (balance?.formatted && Number(balance?.formatted) >= 1) {
-        try {
-          referralTag = getReferralTag({
-            user: address, // The user address making the transaction
-            consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551", // Your Divvi Identifier
-          });
-        } catch (diviError) {
-          console.error("Divvi getDataSuffix error:", diviError);
-          throw new Error("Failed to generate referral data");
-        }
+      try {
+        referralTag = getReferralTag({
+          user: address, // The user address making the transaction
+          consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551", // Your Divvi Identifier
+        });
+      } catch (diviError) {
+        console.error("Divvi getDataSuffix error:", diviError);
+        throw new Error("Failed to generate referral data");
+      }
 
+      const celoBalance = await publicClient.getBalance({
+        address: address as `0x${string}`,
+      });
+      const celoBalanceFormatted = formatGwei(celoBalance);
+
+      console.log(
+        "Celo Balance:",
+        Number(celoBalanceFormatted),
+        celoBalance,
+        celoBalanceFormatted
+      );
+
+      if (Number(celoBalanceFormatted) >= 1) {
         const gameData = encodeFunctionData({
           abi: FlappyRocketGameABI,
           functionName: "depositCELO",
@@ -93,12 +126,13 @@ export default function App() {
 
         const combinedData = referralTag ? gameData + referralTag : gameData;
 
-        if (chainId !== celo.id) {
-          console.error("Network switch to celo failed2");
-          throw new Error("Please complete the network switch to Celo");
-        }
+        // if (chainId !== celo.id) {
+        //   console.error('Network switch to celo failed2');
+        //   throw new Error('Please complete the network switch to Celo');
+        // }
 
         // Step 2: Send transaction with data suffix
+        console.log("starting tx");
         const txHash = await sendTransactionAsync({
           to: FlappyRocketGameAddress as `0x${string}`,
           data: combinedData as `0x${string}`,
@@ -107,8 +141,9 @@ export default function App() {
           maxPriorityFeePerGas: parseUnits("100", 9),
         });
 
-        if (status === "error") throw new Error("Transaction reverted");
+        console.log("Transaction sent:", txHash);
 
+        if (status === "error") throw new Error("Transaction reverted");
         //Step 3: Submit referral after successful transaction
         try {
           await submitReferral({
@@ -120,19 +155,6 @@ export default function App() {
         }
       } else {
         console.log("user has no celo, paying for user!");
-
-        const response = await fetch("/api/play", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to process claim");
-        }
-
-        const result = await response.json();
-        console.log("Transaction result:", result);
       }
 
       showGameRef.current = true;
@@ -146,8 +168,9 @@ export default function App() {
         errorRef.current =
           err instanceof Error ? err.message : "Transaction failed";
       }
+    } finally {
+      isProcessingRef.current = false;
     }
-    isProcessingRef.current = false;
   };
 
   const handleAddUserScore = async (score: number) => {
@@ -172,226 +195,47 @@ export default function App() {
 
   const shareScore = async (score: number) => {
     await sdk.actions.composeCast({
-      text:
-        `🎮 I just scored ${score} playing Flappy Rocket! 🏆\n` +
-        `🚀 Play and win Celo Weekly!\n`,
+      text: `🎮 I just scored ${score} playing Flappy Rocket! 🏆\n 🚀 Play and win Celo Weekly!\n`,
       embeds: ["https://flappy-farcaster.vercel.app"],
     });
   };
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const endGame = () => {
+    showGameRef.current = false;
+  };
 
   useEffect(() => {
-    scoresRef.current = { scores, topScores };
-  }, [scores, topScores]);
+    scoresRef.current = { userScore, topScores };
+  }, [userScore, topScores]);
 
   useEffect(() => {
-    const add = async () => {
-      try {
-        await sdk.actions.addMiniApp();
-      } catch (err) {
-        console.error("Failed to add mini app:", err);
+    async function checkConnection() {
+      if (!isConnected) {
+        await connectAsync({
+          chainId: celo.id,
+          connector: config.connectors[0],
+        });
       }
-    };
-    add();
+    }
+    checkConnection();
   }, []);
 
-  useEffect(() => {
-    if (!isConnected || chainId !== celo.id || !isGameStarted) {
-      // When game is not showing, ensure canvas ref is null
-      canvasRef.current = null;
-      return;
-    }
-
-    if (!canvasRef.current) {
-      // Create new canvas if none exists
-      const canvas = document.createElement("canvas");
-      canvas.width = 480;
-      canvas.height = 640;
-      canvasRef.current = canvas;
-
-      // Get the 2D rendering context
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        throw new Error("Could not get 2D context");
-      }
-
-      // Set font and draw text
-      ctx.font = '20px "Press Start 2P"';
-      ctx.fillStyle = "white";
-      ctx.fillText("Score: 100", 10, 50);
-    }
-    const canvas = canvasRef.current;
-    let gameCleanup: (() => void) | undefined;
-
-    // Initialize game
-    try {
-      gameCleanup = runGame(
-        canvas,
-        handleSubmit,
-        handleAddUserScore,
-        shareScore,
-        isProcessingRef,
-        errorRef,
-        showGameRef,
-        endGame,
-        scoresRef
-      );
-    } catch (err) {
-      console.error("Game initialization failed:", err);
-      setError("Failed to start game. Please refresh the page.");
-
-      canvasRef.current = null;
-      return;
-    }
-
-    // Cleanup function
-    return () => {
-      // 1. Run game's cleanup if it exists
-      if (typeof gameCleanup === "function") {
-        try {
-          gameCleanup();
-        } catch (err) {
-          console.error("Game cleanup error:", err);
-        }
-      }
-    };
-  }, [isGameStarted]);
-
   return (
-    <div className="relative h-screen w-full">
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src={backgroundImage}
-          alt="Game background"
-          fill
-          priority
-          quality={85}
-          className="object-cover"
-        />
-      </div>
-      <div className="relative z-10 h-full w-full">
-        {!isGameStarted && (
-          <div className="font-vt323 flex flex-col items-center justify-center p-8 min-w-[350px] h-screen relative z-10 box-border">
-            <h1 className="font-press-start text-4xl text-white [text-shadow:_3px_3px_0_#000]">
-              FLAPPY ROCKET
-              <span className="block text-sm font-vt323 text-gray-300">
-                Powered by Celo
-              </span>
-            </h1>
-            <h2 className="text-gray-200 text-base md:text-base mb-8 tracking-wide text-center [text-shadow:_2px_2px_0_#000]">
-              Weekly competition!
-            </h2>
-
-            <div style={{ width: "100%", marginBottom: "2rem" }}>
-              {!isConnected ? (
-                <div style={{ textAlign: "center" }}>
-                  <p
-                    style={{
-                      color: "#cbd5e1",
-                      marginBottom: "1.5rem",
-                      fontSize: "1.3rem",
-                    }}
-                  >
-                    Connect your wallet
-                  </p>
-                  <button
-                    className="font-vt323 w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xl mb-2
-             transition-all duration-200 ease-in-out
-             hover:border-2 hover:border-white hover:-translate-y-0.5 hover:shadow-lg
-             active:scale-95 active:bg-white/10 active:border-2 active:border-white/80
-             relative overflow-hidden"
-                    onClick={() => connect({ connector: connectors[0] })}
-                  >
-                    CONNECT WALLET
-                  </button>
-                </div>
-              ) : chainId !== celo.id ? (
-                <div style={{ textAlign: "center" }}>
-                  <p
-                    style={{
-                      color: "#cbd5e1",
-                      marginBottom: "1.5rem",
-                      fontSize: "1.3rem",
-                    }}
-                  >
-                    Switch to Celo network
-                  </p>
-                  <button
-                    type="button"
-                    className="font-vt323 w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xl mb-2
-             transition-all duration-200 ease-in-out
-             hover:border-2 hover:border-white hover:-translate-y-0.5 hover:shadow-lg
-             active:scale-95 active:bg-white/10 active:border-2 active:border-white/80
-             relative overflow-hidden"
-                    onClick={() => switchChain?.({ chainId: celo.id })}
-                  >
-                    SWITCH TO CELO
-                  </button>
-                </div>
-              ) : !isGameStarted ? (
-                <div>
-                  <button
-                    className="font-vt323 w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xl mb-2
-             transition-all duration-200 ease-in-out
-             hover:border-2 hover:border-white hover:-translate-y-0.5 hover:shadow-lg
-             active:scale-95 active:bg-white/10 active:border-2 active:border-white/80
-             relative overflow-hidden"
-                    onClick={() => setIsGameStarted(true)}
-                  >
-                    Load Game
-                  </button>
-                </div>
-              ) : null}
-            </div>
-
-            <div
-              style={{
-                marginTop: 16,
-                marginBottom: 24,
-                color: "#fff",
-                fontSize: "1.2rem",
-                textAlign: "center",
-                lineHeight: "1.5",
-                maxWidth: "400px",
-                textShadow: "1px 1px 0 #000",
-              }}
-            >
-              Compete for weekly rewards on the Celo blockchain.
-              <br />
-              Play → Score → Win!
-            </div>
-
-            {error && (
-              <div
-                style={{
-                  color: "#ff6b6b",
-                  marginTop: "1.2rem",
-                  textAlign: "center",
-                  fontSize: "1.1rem",
-                  textShadow: "1px 1px 0 #000",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  maxWidth: "100%",
-                  padding: "0 1rem",
-                }}
-                title={error}
-              >
-                {error}
-              </div>
-            )}
-          </div>
-        )}
-        {isGameStarted && (
-          <canvas
-            ref={canvasRef}
-            style={{
-              zIndex: 100,
-            }}
-          />
-        )}
-      </div>
+    <div id="app">
+      <PhaserGame
+        ref={phaserRef}
+        currentActiveScene={currentScene}
+        onPaymentRequested={handleSubmit}
+        isProcessing={isProcessingRef}
+        errorRef={errorRef}
+        showGameRef={showGameRef}
+        endGame={endGame}
+        scoresRef={scoresRef}
+        handleAddUserScore={handleAddUserScore}
+        shareScore={shareScore}
+      />
     </div>
   );
 }
+
+export default App;
