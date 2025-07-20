@@ -31,7 +31,7 @@ export class Preloader extends Scene {
 
     // Loading title
     this.add
-      .text(width / 2, height * 0.25, "Loading Flappy Rocket", {
+      .text(width / 2, height * 0.25, "Loading Flappy Rocket V2", {
         fontSize: titleFontSize,
         fontFamily: "Arial Black",
         color: "#FFD700",
