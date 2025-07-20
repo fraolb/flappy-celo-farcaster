@@ -20,6 +20,14 @@ import {
   TOUCH_COOLDOWN,
 } from "../constants";
 
+interface Score {
+  _id: string;
+  username: string;
+  score: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export class Game extends Scene {
   camera!: Phaser.Cameras.Scene2D.Camera;
   background!: Phaser.GameObjects.Image;
@@ -60,12 +68,21 @@ export class Game extends Scene {
   lastCollisionTime: number;
   heartImages!: Phaser.GameObjects.Image[];
 
+  scoresRef: React.RefObject<{
+    userScore: Score | null;
+    topScores: Score[] | null;
+  }>;
+
   // Audio manager
   audioManager!: AudioManager;
 
   constructor(
     endGame: () => void,
-    handleAddUserScore: (score: number) => Promise<void>
+    handleAddUserScore: (score: number) => Promise<void>,
+    scoresRef: React.RefObject<{
+      userScore: Score | null;
+      topScores: Score[] | null;
+    }>
   ) {
     super("Game");
     this.endGame = endGame;
@@ -73,6 +90,7 @@ export class Game extends Scene {
     this.heart = 3;
     this.collisionCooldown = 1000; // ms
     this.lastCollisionTime = 0;
+    this.scoresRef = scoresRef;
   }
 
   flap() {
@@ -288,9 +306,7 @@ export class Game extends Scene {
 
     // Initialize scoring system
     this.score = 0;
-    this.highScore = parseInt(
-      localStorage.getItem("flappyBirdHighScore") || "0"
-    );
+    this.highScore = this.scoresRef?.current?.userScore?.score || 0;
     this.scoredPipes = new Set();
 
     this.background = this.add.image(0, 0, "background");

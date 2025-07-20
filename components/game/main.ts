@@ -59,7 +59,11 @@ const StartGame = (parent: string, options?: any) => {
         options?.showGameRef,
         options?.scoresRef
       ),
-      new MainGame(options?.endGame, options?.handleAddUserScore),
+      new MainGame(
+        options?.endGame,
+        options?.handleAddUserScore,
+        options?.scoresRef
+      ),
       new GameOver(options?.shareScore),
     ],
   });
