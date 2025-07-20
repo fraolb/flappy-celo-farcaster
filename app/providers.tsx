@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { FrameProvider } from "@/components/providers/FrameProvider";
+import { MiniAppProvider } from "@neynar/react";
 import { ScoreProvider } from "@/components/providers/ScoreContext";
 
 const WagmiProvider = dynamic(
@@ -14,9 +14,9 @@ const WagmiProvider = dynamic(
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider>
-      <FrameProvider>
+      <MiniAppProvider analyticsEnabled={true} backButtonEnabled={true}>
         <ScoreProvider>{children}</ScoreProvider>
-      </FrameProvider>
+      </MiniAppProvider>
     </WagmiProvider>
   );
 }
