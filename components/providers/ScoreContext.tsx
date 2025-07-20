@@ -1,8 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useMiniApp } from "@neynar/react";
 import { getUserScores, getTopScorers } from "@/lib/dbFunctions";
-import { useFrame } from "./FrameProvider";
 
 interface Score {
   _id: string;
@@ -13,7 +13,7 @@ interface Score {
 }
 
 interface ScoreContextType {
-  scores: Score | null;
+  userScore: Score | null;
   topScores: Score[] | null;
   loading: boolean;
   scoreError: string | null;
@@ -25,15 +25,15 @@ const ScoreContext = createContext<ScoreContextType | undefined>(undefined);
 export const ScoreProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { isSDKLoaded, context } = useFrame();
+  const { context } = useMiniApp();
 
-  const [scores, setScores] = useState<Score | null>(null);
+  const [userScore, setUserScore] = useState<Score | null>(null);
   const [topScores, setTopScores] = useState<Score[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchScores = async () => {
-    if (!isSDKLoaded || !context) return;
+    if (!context) return;
     if (!context.user?.username) {
       setError("User not found");
       return;
@@ -44,7 +44,7 @@ export const ScoreProvider: React.FC<{ children: React.ReactNode }> = ({
 
     try {
       const fetchedUserScore = await getUserScores(context?.user?.username);
-      setScores(fetchedUserScore);
+      setUserScore(fetchedUserScore);
       const fetchedTopScores = await getTopScorers();
       setTopScores(fetchedTopScores);
     } catch (err) {
@@ -57,12 +57,12 @@ export const ScoreProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     fetchScores();
-  }, [context, isSDKLoaded]);
+  }, [context]);
 
   return (
     <ScoreContext.Provider
       value={{
-        scores,
+        userScore,
         topScores,
         loading,
         scoreError: error,
