@@ -84,10 +84,7 @@ export class Preloader extends Scene {
     this.load.image("heart", "1heart.png");
 
     // UI assets
-    this.load.image("platform", "platform.png");
-    this.load.image("star", "star.png");
     this.load.image("pause", "pause.png");
-    this.load.image("back", "back.png");
 
     //audio assets
     this.load.audio("punch", "punch.mp3");
