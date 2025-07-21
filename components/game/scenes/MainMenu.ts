@@ -12,7 +12,7 @@ interface Score {
 }
 
 export class MainMenu extends Scene {
-  background!: GameObjects.Image;
+  background!: Phaser.GameObjects.TileSprite;
   logo!: GameObjects.Image;
   title!: GameObjects.Text;
   tapToStart!: GameObjects.Text;
@@ -64,8 +64,22 @@ export class MainMenu extends Scene {
     const centerY = gameHeight / 2;
 
     // Background with enhanced styling
-    this.background = this.add.image(0, 0, "background");
+    // Use tileSprite for background
+    this.background = this.add.tileSprite(
+      0,
+      0,
+      gameWidth,
+      gameHeight,
+      "background"
+    );
     this.background.setOrigin(0);
+
+    // Scale the tile so the image fits the canvas
+    const bgTexture = this.textures.get("background").getSourceImage();
+    const scaleX = gameWidth / bgTexture.width;
+    const scaleY = gameHeight / bgTexture.height;
+    this.background.tileScaleX = scaleX;
+    this.background.tileScaleY = scaleY;
 
     // Add a subtle gradient overlay for depth
     const gradient = this.add.rectangle(
@@ -81,11 +95,18 @@ export class MainMenu extends Scene {
     // Responsive scaling based on screen width
     const scaleFactor = Math.min(gameWidth / 400, 1); // 400px is base width, scale down for smaller screens
 
+    // Add logo image above the title
+    const logoSize = Math.floor(84 * scaleFactor); // Adjust size as needed
+    const logoY = centerY - Math.floor(170 * scaleFactor); // Position above the title
+    this.logo = this.add.image(centerX, logoY, "logo");
+    this.logo.setOrigin(0.5);
+    this.logo.setDisplaySize(logoSize, logoSize);
+
     // Game title with responsive styling
-    const titleFontSize = Math.floor(32 * scaleFactor);
+    const titleFontSize = Math.floor(27 * scaleFactor);
     const titleY = centerY - Math.floor(80 * scaleFactor);
 
-    this.title = this.add.text(centerX, titleY, "FLAPPY ROCKET", {
+    this.title = this.add.text(centerX, titleY, "FLAPPY ROCKET V2", {
       fontFamily: "Arial Black",
       fontSize: titleFontSize,
       color: "#FFD700", // Bright gold
@@ -379,6 +400,12 @@ export class MainMenu extends Scene {
           wordWrap: { width: Math.floor(180 * scaleFactor) },
         })
         .setOrigin(0.5);
+    }
+  }
+
+  update() {
+    if (this.background) {
+      this.background.tilePositionX += 1; // Move right-to-left, adjust speed as needed
     }
   }
 }

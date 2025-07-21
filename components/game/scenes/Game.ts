@@ -30,7 +30,7 @@ interface Score {
 
 export class Game extends Scene {
   camera!: Phaser.Cameras.Scene2D.Camera;
-  background!: Phaser.GameObjects.Image;
+  background!: Phaser.GameObjects.TileSprite;
   bird!: Phaser.Physics.Arcade.Sprite;
   isGameStarted!: boolean;
   gameTime!: number;
@@ -308,9 +308,24 @@ export class Game extends Scene {
     this.score = 0;
     this.highScore = this.scoresRef?.current?.userScore?.score || 0;
     this.scoredPipes = new Set();
+    const gameHeight = this.sys.canvas.height;
 
-    this.background = this.add.image(0, 0, "background");
+    // background setup
+    this.background = this.add.tileSprite(
+      0,
+      0,
+      gameWidth,
+      gameHeight,
+      "background"
+    );
     this.background.setOrigin(0);
+
+    // Scale the tile so the image fits the canvas
+    const bgTexture = this.textures.get("background").getSourceImage();
+    const scaleX = gameWidth / bgTexture.width;
+    const scaleY = gameHeight / bgTexture.height;
+    this.background.tileScaleX = scaleX;
+    this.background.tileScaleY = scaleY;
 
     // Create score display with responsive styling
     const scoreFontSize = Math.floor(18 * scaleFactor);
@@ -536,6 +551,11 @@ export class Game extends Scene {
 
   update(_time: number, delta: number): void {
     if (!this.bird.body || this.isPaused) return;
+
+    // Update background position for parallax effect
+    if (this.background) {
+      this.background.tilePositionX += 1; // Move right-to-left, adjust speed as needed
+    }
 
     // Rotate bird based on velocity
     const velocity = this.bird.body.velocity.y;

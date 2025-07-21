@@ -82,6 +82,7 @@ export class Preloader extends Scene {
       frameHeight: 50,
     });
     this.load.image("heart", "1heart.png");
+    this.load.image("logo", "splash.png");
 
     // UI assets
     this.load.image("pause", "pause.png");
