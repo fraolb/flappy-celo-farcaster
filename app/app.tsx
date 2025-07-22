@@ -10,9 +10,10 @@ import { createPublicClient, http } from "viem";
 import {
   useSendTransaction,
   useAccount,
-  useBalance,
+  // useBalance,
   useConnect,
   useSwitchChain,
+  useDisconnect,
 } from "wagmi";
 import { celo } from "wagmi/chains";
 import FlappyRocketGameABI from "../ABI/FlappyRocket.json";
@@ -49,10 +50,11 @@ function App() {
 
   const { isConnected, chainId, address } = useAccount();
   const { connectAsync } = useConnect();
+  const { disconnectAsync } = useDisconnect();
   const { switchChain } = useSwitchChain();
-  const { data: balance } = useBalance({
-    address,
-  });
+  // const { data: balance } = useBalance({
+  //   address,
+  // });
 
   const publicClient = createPublicClient({
     chain: celo,
@@ -66,107 +68,132 @@ function App() {
     console.log("handleSubmit called");
     setError("");
     errorRef.current = "";
-    // if (!isConnected || !address)
-    //   return setError("Please connect your wallet first");
     isProcessingRef.current = true;
 
-    if (!isConnected) {
-      await connectAsync({
-        chainId: celo.id,
-        connector: config.connectors[0],
-      });
-    }
-    if (!address) {
-      console.error("No address found, please connect your wallet");
-      return setError("Please connect your wallet first");
-    }
-
-    console.log("isConnected:", isConnected);
-
     try {
-      switchChain({ chainId: celo.id });
-      if (chainId !== celo.id) {
-        console.error("Network switch to celo failed");
-        //throw new Error('Please complete the network switch to Celo');
-      }
-      console.log("Switched to Celo chain", chainId);
-
-      console.log("Balance:", balance);
-
-      // Step 1: Generate the Divvi data suffix
-      let referralTag;
-
-      try {
-        referralTag = getReferralTag({
-          user: address, // The user address making the transaction
-          consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551", // Your Divvi Identifier
+      // 1. Ensure Wallet is Connected
+      if (!isConnected || !address) {
+        console.log("Wallet not connected, attempting to connect...");
+        await connectAsync({
+          chainId: celo.id,
+          connector: config.connectors[0],
         });
-      } catch (diviError) {
-        console.error("Divvi getDataSuffix error:", diviError);
-        throw new Error("Failed to generate referral data");
+        if (!address) throw new Error("Wallet connection failed");
       }
 
+      // 2. Ensure Correct Chain (Celo)
+      if (chainId !== celo.id) {
+        console.log("Switching to Celo...");
+        try {
+          await switchChain({ chainId: celo.id });
+        } catch (switchError) {
+          console.error("Failed to switch chain:", switchError);
+          throw new Error("Please switch to Celo manually");
+        }
+      }
+
+      // 3. Check Celo Balance
       const celoBalance = await publicClient.getBalance({
         address: address as `0x${string}`,
       });
       const celoBalanceFormatted = formatGwei(celoBalance);
 
-      console.log(
-        "Celo Balance:",
-        Number(celoBalanceFormatted),
-        celoBalance,
-        celoBalanceFormatted
-      );
+      if (Number(celoBalanceFormatted) < 0.1) {
+        throw new Error("Insufficient CELO balance (need at least 0.1 CELO)");
+      }
 
-      if (Number(celoBalanceFormatted) >= 1) {
-        const gameData = encodeFunctionData({
-          abi: FlappyRocketGameABI,
-          functionName: "depositCELO",
+      // 4. Generate Referral Tag (if applicable)
+      let referralTag;
+      try {
+        referralTag = getReferralTag({
+          user: address,
+          consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551",
         });
+      } catch (diviError) {
+        console.error("Divvi referral error:", diviError);
+        throw new Error("Failed to generate referral data");
+      }
 
-        const combinedData = referralTag ? gameData + referralTag : gameData;
+      // 5. Prepare Transaction Data
+      const gameData = encodeFunctionData({
+        abi: FlappyRocketGameABI,
+        functionName: "depositCELO",
+      });
+      const combinedData = referralTag ? gameData + referralTag : gameData;
 
-        // if (chainId !== celo.id) {
-        //   console.error('Network switch to celo failed2');
-        //   throw new Error('Please complete the network switch to Celo');
-        // }
+      // 6. Send Transaction (with Retry Logic)
+      let txHash;
+      let retries = 0;
+      const maxRetries = 2;
 
-        // Step 2: Send transaction with data suffix
-        console.log("starting tx");
-        const txHash = await sendTransactionAsync({
-          to: FlappyRocketGameAddress as `0x${string}`,
-          data: combinedData as `0x${string}`,
-          value: parseEther("0.1"),
-          maxFeePerGas: parseUnits("100", 9),
-          maxPriorityFeePerGas: parseUnits("100", 9),
-        });
+      while (retries < maxRetries) {
+        try {
+          console.log("Sending transaction (attempt", retries + 1, ")...");
+          txHash = await sendTransactionAsync({
+            to: FlappyRocketGameAddress as `0x${string}`,
+            data: combinedData as `0x${string}`,
+            value: parseEther("0.1"),
+            maxFeePerGas: parseUnits("100", 9),
+            maxPriorityFeePerGas: parseUnits("100", 9),
+          });
+          break; // Success, exit retry loop
+        } catch (txError) {
+          retries++;
+          console.error(`Transaction attempt ${retries} failed:`, txError);
 
-        console.log("Transaction sent:", txHash);
+          // If it's a wallet error, try reconnecting
+          /* eslint-disable @typescript-eslint/no-explicit-any */
+          if (
+            typeof txError === "object" &&
+            txError !== null &&
+            "message" in txError &&
+            typeof (txError as any).message === "string" &&
+            (txError as any).message.includes("getChainId is not a function")
+          ) {
+            console.log("Reconnecting wallet...");
+            await disconnectAsync();
+            await connectAsync({
+              chainId: celo.id,
+              connector: config.connectors[0],
+            });
+            continue;
+          }
 
-        if (status === "error") throw new Error("Transaction reverted");
-        //Step 3: Submit referral after successful transaction
+          // If max retries reached, throw the error
+          if (retries >= maxRetries) {
+            throw txError;
+          }
+
+          // Wait before retrying
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+
+      console.log("Transaction successful:", txHash);
+
+      // 7. Submit Referral (if applicable)
+      if (txHash != undefined) {
         try {
           await submitReferral({
             txHash: txHash,
             chainId: 42220,
           });
         } catch (referralError) {
-          console.error("Referral submission error:", referralError);
+          console.error(
+            "Referral submission failed (non-critical):",
+            referralError
+          );
         }
-      } else {
-        console.log("user has no celo, paying for user!");
       }
 
+      // 8. Proceed to Game
       showGameRef.current = true;
     } catch (err) {
-      isProcessingRef.current = false;
+      console.error("Transaction error:", err);
       if (err instanceof UserRejectedRequestError) {
         setError("Payment cancelled");
-        errorRef.current = "Payment cancelled";
       } else {
         setError(err instanceof Error ? err.message : "Transaction failed");
-        errorRef.current =
-          err instanceof Error ? err.message : "Transaction failed";
       }
     } finally {
       isProcessingRef.current = false;
