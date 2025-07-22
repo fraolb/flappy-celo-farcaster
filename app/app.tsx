@@ -139,6 +139,13 @@ function App() {
           break; // Success, exit retry loop
         } catch (txError) {
           retries++;
+
+          // Case 1: User rejected the transaction → exit loop
+          if (txError instanceof UserRejectedRequestError) {
+            console.log("User rejected transaction");
+            break; // Exit loop (no retry)
+          }
+
           console.error(`Transaction attempt ${retries} failed:`, txError);
 
           // If it's a wallet error, try reconnecting
