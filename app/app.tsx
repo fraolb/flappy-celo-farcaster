@@ -13,7 +13,7 @@ import {
   // useBalance,
   useConnect,
   useSwitchChain,
-  useDisconnect,
+  // useDisconnect,
 } from "wagmi";
 import { celo } from "wagmi/chains";
 import FlappyRocketGameABI from "../ABI/FlappyRocket.json";
@@ -50,7 +50,7 @@ function App() {
 
   const { isConnected, chainId, address } = useAccount();
   const { connectAsync } = useConnect();
-  const { disconnectAsync } = useDisconnect();
+  //const { disconnectAsync } = useDisconnect();
   const { switchChain } = useSwitchChain();
   // const { data: balance } = useBalance({
   //   address,
