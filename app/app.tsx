@@ -138,8 +138,6 @@ function App() {
           });
           break; // Success, exit retry loop
         } catch (txError) {
-          retries++;
-
           // Case 1: User rejected the transaction → exit loop
           if (txError instanceof UserRejectedRequestError) {
             console.log("User rejected transaction");
@@ -158,13 +156,16 @@ function App() {
             (txError as any).message.includes("getChainId is not a function")
           ) {
             console.log("Reconnecting wallet...");
-            await disconnectAsync();
+            // await disconnectAsync();
             await connectAsync({
               chainId: celo.id,
               connector: config.connectors[0],
             });
             continue;
           }
+
+          retries++;
+          console.log(`Retrying transaction (${retries})...`);
 
           // If max retries reached, throw the error
           if (retries >= maxRetries) {
