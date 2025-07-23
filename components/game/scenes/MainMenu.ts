@@ -252,21 +252,23 @@ export class MainMenu extends Scene {
       connectBtnGraphics.disableInteractive();
       connectBtnText.setText("Connecting...");
       try {
-        await this.handleConnectToCelo();
+        //await this.handleConnectToCelo();
         isWalletConnected = true;
         connectBtnGraphics.destroy();
         connectBtnText.destroy();
 
-        // Now show the Play button (existing logic)
-        this.showPlayButton(
-          centerX,
-          titleY,
-          scaleFactor,
-          playButtonY,
-          playButtonWidth,
-          playButtonHeight,
-          borderRadius
-        );
+        // Delay showing the Play button to avoid accidental click-through
+        this.time.delayedCall(100, () => {
+          this.showPlayButton(
+            centerX,
+            titleY,
+            scaleFactor,
+            playButtonY,
+            playButtonWidth,
+            playButtonHeight,
+            borderRadius
+          );
+        });
       } catch (err) {
         console.log("Connection error:", isWalletConnected, err);
         connectBtnText.setText("Connect to Celo");
