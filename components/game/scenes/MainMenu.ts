@@ -268,6 +268,7 @@ export class MainMenu extends Scene {
           borderRadius
         );
       } catch (err) {
+        console.log("Connection error:", isWalletConnected, err);
         connectBtnText.setText("Connect to Celo");
         connectBtnGraphics.setInteractive(
           new Phaser.Geom.Rectangle(
