@@ -54,6 +54,7 @@ const StartGame = (parent: string, options?: any) => {
       Preloader,
       new MainMenu(
         options?.onPaymentRequested,
+        options?.handleConnectToCelo,
         options?.isProcessing,
         options?.errorRef,
         options?.showGameRef,

@@ -207,6 +207,14 @@ function App() {
     }
   };
 
+  const handleConnectToCelo = async () => {
+    await connectAsync({
+      chainId: celo.id,
+      connector: config.connectors[0],
+    });
+    console.log("Connected to Celo?", isConnected);
+  };
+
   const handleAddUserScore = async (score: number) => {
     if (!isConnected || !context?.user?.username) {
       setError("Please connect your wallet first");
@@ -260,6 +268,7 @@ function App() {
         ref={phaserRef}
         currentActiveScene={currentScene}
         onPaymentRequested={handleSubmit}
+        handleConnectToCelo={handleConnectToCelo}
         isProcessing={isProcessingRef}
         errorRef={errorRef}
         showGameRef={showGameRef}
