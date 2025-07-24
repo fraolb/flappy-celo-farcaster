@@ -152,7 +152,8 @@ function App() {
                 (txError as any).message.toLowerCase().includes("user denied")))
           ) {
             console.log("User rejected transaction");
-            break; // Exit loop (no retry)
+            //break; // Exit loop (no retry)
+            throw new Error("User rejected transaction");
           }
 
           console.error(`Transaction attempt ${retries} failed:`, txError);
