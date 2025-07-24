@@ -270,6 +270,7 @@ function App() {
         currentActiveScene={currentScene}
         onPaymentRequested={handleSubmit}
         handleConnectToCelo={handleConnectToCelo}
+        isConnected={isConnected && chainId == celo.id ? true : false}
         isProcessing={isProcessingRef}
         errorRef={errorRef}
         showGameRef={showGameRef}

@@ -19,6 +19,7 @@ interface IProps {
   currentActiveScene?: (scene_instance: Phaser.Scene) => void;
   onPaymentRequested: () => Promise<void>;
   handleConnectToCelo: () => Promise<void>;
+  isConnected: boolean;
   isProcessing: React.RefObject<boolean>;
   errorRef: React.RefObject<string>;
   showGameRef: React.RefObject<boolean>;
@@ -37,6 +38,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
       currentActiveScene,
       onPaymentRequested,
       handleConnectToCelo,
+      isConnected,
       isProcessing,
       errorRef,
       showGameRef,
@@ -54,6 +56,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
         game.current = StartGame("game-container", {
           onPaymentRequested,
           handleConnectToCelo,
+          isConnected,
           isProcessing,
           errorRef,
           showGameRef,

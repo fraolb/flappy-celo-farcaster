@@ -55,6 +55,7 @@ const StartGame = (parent: string, options?: any) => {
       new MainMenu(
         options?.onPaymentRequested,
         options?.handleConnectToCelo,
+        options?.isConnected,
         options?.isProcessing,
         options?.errorRef,
         options?.showGameRef,
