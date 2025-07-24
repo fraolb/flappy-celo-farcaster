@@ -153,6 +153,8 @@ function App() {
           ) {
             console.log("User rejected transaction");
             //break; // Exit loop (no retry)
+            errorRef.current = "User rejected transaction";
+            setError("User rejected transaction");
             throw new Error("User rejected transaction");
           }
 
@@ -181,6 +183,8 @@ function App() {
 
           // If max retries reached, throw the error
           if (retries >= maxRetries) {
+            setError("Transaction failed");
+            errorRef.current = "Transaction failed";
             throw txError;
           }
 
@@ -211,8 +215,10 @@ function App() {
     } catch (err) {
       console.error("Transaction error:", err);
       if (err instanceof UserRejectedRequestError) {
+        setError("Transaction failed");
         setError("Payment cancelled");
       } else {
+        setError("Transaction failed");
         setError(err instanceof Error ? err.message : "Transaction failed");
       }
     } finally {
