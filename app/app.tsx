@@ -139,7 +139,18 @@ function App() {
           break; // Success, exit retry loop
         } catch (txError) {
           // Case 1: User rejected the transaction → exit loop
-          if (txError instanceof UserRejectedRequestError) {
+          /* eslint-disable @typescript-eslint/no-explicit-any */
+          if (
+            txError instanceof UserRejectedRequestError ||
+            (typeof txError === "object" &&
+              txError !== null &&
+              "message" in txError &&
+              typeof (txError as any).message === "string" &&
+              ((txError as any).message
+                .toLowerCase()
+                .includes("user rejected") ||
+                (txError as any).message.toLowerCase().includes("user denied")))
+          ) {
             console.log("User rejected transaction");
             break; // Exit loop (no retry)
           }
