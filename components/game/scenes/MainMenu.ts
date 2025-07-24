@@ -26,6 +26,7 @@ export class MainMenu extends Scene {
   onPaymentRequested: () => Promise<void>;
   handleConnectToCelo: () => Promise<void>;
   isProcessing: React.RefObject<boolean>;
+  isConnected: boolean;
   errorRef: React.RefObject<string>;
   showGameRef: React.RefObject<boolean>;
   scoresRef: React.RefObject<{
@@ -39,6 +40,7 @@ export class MainMenu extends Scene {
   constructor(
     onPaymentRequested: () => Promise<void>,
     handleConnectToCelo: () => Promise<void>,
+    isConnected: boolean,
     isProcessing: React.RefObject<boolean>,
     errorRef: React.RefObject<string>,
     showGameRef: React.RefObject<boolean>,
@@ -49,7 +51,8 @@ export class MainMenu extends Scene {
   ) {
     super("MainMenu");
     this.onPaymentRequested = onPaymentRequested;
-    this.handleConnectToCelo = onPaymentRequested;
+    this.handleConnectToCelo = handleConnectToCelo;
+    this.isConnected = isConnected;
     this.isProcessing = isProcessing;
     this.errorRef = errorRef;
     this.showGameRef = showGameRef;
@@ -59,9 +62,6 @@ export class MainMenu extends Scene {
   create() {
     // Initialize audio manager
     this.audioManager = new AudioManager(this);
-
-    // Track wallet connection state
-    let isWalletConnected = false;
 
     // Get responsive dimensions
     const gameWidth = this.sys.canvas.width;
@@ -178,121 +178,136 @@ export class MainMenu extends Scene {
       Phaser.Geom.Rectangle.Contains
     );
 
-    const connectBtnText = this.add
-      .text(centerX, connectBtnY, "Connect to Celo", {
-        fontFamily: "Arial Black",
-        fontSize: Math.floor(20 * scaleFactor),
-        color: "#fff",
-        stroke: "#2e7d4f",
-        strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
-        align: "center",
-        shadow: {
-          offsetX: Math.floor(1 * scaleFactor),
-          offsetY: Math.floor(1 * scaleFactor),
-          color: "#000000",
-          blur: Math.floor(2 * scaleFactor),
-          fill: true,
-        },
-      })
-      .setOrigin(0.5)
-      .setDepth(2);
-
-    // Button hover effect for connect
-    connectBtnGraphics.on("pointerover", () => {
-      connectBtnGraphics.clear();
-      connectBtnGraphics.fillStyle(0x43e68b, 1); // lighter green
-      connectBtnGraphics.lineStyle(
-        Math.max(1, Math.floor(2 * scaleFactor)),
-        0x2e7d4f,
-        1
-      );
-      connectBtnGraphics.fillRoundedRect(
-        centerX - connectBtnWidth / 2,
-        connectBtnY - connectBtnHeight / 2,
-        connectBtnWidth,
-        connectBtnHeight,
-        connectBtnRadius
-      );
-      connectBtnGraphics.strokeRoundedRect(
-        centerX - connectBtnWidth / 2,
-        connectBtnY - connectBtnHeight / 2,
-        connectBtnWidth,
-        connectBtnHeight,
-        connectBtnRadius
-      );
-      connectBtnText.setColor("#fff");
-    });
-    connectBtnGraphics.on("pointerout", () => {
-      connectBtnGraphics.clear();
-      connectBtnGraphics.fillStyle(0x35d07f, 1); // Celo green
-      connectBtnGraphics.lineStyle(
-        Math.max(1, Math.floor(2 * scaleFactor)),
-        0x2e7d4f,
-        1
-      );
-      connectBtnGraphics.fillRoundedRect(
-        centerX - connectBtnWidth / 2,
-        connectBtnY - connectBtnHeight / 2,
-        connectBtnWidth,
-        connectBtnHeight,
-        connectBtnRadius
-      );
-      connectBtnGraphics.strokeRoundedRect(
-        centerX - connectBtnWidth / 2,
-        connectBtnY - connectBtnHeight / 2,
-        connectBtnWidth,
-        connectBtnHeight,
-        connectBtnRadius
-      );
-      connectBtnText.setColor("#fff");
-    });
-
-    // Connect button click
-    connectBtnGraphics.on("pointerdown", async () => {
-      connectBtnGraphics.disableInteractive();
-      connectBtnText.setText("Connecting...");
-      try {
-        //await this.handleConnectToCelo();
-        isWalletConnected = true;
-        connectBtnGraphics.destroy();
-        connectBtnText.destroy();
-
-        // Delay showing the Play button to avoid accidental click-through
-        this.time.delayedCall(100, () => {
-          this.showPlayButton(
-            centerX,
-            titleY,
-            scaleFactor,
-            playButtonY,
-            playButtonWidth,
-            playButtonHeight,
-            borderRadius
-          );
-        });
-      } catch (err) {
-        console.log("Connection error:", isWalletConnected, err);
-        connectBtnText.setText("Connect to Celo");
-        connectBtnGraphics.setInteractive(
-          new Phaser.Geom.Rectangle(
-            centerX - connectBtnWidth / 2,
-            connectBtnY - connectBtnHeight / 2,
-            connectBtnWidth,
-            connectBtnHeight
-          ),
-          Phaser.Geom.Rectangle.Contains
-        );
-        // Optionally show error
-      }
-    });
-
-    // Hide the Play button initially
-    if (this.playButtonText) this.playButtonText.setVisible(false);
-
     // Play button
     const playButtonY = titleY + Math.floor(72 * scaleFactor);
     const playButtonWidth = Math.floor(180 * scaleFactor);
     const playButtonHeight = Math.floor(52 * scaleFactor);
     const borderRadius = Math.floor(12 * scaleFactor);
+
+    if (this.isConnected == true) {
+      connectBtnGraphics.destroy();
+      //connectBtnText.destroy();
+      // Show the Play button immediately if already connected
+      this.showPlayButton(
+        centerX,
+        titleY,
+        scaleFactor,
+        playButtonY,
+        playButtonWidth,
+        playButtonHeight,
+        borderRadius
+      );
+    } else {
+      const connectBtnText = this.add
+        .text(centerX, connectBtnY, "Connect to Celo", {
+          fontFamily: "Arial Black",
+          fontSize: Math.floor(20 * scaleFactor),
+          color: "#fff",
+          stroke: "#2e7d4f",
+          strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
+          align: "center",
+          shadow: {
+            offsetX: Math.floor(1 * scaleFactor),
+            offsetY: Math.floor(1 * scaleFactor),
+            color: "#000000",
+            blur: Math.floor(2 * scaleFactor),
+            fill: true,
+          },
+        })
+        .setOrigin(0.5)
+        .setDepth(2);
+
+      // Button hover effect for connect
+      connectBtnGraphics.on("pointerover", () => {
+        connectBtnGraphics.clear();
+        connectBtnGraphics.fillStyle(0x43e68b, 1); // lighter green
+        connectBtnGraphics.lineStyle(
+          Math.max(1, Math.floor(2 * scaleFactor)),
+          0x2e7d4f,
+          1
+        );
+        connectBtnGraphics.fillRoundedRect(
+          centerX - connectBtnWidth / 2,
+          connectBtnY - connectBtnHeight / 2,
+          connectBtnWidth,
+          connectBtnHeight,
+          connectBtnRadius
+        );
+        connectBtnGraphics.strokeRoundedRect(
+          centerX - connectBtnWidth / 2,
+          connectBtnY - connectBtnHeight / 2,
+          connectBtnWidth,
+          connectBtnHeight,
+          connectBtnRadius
+        );
+        connectBtnText.setColor("#fff");
+      });
+      connectBtnGraphics.on("pointerout", () => {
+        connectBtnGraphics.clear();
+        connectBtnGraphics.fillStyle(0x35d07f, 1); // Celo green
+        connectBtnGraphics.lineStyle(
+          Math.max(1, Math.floor(2 * scaleFactor)),
+          0x2e7d4f,
+          1
+        );
+        connectBtnGraphics.fillRoundedRect(
+          centerX - connectBtnWidth / 2,
+          connectBtnY - connectBtnHeight / 2,
+          connectBtnWidth,
+          connectBtnHeight,
+          connectBtnRadius
+        );
+        connectBtnGraphics.strokeRoundedRect(
+          centerX - connectBtnWidth / 2,
+          connectBtnY - connectBtnHeight / 2,
+          connectBtnWidth,
+          connectBtnHeight,
+          connectBtnRadius
+        );
+        connectBtnText.setColor("#fff");
+      });
+
+      // Connect button click
+      connectBtnGraphics.on("pointerdown", async () => {
+        connectBtnGraphics.disableInteractive();
+        connectBtnText.setText("Connecting...");
+        try {
+          await this.handleConnectToCelo();
+
+          connectBtnGraphics.destroy();
+          connectBtnText.destroy();
+
+          // Delay showing the Play button to avoid accidental click-through
+          this.time.delayedCall(100, () => {
+            this.showPlayButton(
+              centerX,
+              titleY,
+              scaleFactor,
+              playButtonY,
+              playButtonWidth,
+              playButtonHeight,
+              borderRadius
+            );
+          });
+        } catch (err) {
+          console.log("Connection error:", err);
+          connectBtnText.setText("Connect to Celo");
+          connectBtnGraphics.setInteractive(
+            new Phaser.Geom.Rectangle(
+              centerX - connectBtnWidth / 2,
+              connectBtnY - connectBtnHeight / 2,
+              connectBtnWidth,
+              connectBtnHeight
+            ),
+            Phaser.Geom.Rectangle.Contains
+          );
+          // Optionally show error
+        }
+      });
+
+      // Hide the Play button initially
+      if (this.playButtonText) this.playButtonText.setVisible(false);
+    }
 
     // High score display with responsive styling
     const highScoreFontSize = Math.floor(24 * scaleFactor);
