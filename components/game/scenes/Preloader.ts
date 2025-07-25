@@ -87,6 +87,11 @@ export class Preloader extends Scene {
     // UI assets
     this.load.image("pause", "pause.png");
 
+    // button assets
+    this.load.image("instructionIcon", "user-guide.png");
+    this.load.image("leaderboardIcon", "leaderboard.png");
+    this.load.image("infoIcon", "guidebook.png");
+
     //audio assets
     this.load.audio("punch", "punch.mp3");
     this.load.audio("jump", "jump.mp3");

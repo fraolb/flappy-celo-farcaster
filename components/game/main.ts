@@ -7,6 +7,9 @@ import { Game as MainGame } from "./scenes/Game";
 import { GameOver } from "./scenes/GameOver";
 import { MainMenu } from "./scenes/MainMenu";
 import { Preloader } from "./scenes/Preloader";
+import { LeaderboardScene } from "./scenes/Leaderboard";
+import { InfoScene } from "./scenes/Info";
+import { InstructionsScene } from "./scenes/Instructions";
 
 //  Find out more information about the Game Config at:
 //  https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
@@ -42,7 +45,16 @@ const config: Phaser.Types.Core.GameConfig = {
       capture: true,
     },
   },
-  scene: [Boot, Preloader, MainMenu, MainGame, GameOver],
+  scene: [
+    Boot,
+    Preloader,
+    MainMenu,
+    MainGame,
+    GameOver,
+    LeaderboardScene,
+    InfoScene,
+    InstructionsScene,
+  ],
 };
 
 const StartGame = (parent: string, options?: any) => {
@@ -67,6 +79,9 @@ const StartGame = (parent: string, options?: any) => {
         options?.scoresRef
       ),
       new GameOver(options?.shareScore),
+      new LeaderboardScene(options?.scoresRef),
+      InfoScene,
+      InstructionsScene,
     ],
   });
 };

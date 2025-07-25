@@ -371,6 +371,74 @@ export class MainMenu extends Scene {
         })
         .setOrigin(0.5);
     }
+
+    // ====================
+    // Add Buttons Row
+    // ====================
+    const buttonRowY =
+      this.highScoreText.y +
+      (this.scoresRef?.current?.userScore
+        ? Math.floor(120 * scaleFactor)
+        : Math.floor(80 * scaleFactor));
+
+    // Button settings
+    const buttonSpacing = Math.floor(30 * scaleFactor);
+    const buttonSize = Math.floor(50 * scaleFactor);
+    const totalWidth = buttonSize * 3 + buttonSpacing * 2;
+    const startX = centerX - totalWidth / 2 + buttonSize / 2;
+
+    // Instruction Button
+    const instructionBtn = this.add
+      .image(startX, buttonRowY, "instructionIcon")
+      .setDisplaySize(buttonSize, buttonSize)
+      .setInteractive({ useHandCursor: true })
+      .setData("scene", "Instructions");
+
+    // Leaderboard Button
+    const leaderboardBtn = this.add
+      .image(startX + buttonSize + buttonSpacing, buttonRowY, "leaderboardIcon")
+      .setDisplaySize(buttonSize, buttonSize)
+      .setInteractive({ useHandCursor: true })
+      .setData("scene", "Leaderboard");
+
+    // Info Button
+    const infoBtn = this.add
+      .image(startX + (buttonSize + buttonSpacing) * 2, buttonRowY, "infoIcon")
+      .setDisplaySize(buttonSize, buttonSize)
+      .setInteractive({ useHandCursor: true })
+      .setData("scene", "Info");
+
+    // Add hover effects to all buttons
+    [instructionBtn, leaderboardBtn, infoBtn].forEach((button) => {
+      // Scale up on hover
+      button.on("pointerover", () => {
+        this.tweens.add({
+          targets: button,
+          scaleX: 1.1,
+          scaleY: 1.1,
+          duration: 100,
+          ease: "Power1",
+        });
+        this.audioManager.playSound("menuHover");
+      });
+
+      // Scale back to normal
+      button.on("pointerout", () => {
+        this.tweens.add({
+          targets: button,
+          scaleX: 1,
+          scaleY: 1,
+          duration: 100,
+          ease: "Power1",
+        });
+      });
+
+      // Click handler
+      button.on("pointerdown", () => {
+        this.audioManager.playSound("menuSelect");
+        this.scene.start(button.getData("scene"));
+      });
+    });
   }
 
   update() {
