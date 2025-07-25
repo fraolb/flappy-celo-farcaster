@@ -378,8 +378,8 @@ export class MainMenu extends Scene {
     const buttonRowY =
       this.highScoreText.y +
       (this.scoresRef?.current?.userScore
-        ? Math.floor(120 * scaleFactor)
-        : Math.floor(80 * scaleFactor));
+        ? Math.floor(220 * scaleFactor)
+        : Math.floor(180 * scaleFactor));
 
     // Button settings
     const buttonSpacing = Math.floor(30 * scaleFactor);
@@ -414,8 +414,8 @@ export class MainMenu extends Scene {
       button.on("pointerover", () => {
         this.tweens.add({
           targets: button,
-          scaleX: 1.1,
-          scaleY: 1.1,
+          scaleX: 0.2,
+          scaleY: 0.2,
           duration: 100,
           ease: "Power1",
         });
@@ -426,8 +426,8 @@ export class MainMenu extends Scene {
       button.on("pointerout", () => {
         this.tweens.add({
           targets: button,
-          scaleX: 1,
-          scaleY: 1,
+          scaleX: 0.1,
+          scaleY: 0.1,
           duration: 100,
           ease: "Power1",
         });
