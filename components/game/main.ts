@@ -18,7 +18,7 @@ const config: Phaser.Types.Core.GameConfig = {
   width: window.innerWidth,
   height: window.innerHeight,
   parent: "game-container",
-  backgroundColor: "#028af8",
+  backgroundColor: "#000000ff",
   scale: {
     mode: Scale.RESIZE, // Use RESIZE for full responsiveness
     autoCenter: Scale.CENTER_BOTH,

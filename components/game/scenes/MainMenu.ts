@@ -414,8 +414,8 @@ export class MainMenu extends Scene {
       button.on("pointerover", () => {
         this.tweens.add({
           targets: button,
-          scaleX: 0.2,
-          scaleY: 0.2,
+          scaleX: 0.15,
+          scaleY: 0.15,
           duration: 100,
           ease: "Power1",
         });
