@@ -1,89 +1,107 @@
 import { NextResponse } from "next/server";
-import { createPublicClient, createWalletClient, http } from "viem";
-import { celo } from "viem/chains";
-import { privateKeyToAccount } from "viem/accounts";
-import { encodeFunctionData, parseEther } from "viem";
-import { submitReferral, getReferralTag } from "@divvi/referral-sdk";
-import FlappyRocketGameABI from "../../../ABI/FlappyRocket.json";
+import UserPlay from "@/model/userPlays";
+import dbConnect from "@/lib/mongodb";
+import { jwtVerify } from "jose";
 
-const FlappyRocketGameAddress = "0x883D06cc70BE8c3E018EA35f7BB7671B044b4Beb";
+export async function POST(request: Request) {
+  await dbConnect();
 
-export async function POST() {
   try {
-    // Initialize clients
-    const publicClient = createPublicClient({
-      chain: celo,
-      transport: http("https://forno.celo.org"),
-    });
+    const body = await request.json();
+    const { username, wallet } = body;
 
-    let referralTag;
+    // Validate required fields
+    if (!username || !wallet) {
+      return NextResponse.json(
+        { error: "Missing username or wallet" },
+        { status: 400 }
+      );
+    }
+
+    // Validate wallet address format (basic check)
+    if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
+      return NextResponse.json(
+        { error: "Invalid wallet address format" },
+        { status: 400 }
+      );
+    }
+
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { error: "Missing or invalid authorization token" },
+        { status: 401 }
+      );
+    }
+
+    if (!process.env.JWT_SECRET) {
+      // Changed from NEXT_PUBLIC_JWT_SECRET
+      throw new Error("JWT_SECRET not configured");
+    }
+
+    const token = authHeader.split(" ")[1];
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+
     try {
-      referralTag = getReferralTag({
-        user: "0x137f7b4Ac3BB0456C08A1025335133FF3120844f" as `0x${string}`,
-        consumer: "0xC00DA57cDE8dcB4ED4a8141784B5B4A5CBf62551", // Your Divvi Identifier
+      const { payload } = await jwtVerify(token, secret, {
+        algorithms: ["HS256"],
       });
-    } catch (diviError) {
-      console.error("Divvi getDataSuffix error:", diviError);
-      throw new Error("Failed to generate referral data");
-    }
 
-    // Validate and setup sponsor account
-    const privateKey = process.env.SPONSOR_PRIVATE_KEY;
-    if (!privateKey) {
-      throw new Error("SPONSOR_PRIVATE_KEY not configured");
-    }
-
-    const account = privateKeyToAccount(privateKey as `0x${string}`);
-    const walletClient = createWalletClient({
-      account,
-      chain: celo,
-      transport: http("https://forno.celo.org"),
-    });
-
-    // Encode depositCELO function call
-    const contractData = encodeFunctionData({
-      abi: FlappyRocketGameABI,
-      functionName: "depositCELO",
-    });
-
-    const combinedData = referralTag
-      ? contractData + referralTag
-      : contractData;
-
-    // Send transaction with the minimum deposit value
-    const hash = await walletClient.sendTransaction({
-      account,
-      to: FlappyRocketGameAddress,
-      data: combinedData as `0x${string}`,
-      value: parseEther("0.1"),
-    });
-
-    // Wait for transaction receipt
-    const receipt = await publicClient.waitForTransactionReceipt({ hash });
-
-    // Optional: Report to Divi
-    if (referralTag) {
-      try {
-        await submitReferral({
-          txHash: receipt.transactionHash,
-          chainId: 42220,
+      // Verify token matches request data
+      if (payload.username !== username || payload.wallet !== wallet) {
+        console.error("Token data mismatch:", {
+          tokenUsername: payload.username,
+          requestUsername: username,
+          tokenWallet: payload.wallet,
+          requestWallet: wallet,
         });
-      } catch (diviError) {
-        console.error("Divi referral error:", diviError);
+        return NextResponse.json({ error: "Data mismatch" }, { status: 401 });
       }
-    }
 
-    return NextResponse.json({
-      success: true,
-      transactionHash: receipt.transactionHash,
-    });
+      // Check if user has plays left
+      const user = await UserPlay.findOne({ wallet });
+      if (user && user.playsLeft <= 0) {
+        return NextResponse.json(
+          { error: "No plays left", playsLeft: 0 },
+          { status: 400 }
+        );
+      }
+
+      // Update or create user play record
+      const updatedPlay = await UserPlay.findOneAndUpdate(
+        { wallet }, // Use wallet as primary identifier
+        {
+          $inc: { playsLeft: -1 },
+          $set: {
+            lastPlay: new Date(),
+            username: username, // Ensure username is always updated
+          },
+        },
+        {
+          upsert: true,
+          new: true, // Return the updated document
+          runValidators: true,
+        }
+      );
+
+      return NextResponse.json({
+        success: true,
+        playsLeft: updatedPlay.playsLeft,
+        message: "Play deducted successfully",
+      });
+    } catch (jwtError) {
+      console.error("JWT verification error:", jwtError);
+      return NextResponse.json(
+        { error: "Invalid or expired token" },
+        { status: 401 }
+      );
+    }
   } catch (error) {
-    console.error("Sponsor deposit error:", error);
+    console.error("Play deduction error:", error);
     return NextResponse.json(
       {
-        error: `Failed to sponsor deposit: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`,
+        error: "Internal server error",
+        message: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
