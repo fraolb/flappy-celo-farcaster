@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate wallet address format (basic check)
+    // Validate wallet address format
     if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
       return NextResponse.json(
         { error: "Invalid wallet address format" },
@@ -35,7 +35,6 @@ export async function POST(request: Request) {
     }
 
     if (!process.env.JWT_SECRET) {
-      // Changed from NEXT_PUBLIC_JWT_SECRET
       throw new Error("JWT_SECRET not configured");
     }
 
@@ -47,7 +46,6 @@ export async function POST(request: Request) {
         algorithms: ["HS256"],
       });
 
-      // Verify token matches request data
       if (payload.username !== username || payload.wallet !== wallet) {
         console.error("Token data mismatch:", {
           tokenUsername: payload.username,
@@ -58,28 +56,67 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Data mismatch" }, { status: 401 });
       }
 
-      // Check if user has plays left
+      // Check if user exists and if plays should reset
       const user = await UserPlay.findOne({ wallet });
-      if (user && user.playsLeft <= 0) {
-        return NextResponse.json(
-          { error: "No plays left", playsLeft: 0 },
-          { status: 400 }
-        );
+      const now = new Date();
+
+      if (user) {
+        // Check if 24 hours have passed since last play
+        const timeSinceLastPlay = now.getTime() - user.lastPlay.getTime();
+        const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+        if (timeSinceLastPlay >= twentyFourHours) {
+          // Reset playsLeft to 4 and update lastPlay
+          const updatedPlay = await UserPlay.findOneAndUpdate(
+            { wallet },
+            {
+              $set: {
+                playsLeft: 4, // Reset to 4 plays
+                lastPlay: now,
+                username: username,
+              },
+            },
+            {
+              new: true,
+              runValidators: true,
+            }
+          );
+
+          return NextResponse.json({
+            success: true,
+            playsLeft: updatedPlay.playsLeft,
+            message: "Plays reset to 4 for new day",
+          });
+        }
+
+        // If less than 24 hours, check if plays left
+        if (user.playsLeft <= 0) {
+          return NextResponse.json(
+            {
+              error: "No plays left",
+              playsLeft: 0,
+              nextReset: new Date(
+                user.lastPlay.getTime() + twentyFourHours
+              ).toISOString(),
+            },
+            { status: 400 }
+          );
+        }
       }
 
-      // Update or create user play record
+      // If user doesn't exist or has plays left, deduct one play
       const updatedPlay = await UserPlay.findOneAndUpdate(
-        { wallet }, // Use wallet as primary identifier
+        { wallet },
         {
           $inc: { playsLeft: -1 },
           $set: {
-            lastPlay: new Date(),
-            username: username, // Ensure username is always updated
+            lastPlay: now,
+            username: username,
           },
         },
         {
           upsert: true,
-          new: true, // Return the updated document
+          new: true,
           runValidators: true,
         }
       );
