@@ -26,7 +26,7 @@ export const createScoreToken = async (
 };
 
 export const generatePlayToken = async (
-  address: string,
+  wallet: string,
   username: string | undefined
 ) => {
   if (!process.env.NEXT_PUBLIC_JWT_SECRET) {
@@ -37,7 +37,7 @@ export const generatePlayToken = async (
     const secret = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET);
 
     return await new SignJWT({
-      address,
+      wallet,
       username,
     })
       .setProtectedHeader({ alg: "HS256" })
