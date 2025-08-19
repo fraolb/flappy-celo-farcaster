@@ -66,27 +66,34 @@ export async function POST(request: Request) {
         const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
         if (timeSinceLastPlay >= twentyFourHours) {
-          // Reset playsLeft to 4 and update lastPlay
-          const updatedPlay = await UserPlay.findOneAndUpdate(
-            { wallet },
-            {
-              $set: {
-                playsLeft: 4, // Reset to 4 plays
-                lastPlay: now,
-                username: username,
+          try {
+            // Reset playsLeft to 4 and update lastPlay
+            const updatedPlay = await UserPlay.findOneAndUpdate(
+              { wallet },
+              {
+                $set: {
+                  playsLeft: 4, // Reset to 4 plays
+                  lastPlay: now,
+                  username: username,
+                },
               },
-            },
-            {
-              new: true,
-              runValidators: true,
-            }
-          );
+              {
+                new: true,
+                runValidators: true,
+              }
+            );
 
-          return NextResponse.json({
-            success: true,
-            playsLeft: updatedPlay.playsLeft,
-            message: "Plays reset to 4 for new day",
-          });
+            return NextResponse.json({
+              success: true,
+              playsLeft: updatedPlay.playsLeft,
+              message: "Plays reset to 4 for new day",
+            });
+          } catch (error) {
+            return NextResponse.json(
+              { error: `error rest playsleft, ${error}` },
+              { status: 401 }
+            );
+          }
         }
 
         // If less than 24 hours, check if plays left
@@ -104,28 +111,35 @@ export async function POST(request: Request) {
         }
       }
 
-      // If user doesn't exist or has plays left, deduct one play
-      const updatedPlay = await UserPlay.findOneAndUpdate(
-        { wallet },
-        {
-          $inc: { playsLeft: -1 },
-          $set: {
-            lastPlay: now,
-            username: username,
+      try {
+        // If user doesn't exist or has plays left, deduct one play
+        const updatedPlay = await UserPlay.findOneAndUpdate(
+          { wallet },
+          {
+            $inc: { playsLeft: -1 },
+            $set: {
+              lastPlay: now,
+              username: username,
+            },
           },
-        },
-        {
-          upsert: true,
-          new: true,
-          runValidators: true,
-        }
-      );
+          {
+            upsert: true,
+            new: true,
+            runValidators: true,
+          }
+        );
 
-      return NextResponse.json({
-        success: true,
-        playsLeft: updatedPlay.playsLeft,
-        message: "Play deducted successfully",
-      });
+        return NextResponse.json({
+          success: true,
+          playsLeft: updatedPlay.playsLeft,
+          message: "Play deducted successfully",
+        });
+      } catch (error) {
+        return NextResponse.json(
+          { error: `player doesnt exist or has play left error ${error}` },
+          { status: 401 }
+        );
+      }
     } catch (jwtError) {
       console.error("JWT verification error:", jwtError);
       return NextResponse.json(
