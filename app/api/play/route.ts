@@ -112,32 +112,36 @@ export async function POST(request: Request) {
       }
 
       try {
-        // If user doesn't exist or has plays left, deduct one play
-        const updatedPlay = await UserPlay.findOneAndUpdate(
-          { wallet },
-          {
-            $inc: { playsLeft: -1 },
-            $set: {
-              lastPlay: now,
-              username: username,
-            },
-          },
-          {
-            upsert: true,
-            new: true,
-            runValidators: true,
-          }
-        );
+        let userPlay = await UserPlay.findOne({ wallet });
+
+        if (!userPlay) {
+          // Create new user if doesn't exist
+          userPlay = new UserPlay({
+            wallet,
+            username,
+            playsLeft: 3, // Start with 3 since we're deducting one
+            lastPlay: now,
+          });
+        } else {
+          // Update existing user
+          userPlay.playsLeft -= 1;
+          userPlay.lastPlay = now;
+          userPlay.username = username; // Update username if changed
+        }
+
+        await userPlay.save();
 
         return NextResponse.json({
           success: true,
-          playsLeft: updatedPlay.playsLeft,
+          playsLeft: userPlay.playsLeft,
           message: "Play deducted successfully",
         });
       } catch (error) {
+        console.error("Save operation error:", error);
+
         return NextResponse.json(
-          { error: `player doesnt exist or has play left error ${error}` },
-          { status: 401 }
+          { error: `Failed to save play data, ${error}` },
+          { status: 500 }
         );
       }
     } catch (jwtError) {
