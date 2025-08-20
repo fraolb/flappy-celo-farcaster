@@ -7,14 +7,23 @@ import { jwtVerify } from "jose";
 export async function GET(request: Request) {
   await dbConnect();
 
-  const { searchParams } = new URL(request.url);
-  const username = searchParams.get("username");
+  const body = await request.json();
+  const { username } = body;
 
   try {
     // Fetch the user's plays left and last play time
-    const userPlay = await UserPlay.findOne({ username });
+    let userPlay = await UserPlay.findOne({ username });
+    const now = new Date();
     if (!userPlay) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      userPlay = new UserPlay({
+        username,
+        playsLeft: 3, // Start with 3 since we're deducting one
+        lastPlay: now,
+      });
+
+      return NextResponse.json({
+        userPlay,
+      });
     }
     return NextResponse.json(userPlay);
   } catch (error) {
@@ -79,7 +88,7 @@ export async function POST(request: Request) {
       }
 
       // Check if user exists and if plays should reset
-      const user = await UserPlay.findOne({ wallet });
+      const user = await UserPlay.findOne({ username });
       const now = new Date();
 
       if (user) {

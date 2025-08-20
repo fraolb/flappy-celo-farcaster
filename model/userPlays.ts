@@ -9,7 +9,6 @@ const UserPlaySchema: Schema = new Schema(
     },
     wallet: {
       type: String,
-      required: true,
       unique: true,
     },
     playsLeft: {
