@@ -3,6 +3,28 @@ import UserPlay from "@/model/userPlays";
 import dbConnect from "@/lib/mongodb";
 import { jwtVerify } from "jose";
 
+// GET: Fetch user's plays left and last play time
+export async function GET(request: Request) {
+  await dbConnect();
+
+  const { searchParams } = new URL(request.url);
+  const username = searchParams.get("username");
+
+  try {
+    // Fetch the user's plays left and last play time
+    const userPlay = await UserPlay.findOne({ username });
+    if (!userPlay) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+    return NextResponse.json(userPlay);
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Error fetching user play", error },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: Request) {
   await dbConnect();
 
