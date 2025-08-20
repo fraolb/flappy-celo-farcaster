@@ -7,8 +7,8 @@ import { jwtVerify } from "jose";
 export async function GET(request: Request) {
   await dbConnect();
 
-  const body = await request.json();
-  const { username } = body;
+  const { searchParams } = new URL(request.url);
+  const username = searchParams.get("username");
 
   try {
     // Fetch the user's plays left and last play time
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
               { wallet },
               {
                 $set: {
-                  playsLeft: 4, // Reset to 4 plays
+                  playsLeft: 3, // Start with 3 since we're deducting one
                   lastPlay: now,
                   username: username,
                 },

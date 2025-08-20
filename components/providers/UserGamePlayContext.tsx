@@ -28,9 +28,7 @@ export const UserGamePlayProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { context } = useMiniApp();
 
-  const [userGamePlay, setUserUserGamePlay] = useState<GamePlayType | null>(
-    null
-  );
+  const [userGamePlay, setUserGamePlay] = useState<GamePlayType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,17 +43,16 @@ export const UserGamePlayProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
 
     try {
-      const fetchedUserGamePlay = await fetch("/api/play", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: context?.user?.username,
-        }),
-      });
+      const fetchedUserGamePlay = await fetch(
+        `/api/play?username=${context.user.username}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
       const result = await fetchedUserGamePlay.json();
-      setUserUserGamePlay(result);
+      setUserGamePlay(result);
     } catch (err) {
       console.error("Error fetching user gameplay:", err);
       setError("Failed to fetch user gameplay");
