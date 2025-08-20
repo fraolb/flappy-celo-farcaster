@@ -9,6 +9,7 @@ import { addUserScore } from "../lib/dbFunctions";
 import { createScoreToken, generatePlayToken } from "../lib/gameAuth";
 import { IRefPhaserGame, PhaserGame } from "../components/PhaserGame";
 import { useScoreContext } from "../components/providers/ScoreContext";
+import { useGamePlayContext } from "../components/providers/UserGamePlayContext";
 import { config } from "../components/providers/WagmiProvider";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
 
   const { context } = useMiniApp();
   const { userScore, topScores, refetchScores } = useScoreContext();
+  const { userGamePlay } = useGamePlayContext();
   const scoresRef = useRef({ userScore: userScore, topScores: topScores });
 
   //  References to the PhaserGame component (game and scene are exposed)
@@ -152,6 +154,7 @@ function App() {
 
   useEffect(() => {
     scoresRef.current = { userScore, topScores };
+    console.log("user gameplay is ", userGamePlay);
   }, [userScore, topScores]);
 
   useEffect(() => {

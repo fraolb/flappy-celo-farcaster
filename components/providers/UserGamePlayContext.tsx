@@ -15,7 +15,7 @@ interface GamePlayType {
 interface GamePlayContextType {
   userGamePlay: GamePlayType | null;
   loading: boolean;
-  scoreError: string | null;
+  userGameplayError: string | null;
   fetchUserGamePlay: () => Promise<void>;
 }
 
@@ -73,7 +73,7 @@ export const UserGamePlayProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         userGamePlay,
         loading,
-        scoreError: error,
+        userGameplayError: error,
         fetchUserGamePlay,
       }}
     >
