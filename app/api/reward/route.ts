@@ -66,11 +66,12 @@ export async function POST(request: Request) {
 
     const RATE = 0.0005; // CELO per point
     const reward = score * RATE;
+    const rewardInBigint = parseEther(String(reward));
     // Encode payoutCELOToWinner function call
     const contractData = encodeFunctionData({
       abi: FlappyRocketGameABI,
       functionName: "payoutCELOToWinner",
-      args: [wallet, reward],
+      args: [wallet, rewardInBigint],
     });
 
     const combinedData = referralTag
