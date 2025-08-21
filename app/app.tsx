@@ -129,6 +129,19 @@ function App() {
     console.log("handleAddUserScore called with score:", score);
     const username = context.user.username;
     try {
+      const rewardPlayer = await fetch("/api/reward", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: context?.user?.username,
+          wallet: address,
+          score: score,
+        }),
+      });
+      console.log("the reward player res ", rewardPlayer);
+
       const token = await createScoreToken(username, score);
 
       await addUserScore(username, score, token);
