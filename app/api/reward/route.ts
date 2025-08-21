@@ -95,10 +95,8 @@ export async function POST(request: Request) {
       await UserPlay.findOneAndUpdate(
         { username },
         {
-          $set: {
-            lastEarned: 0,
-            totalEarned: 0,
-          },
+          $set: { lastEarned: reward },
+          $inc: { totalEarned: reward },
         },
         {
           new: true,
