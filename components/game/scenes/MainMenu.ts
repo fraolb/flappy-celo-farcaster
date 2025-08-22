@@ -11,6 +11,15 @@ interface Score {
   updatedAt: string;
 }
 
+interface GamePlayType {
+  username: string;
+  wallet: string;
+  playsLeft: number;
+  lastPlay: Date;
+  lastEarned: number;
+  totalEarned: number;
+}
+
 export class MainMenu extends Scene {
   background!: Phaser.GameObjects.TileSprite;
   logo!: GameObjects.Image;
@@ -29,6 +38,7 @@ export class MainMenu extends Scene {
   isConnected: boolean;
   errorRef: React.RefObject<string>;
   showGameRef: React.RefObject<boolean>;
+  userGamePlayRef: React.RefObject<GamePlayType | null>;
   scoresRef: React.RefObject<{
     userScore: Score | null;
     topScores: Score[] | null;
@@ -44,6 +54,7 @@ export class MainMenu extends Scene {
     isProcessing: React.RefObject<boolean>,
     errorRef: React.RefObject<string>,
     showGameRef: React.RefObject<boolean>,
+    userGamePlayRef: React.RefObject<GamePlayType | null>,
     scoresRef: React.RefObject<{
       userScore: Score | null;
       topScores: Score[] | null;
@@ -56,6 +67,7 @@ export class MainMenu extends Scene {
     this.isProcessing = isProcessing;
     this.errorRef = errorRef;
     this.showGameRef = showGameRef;
+    this.userGamePlayRef = userGamePlayRef;
     this.scoresRef = scoresRef;
   }
 
@@ -309,67 +321,52 @@ export class MainMenu extends Scene {
       if (this.playButtonText) this.playButtonText.setVisible(false);
     }
 
-    // High score display with responsive styling
-    const highScoreFontSize = Math.floor(24 * scaleFactor);
-    const highScoreY = playButtonY + Math.floor(78 * scaleFactor);
-
-    this.highScoreText = this.add.text(centerX, highScoreY, "Top 5 Scores", {
-      fontFamily: "Arial Black",
-      fontSize: highScoreFontSize,
-      color: "#FFD700", // Yellow
-      stroke: "#FF4500", // Orange-red stroke
-      strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
-      align: "center",
-      shadow: {
-        offsetX: Math.floor(1 * scaleFactor),
-        offsetY: Math.floor(1 * scaleFactor),
-        color: "#000000",
-        blur: Math.floor(2 * scaleFactor),
-        fill: true,
-      },
-    });
-    this.highScoreText.setOrigin(0.5);
-
-    console.log("Scores:", this.scoresRef.current);
-    // Top scores list
-    const topScores = this.scoresRef?.current?.topScores || [];
-    const topScoreFontSize = Math.floor(16 * scaleFactor);
-    const topScoreStartY = highScoreY + Math.floor(25 * scaleFactor);
-    topScores.slice(0, 5).forEach((score: Score, idx: number) => {
-      const scoreText = `${idx + 1}. ${score.username} - ${score.score}`;
-      this.add
-        .text(
-          centerX,
-          topScoreStartY + idx * Math.floor(20 * scaleFactor),
-          scoreText,
-          {
-            fontFamily: "Arial",
-            fontSize: topScoreFontSize,
-            color: "#FFFFFF",
-            align: "center",
-            wordWrap: { width: Math.floor(180 * scaleFactor) },
-          }
-        )
-        .setOrigin(0.5);
-    });
-
     // User score display
     const userScore = this.scoresRef?.current?.userScore;
     if (userScore) {
-      const userScoreFontSize = Math.floor(22 * scaleFactor);
-      const userScoreY =
-        topScoreStartY +
-        5 * Math.floor(20 * scaleFactor) +
-        Math.floor(10 * scaleFactor);
+      const userScoreFontSize = Math.floor(24 * scaleFactor);
+      const userScoreY = playButtonY + Math.floor(78 * scaleFactor);
       this.add
         .text(centerX, userScoreY, `Your Score: ${userScore.score}`, {
-          fontFamily: "Arial",
+          fontFamily: "Arial Black",
           fontSize: userScoreFontSize,
+          color: "#FFD700", // Yellow
+          stroke: "#FF4500", // Orange-red stroke
+          strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
+          align: "center",
+          shadow: {
+            offsetX: Math.floor(1 * scaleFactor),
+            offsetY: Math.floor(1 * scaleFactor),
+            color: "#000000",
+            blur: Math.floor(2 * scaleFactor),
+            fill: true,
+          },
+        })
+        .setOrigin(0.5);
+    }
+
+    // Total user rewards display with responsive styling
+    const totalUserEarned = this.userGamePlayRef?.current?.totalEarned;
+    if (totalUserEarned) {
+      const totalRewardsFontSize = Math.floor(22 * scaleFactor);
+      const totalRewardsY =
+        playButtonY +
+        5 * Math.floor(20 * scaleFactor) +
+        Math.floor(10 * scaleFactor);
+
+      this.highScoreText = this.add.text(
+        centerX,
+        totalRewardsY,
+        `Total Rewards ${totalUserEarned}`,
+        {
+          fontFamily: "Arial",
+          fontSize: totalRewardsFontSize,
           color: "#FFD700",
           align: "center",
           wordWrap: { width: Math.floor(180 * scaleFactor) },
-        })
-        .setOrigin(0.5);
+        }
+      );
+      this.highScoreText.setOrigin(0.5);
     }
 
     // ====================
@@ -509,34 +506,19 @@ export class MainMenu extends Scene {
       })
       .setOrigin(0.5)
       .setDepth(2);
-    // Payment info text below play button
-    const paymentInfoFontSize = Math.floor(14 * scaleFactor);
-    const paymentInfoY =
-      playButtonY + playButtonHeight / 2 + Math.floor(30 * scaleFactor);
-    this.add
-      .text(centerX, paymentInfoY, "Pay 0.1 CELO to play", {
-        fontFamily: "Arial",
-        fontSize: paymentInfoFontSize,
-        color: "#ffffffff",
-        align: "center",
-      })
-      .setOrigin(0.5);
 
     // Error text display (initially hidden)
-    const errorFontSize = Math.floor(10 * scaleFactor);
+    const errorFontSize = Math.floor(14 * scaleFactor);
+    const errorY =
+      playButtonY + playButtonHeight / 2 + Math.floor(30 * scaleFactor);
     this.errorDisplay = this.add
-      .text(
-        centerX,
-        playButtonY + playButtonHeight / 2 + Math.floor(12 * scaleFactor),
-        "",
-        {
-          fontFamily: "Arial",
-          fontSize: errorFontSize,
-          color: "#FF3333",
-          align: "center",
-          wordWrap: { width: playButtonWidth + 10 },
-        }
-      )
+      .text(centerX, errorY, "", {
+        fontFamily: "Arial",
+        fontSize: errorFontSize,
+        color: "#ffffffff",
+        align: "center",
+        wordWrap: { width: playButtonWidth + 10 },
+      })
       .setOrigin(0.5);
 
     // Button hover effect
