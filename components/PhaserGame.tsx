@@ -15,6 +15,15 @@ interface Score {
   updatedAt: string;
 }
 
+interface GamePlayType {
+  username: string;
+  wallet: string;
+  playsLeft: number;
+  lastPlay: Date;
+  lastEarned: number;
+  totalEarned: number;
+}
+
 interface IProps {
   currentActiveScene?: (scene_instance: Phaser.Scene) => void;
   onPaymentRequested: () => Promise<void>;
@@ -24,6 +33,7 @@ interface IProps {
   errorRef: React.RefObject<string>;
   showGameRef: React.RefObject<boolean>;
   endGame: () => void;
+  userGamePlayRef: React.RefObject<GamePlayType | null>;
   scoresRef: React.RefObject<{
     userScore: Score | null;
     topScores: Score[] | null;
@@ -41,6 +51,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
       isConnected,
       isProcessing,
       errorRef,
+      userGamePlayRef,
       showGameRef,
       endGame,
       scoresRef,
@@ -61,6 +72,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
           errorRef,
           showGameRef,
           endGame,
+          userGamePlayRef,
           scoresRef,
           handleAddUserScore,
           shareScore,

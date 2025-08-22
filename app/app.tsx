@@ -12,14 +12,24 @@ import { useScoreContext } from "../components/providers/ScoreContext";
 import { useGamePlayContext } from "../components/providers/UserGamePlayContext";
 import { config } from "../components/providers/WagmiProvider";
 
+interface GamePlayType {
+  username: string;
+  wallet: string;
+  playsLeft: number;
+  lastPlay: Date;
+  lastEarned: number;
+  totalEarned: number;
+}
+
 function App() {
   // The sprite can only be moved in the MainMenu Scene
   const [canMoveSprite, setCanMoveSprite] = useState(true);
 
   const { context } = useMiniApp();
   const { userScore, topScores, refetchScores } = useScoreContext();
-  const { userGamePlay } = useGamePlayContext();
+  const { userGamePlay, fetchUserGamePlay } = useGamePlayContext();
   const scoresRef = useRef({ userScore: userScore, topScores: topScores });
+  const userGamePlayRef = useRef<GamePlayType | null>(userGamePlay);
 
   //  References to the PhaserGame component (game and scene are exposed)
   const phaserRef = useRef<IRefPhaserGame | null>(null);
@@ -141,6 +151,7 @@ function App() {
         }),
       });
       console.log("the reward player res ", rewardPlayer);
+      await fetchUserGamePlay();
 
       const token = await createScoreToken(username, score);
 
@@ -166,6 +177,7 @@ function App() {
   };
 
   useEffect(() => {
+    userGamePlayRef.current = userGamePlay;
     scoresRef.current = { userScore, topScores };
     console.log("user gameplay is ", userGamePlay);
   }, [userScore, topScores]);
@@ -194,6 +206,7 @@ function App() {
         errorRef={errorRef}
         showGameRef={showGameRef}
         endGame={endGame}
+        userGamePlayRef={userGamePlayRef}
         scoresRef={scoresRef}
         handleAddUserScore={handleAddUserScore}
         shareScore={shareScore}
