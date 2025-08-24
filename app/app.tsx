@@ -16,7 +16,7 @@ interface GamePlayType {
   username: string;
   wallet: string;
   playsLeft: number;
-  lastPlay: Date;
+  lastPlay: Date | string;
   lastEarned: number;
   totalEarned: number;
 }
@@ -29,7 +29,7 @@ function App() {
   const { userScore, topScores, refetchScores } = useScoreContext();
   const { userGamePlay, fetchUserGamePlay } = useGamePlayContext();
   const scoresRef = useRef({ userScore: userScore, topScores: topScores });
-  const userGamePlayRef = useRef<GamePlayType | null>(userGamePlay);
+  const userGamePlayRef = useRef<GamePlayType | null>(null);
 
   //  References to the PhaserGame component (game and scene are exposed)
   const phaserRef = useRef<IRefPhaserGame | null>(null);
@@ -177,10 +177,15 @@ function App() {
   };
 
   useEffect(() => {
-    userGamePlayRef.current = userGamePlay;
+    if (userGamePlay) {
+      userGamePlayRef.current = userGamePlay;
+      console.log("user gameplay updated:", userGamePlay);
+    } else {
+      userGamePlayRef.current = null;
+    }
     scoresRef.current = { userScore, topScores };
     console.log("user gameplay is ", userGamePlay);
-  }, [userScore, topScores]);
+  }, [userGamePlay, userScore, topScores]);
 
   useEffect(() => {
     async function checkConnection() {

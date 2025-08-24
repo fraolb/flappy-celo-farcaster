@@ -15,7 +15,7 @@ interface GamePlayType {
   username: string;
   wallet: string;
   playsLeft: number;
-  lastPlay: Date;
+  lastPlay: Date | string;
   lastEarned: number;
   totalEarned: number;
 }
