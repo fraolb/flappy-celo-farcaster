@@ -371,7 +371,7 @@ export class MainMenu extends Scene {
           color: "#FFD700",
           stroke: "#FF4500",
           align: "center",
-          wordWrap: { width: Math.floor(180 * scaleFactor) },
+          wordWrap: { width: Math.floor(250 * scaleFactor) },
         }
       );
       this.highScoreText.setOrigin(0.5);
