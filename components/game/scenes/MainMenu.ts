@@ -353,8 +353,9 @@ export class MainMenu extends Scene {
       totalUserEarned,
       this.userGamePlayRef?.current
     );
+    const formattedEarned = totalUserEarned?.toFixed(3) || "0.000";
     if (totalUserEarned) {
-      const totalRewardsFontSize = Math.floor(42 * scaleFactor);
+      const totalRewardsFontSize = Math.floor(22 * scaleFactor);
       const totalRewardsY =
         playButtonY +
         5 * Math.floor(20 * scaleFactor) +
@@ -363,11 +364,12 @@ export class MainMenu extends Scene {
       this.highScoreText = this.add.text(
         centerX,
         totalRewardsY,
-        `Total Rewards ${totalUserEarned}`,
+        `Total Rewards ${formattedEarned}`,
         {
           fontFamily: "Arial",
           fontSize: totalRewardsFontSize,
           color: "#FFD700",
+          stroke: "#FF4500",
           align: "center",
           wordWrap: { width: Math.floor(180 * scaleFactor) },
         }
