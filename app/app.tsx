@@ -184,7 +184,7 @@ function App() {
       userGamePlayRef.current = null;
     }
     scoresRef.current = { userScore, topScores };
-    console.log("user gameplay is ", userGamePlay);
+    console.log("user gameplay is ", userGamePlay, userGamePlayRef.current);
   }, [userGamePlay, userScore, topScores]);
 
   useEffect(() => {
@@ -198,6 +198,7 @@ function App() {
     }
     checkConnection();
   }, []);
+  console.log("the user gameplay ref is ", userGamePlayRef.current);
 
   return (
     <div id="app">
