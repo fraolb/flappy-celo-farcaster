@@ -70,8 +70,8 @@ const StartGame = (parent: string, options?: any) => {
         options?.isConnected,
         options?.isProcessing,
         options?.errorRef,
-        options?.userGamePlayRef,
         options?.showGameRef,
+        options?.userGamePlayRef,
         options?.scoresRef
       ),
       new MainGame(
