@@ -497,8 +497,8 @@ export class MainMenu extends Scene {
 
     // Optional: Add visual feedback when values update
     if (userScore || totalUserEarned) {
-      this.userScoreText.setColor("#00FF00"); // Green flash on update
-      this.totalRewardsText.setColor("#00FF00");
+      this.userScoreText.setColor("#dab900ff"); // Green flash on update
+      this.totalRewardsText.setColor("#dab900ff");
 
       this.time.delayedCall(200, () => {
         this.userScoreText.setColor("#FFD700");
@@ -580,7 +580,7 @@ export class MainMenu extends Scene {
         fontSize: errorFontSize,
         color: "#ffffffff",
         align: "center",
-        wordWrap: { width: playButtonWidth + 10 },
+        wordWrap: { width: playButtonWidth + 30 },
       })
       .setOrigin(0.5);
 

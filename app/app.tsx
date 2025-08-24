@@ -96,7 +96,7 @@ function App() {
           const nextReset = playResult.nextReset
             ? new Date(playResult.nextReset)
             : null;
-          errorRef.current = "No plays left.";
+          errorRef.current = `No plays left for today. Comback after ${nextReset}`;
           throw new Error(
             `No plays left. ${
               nextReset
