@@ -323,51 +323,51 @@ export class MainMenu extends Scene {
 
     // User score display
     const userScore = this.scoresRef?.current?.userScore;
-    if (userScore) {
-      const userScoreFontSize = Math.floor(24 * scaleFactor);
-      const userScoreY = playButtonY + Math.floor(78 * scaleFactor);
-      this.add
-        .text(centerX, userScoreY, `Your Score: ${userScore.score}`, {
-          fontFamily: "Arial Black",
-          fontSize: userScoreFontSize,
-          color: "#FFD700", // Yellow
-          stroke: "#FF4500", // Orange-red stroke
-          strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
-          align: "center",
-          shadow: {
-            offsetX: Math.floor(1 * scaleFactor),
-            offsetY: Math.floor(1 * scaleFactor),
-            color: "#000000",
-            blur: Math.floor(2 * scaleFactor),
-            fill: true,
-          },
-        })
-        .setOrigin(0.5);
-    }
+    // if (userScore) {
+    //   const userScoreFontSize = Math.floor(24 * scaleFactor);
+    //   const userScoreY = playButtonY + Math.floor(78 * scaleFactor);
+    //   this.add
+    //     .text(centerX, userScoreY, `Your Score: ${userScore.score}`, {
+    //       fontFamily: "Arial Black",
+    //       fontSize: userScoreFontSize,
+    //       color: "#FFD700", // Yellow
+    //       stroke: "#FF4500", // Orange-red stroke
+    //       strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
+    //       align: "center",
+    //       shadow: {
+    //         offsetX: Math.floor(1 * scaleFactor),
+    //         offsetY: Math.floor(1 * scaleFactor),
+    //         color: "#000000",
+    //         blur: Math.floor(2 * scaleFactor),
+    //         fill: true,
+    //       },
+    //     })
+    //     .setOrigin(0.5);
+    // }
 
     // Total user rewards display with responsive styling
     const totalUserEarned = this.userGamePlayRef?.current?.totalEarned;
-    if (totalUserEarned) {
-      const totalRewardsFontSize = Math.floor(22 * scaleFactor);
-      const totalRewardsY =
-        playButtonY +
-        5 * Math.floor(20 * scaleFactor) +
-        Math.floor(10 * scaleFactor);
+    // if (totalUserEarned) {
+    //   const totalRewardsFontSize = Math.floor(22 * scaleFactor);
+    //   const totalRewardsY =
+    //     playButtonY +
+    //     5 * Math.floor(20 * scaleFactor) +
+    //     Math.floor(10 * scaleFactor);
 
-      this.highScoreText = this.add.text(
-        centerX,
-        totalRewardsY,
-        `Total Rewards ${totalUserEarned}`,
-        {
-          fontFamily: "Arial",
-          fontSize: totalRewardsFontSize,
-          color: "#FFD700",
-          align: "center",
-          wordWrap: { width: Math.floor(180 * scaleFactor) },
-        }
-      );
-      this.highScoreText.setOrigin(0.5);
-    }
+    //   this.highScoreText = this.add.text(
+    //     centerX,
+    //     totalRewardsY,
+    //     `Total Rewards ${totalUserEarned}`,
+    //     {
+    //       fontFamily: "Arial",
+    //       fontSize: totalRewardsFontSize,
+    //       color: "#FFD700",
+    //       align: "center",
+    //       wordWrap: { width: Math.floor(180 * scaleFactor) },
+    //     }
+    //   );
+    //   this.highScoreText.setOrigin(0.5);
+    // }
 
     // ====================
     // Add Buttons Row
@@ -572,10 +572,10 @@ export class MainMenu extends Scene {
     });
 
     // Button click triggers payment request (only once)
-    let playClicked = false;
+
     buttonGraphics.on("pointerdown", async () => {
-      if (playClicked || this.isProcessing.current) return;
-      playClicked = true;
+      if (this.isProcessing.current) return;
+
       buttonGraphics.disableInteractive();
       this.audioManager.playSound("menuSelect");
       this.playButtonText.setText("Processing...");
@@ -583,7 +583,6 @@ export class MainMenu extends Scene {
 
       try {
         await this.onPaymentRequested();
-        playClicked = false;
       } catch (err) {
         // Payment failed or was rejected
         this.playButtonText.setText("PLAY");
@@ -596,10 +595,10 @@ export class MainMenu extends Scene {
           ),
           Phaser.Geom.Rectangle.Contains
         );
-        playClicked = false;
+
         console.log("the err is ", err);
         // Show error message (up to first period)
-        let errorMsg = "Payment was cancelled or failed.";
+        let errorMsg = "User has finished his daily game.";
         if (typeof errorMsg === "string") {
           const periodIdx = errorMsg.indexOf(".");
           if (periodIdx !== -1) {
