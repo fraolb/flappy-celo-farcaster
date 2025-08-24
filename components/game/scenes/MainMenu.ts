@@ -29,6 +29,9 @@ export class MainMenu extends Scene {
   tapToStartTween!: Phaser.Tweens.Tween;
   titleGlowTween!: Phaser.Tweens.Tween;
 
+  userScoreText!: GameObjects.Text;
+  totalRewardsText!: GameObjects.Text;
+
   // Audio system
   audioManager!: AudioManager;
 
@@ -321,61 +324,25 @@ export class MainMenu extends Scene {
       if (this.playButtonText) this.playButtonText.setVisible(false);
     }
 
-    // User score display
+    // Display user's high score if available
+    // Create the text objects initially (even if values are null)
     const userScore = this.scoresRef?.current?.userScore;
-    console.log("User score in main menu: ", userScore);
-    if (userScore) {
-      const userScoreFontSize = Math.floor(24 * scaleFactor);
-      const userScoreY = playButtonY + Math.floor(78 * scaleFactor);
-      this.add
-        .text(centerX, userScoreY, `Your Score: ${userScore.score}`, {
-          fontFamily: "Arial Black",
-          fontSize: userScoreFontSize,
-          color: "#FFD700", // Yellow
-          stroke: "#FF4500", // Orange-red stroke
-          strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
-          align: "center",
-          shadow: {
-            offsetX: Math.floor(1 * scaleFactor),
-            offsetY: Math.floor(1 * scaleFactor),
-            color: "#000000",
-            blur: Math.floor(2 * scaleFactor),
-            fill: true,
-          },
-        })
-        .setOrigin(0.5);
-    }
-
-    // Total user rewards display with responsive styling
     const totalUserEarned = this.userGamePlayRef?.current?.totalEarned;
-    console.log(
-      "Total user earned in main menu: ",
-      totalUserEarned,
-      this.userGamePlayRef?.current
+    this.createScoreDisplays(
+      centerX,
+      playButtonY,
+      scaleFactor,
+      userScore,
+      totalUserEarned
     );
-    const formattedEarned = totalUserEarned?.toFixed(3) || "0.000";
-    if (totalUserEarned) {
-      const totalRewardsFontSize = Math.floor(22 * scaleFactor);
-      const totalRewardsY =
-        playButtonY +
-        5 * Math.floor(20 * scaleFactor) +
-        Math.floor(10 * scaleFactor);
 
-      this.highScoreText = this.add.text(
-        centerX,
-        totalRewardsY,
-        `Total Rewards ${formattedEarned}`,
-        {
-          fontFamily: "Arial",
-          fontSize: totalRewardsFontSize,
-          color: "#FFD700",
-          stroke: "#FF4500",
-          align: "center",
-          wordWrap: { width: Math.floor(250 * scaleFactor) },
-        }
-      );
-      this.highScoreText.setOrigin(0.5);
-    }
+    // Add polling to update the displays when refs change
+    this.time.addEvent({
+      delay: 500, // Check every 500ms
+      callback: this.updateScoreDisplays,
+      callbackScope: this,
+      loop: true,
+    });
 
     // ====================
     // Add Buttons Row
@@ -449,6 +416,94 @@ export class MainMenu extends Scene {
   update() {
     if (this.background) {
       this.background.tilePositionX += 1; // Move right-to-left, adjust speed as needed
+    }
+  }
+
+  // Method to create the score display texts
+  createScoreDisplays(
+    centerX: number,
+    playButtonY: number,
+    scaleFactor: number,
+    userScore: Score | null,
+    totalUserEarned: number | undefined
+  ) {
+    const userScoreFontSize = Math.floor(24 * scaleFactor);
+    const userScoreY = playButtonY + Math.floor(78 * scaleFactor);
+
+    // User score display
+    this.userScoreText = this.add
+      .text(
+        centerX,
+        userScoreY,
+        userScore ? `Your Score: ${userScore.score}` : "Your Score: Loading...",
+        {
+          fontFamily: "Arial Black",
+          fontSize: userScoreFontSize,
+          color: "#FFD700",
+          stroke: "#FF4500",
+          strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
+          align: "center",
+          shadow: {
+            offsetX: Math.floor(1 * scaleFactor),
+            offsetY: Math.floor(1 * scaleFactor),
+            color: "#000000",
+            blur: Math.floor(2 * scaleFactor),
+            fill: true,
+          },
+        }
+      )
+      .setOrigin(0.5);
+
+    // Total rewards display
+    const totalRewardsFontSize = Math.floor(22 * scaleFactor);
+    const totalRewardsY =
+      playButtonY +
+      5 * Math.floor(20 * scaleFactor) +
+      Math.floor(10 * scaleFactor);
+    const formattedEarned = totalUserEarned
+      ? totalUserEarned.toFixed(3)
+      : "0.000";
+
+    this.totalRewardsText = this.add
+      .text(centerX, totalRewardsY, `Total Rewards: ${formattedEarned}`, {
+        fontFamily: "Arial",
+        fontSize: totalRewardsFontSize,
+        color: "#FFD700",
+        stroke: "#FF4500",
+        align: "center",
+        wordWrap: { width: Math.floor(250 * scaleFactor) },
+      })
+      .setOrigin(0.5);
+  }
+
+  // Method to update the displays
+  updateScoreDisplays() {
+    const userScore = this.scoresRef?.current?.userScore;
+    const totalUserEarned = this.userGamePlayRef?.current?.totalEarned;
+    const formattedEarned = totalUserEarned
+      ? totalUserEarned.toFixed(3)
+      : "0.000";
+
+    // Update user score text
+    if (userScore) {
+      this.userScoreText.setText(`Your Score: ${userScore.score}`);
+      this.userScoreText.setColor("#FFD700"); // Reset color if it was changed
+    } else {
+      this.userScoreText.setText("Your Score: Loading...");
+    }
+
+    // Update total rewards text
+    this.totalRewardsText.setText(`Total Rewards: ${formattedEarned}`);
+
+    // Optional: Add visual feedback when values update
+    if (userScore || totalUserEarned) {
+      this.userScoreText.setColor("#00FF00"); // Green flash on update
+      this.totalRewardsText.setColor("#00FF00");
+
+      this.time.delayedCall(200, () => {
+        this.userScoreText.setColor("#FFD700");
+        this.totalRewardsText.setColor("#FFD700");
+      });
     }
   }
 
