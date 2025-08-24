@@ -323,6 +323,7 @@ export class MainMenu extends Scene {
 
     // User score display
     const userScore = this.scoresRef?.current?.userScore;
+    console.log("User score in main menu: ", userScore);
     // if (userScore) {
     //   const userScoreFontSize = Math.floor(24 * scaleFactor);
     //   const userScoreY = playButtonY + Math.floor(78 * scaleFactor);
@@ -347,6 +348,7 @@ export class MainMenu extends Scene {
 
     // Total user rewards display with responsive styling
     const totalUserEarned = this.userGamePlayRef?.current?.totalEarned;
+    console.log("Total user earned in main menu: ", totalUserEarned);
     // if (totalUserEarned) {
     //   const totalRewardsFontSize = Math.floor(22 * scaleFactor);
     //   const totalRewardsY =
