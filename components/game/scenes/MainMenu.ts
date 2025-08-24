@@ -580,7 +580,7 @@ export class MainMenu extends Scene {
         fontSize: errorFontSize,
         color: "#ffffffff",
         align: "center",
-        wordWrap: { width: playButtonWidth + 120 },
+        wordWrap: { width: playButtonWidth + 170 },
       })
       .setOrigin(0.5);
 
