@@ -324,52 +324,56 @@ export class MainMenu extends Scene {
     // User score display
     const userScore = this.scoresRef?.current?.userScore;
     console.log("User score in main menu: ", userScore);
-    // if (userScore) {
-    //   const userScoreFontSize = Math.floor(24 * scaleFactor);
-    //   const userScoreY = playButtonY + Math.floor(78 * scaleFactor);
-    //   this.add
-    //     .text(centerX, userScoreY, `Your Score: ${userScore.score}`, {
-    //       fontFamily: "Arial Black",
-    //       fontSize: userScoreFontSize,
-    //       color: "#FFD700", // Yellow
-    //       stroke: "#FF4500", // Orange-red stroke
-    //       strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
-    //       align: "center",
-    //       shadow: {
-    //         offsetX: Math.floor(1 * scaleFactor),
-    //         offsetY: Math.floor(1 * scaleFactor),
-    //         color: "#000000",
-    //         blur: Math.floor(2 * scaleFactor),
-    //         fill: true,
-    //       },
-    //     })
-    //     .setOrigin(0.5);
-    // }
+    if (userScore) {
+      const userScoreFontSize = Math.floor(24 * scaleFactor);
+      const userScoreY = playButtonY + Math.floor(78 * scaleFactor);
+      this.add
+        .text(centerX, userScoreY, `Your Score: ${userScore.score}`, {
+          fontFamily: "Arial Black",
+          fontSize: userScoreFontSize,
+          color: "#FFD700", // Yellow
+          stroke: "#FF4500", // Orange-red stroke
+          strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
+          align: "center",
+          shadow: {
+            offsetX: Math.floor(1 * scaleFactor),
+            offsetY: Math.floor(1 * scaleFactor),
+            color: "#000000",
+            blur: Math.floor(2 * scaleFactor),
+            fill: true,
+          },
+        })
+        .setOrigin(0.5);
+    }
 
     // Total user rewards display with responsive styling
     const totalUserEarned = this.userGamePlayRef?.current?.totalEarned;
-    console.log("Total user earned in main menu: ", totalUserEarned);
-    // if (totalUserEarned) {
-    //   const totalRewardsFontSize = Math.floor(22 * scaleFactor);
-    //   const totalRewardsY =
-    //     playButtonY +
-    //     5 * Math.floor(20 * scaleFactor) +
-    //     Math.floor(10 * scaleFactor);
+    console.log(
+      "Total user earned in main menu: ",
+      totalUserEarned,
+      this.userGamePlayRef?.current
+    );
+    if (totalUserEarned) {
+      const totalRewardsFontSize = Math.floor(42 * scaleFactor);
+      const totalRewardsY =
+        playButtonY +
+        5 * Math.floor(20 * scaleFactor) +
+        Math.floor(10 * scaleFactor);
 
-    //   this.highScoreText = this.add.text(
-    //     centerX,
-    //     totalRewardsY,
-    //     `Total Rewards ${totalUserEarned}`,
-    //     {
-    //       fontFamily: "Arial",
-    //       fontSize: totalRewardsFontSize,
-    //       color: "#FFD700",
-    //       align: "center",
-    //       wordWrap: { width: Math.floor(180 * scaleFactor) },
-    //     }
-    //   );
-    //   this.highScoreText.setOrigin(0.5);
-    // }
+      this.highScoreText = this.add.text(
+        centerX,
+        totalRewardsY,
+        `Total Rewards ${totalUserEarned}`,
+        {
+          fontFamily: "Arial",
+          fontSize: totalRewardsFontSize,
+          color: "#FFD700",
+          align: "center",
+          wordWrap: { width: Math.floor(180 * scaleFactor) },
+        }
+      );
+      this.highScoreText.setOrigin(0.5);
+    }
 
     // ====================
     // Add Buttons Row
