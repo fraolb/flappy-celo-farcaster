@@ -574,10 +574,10 @@ export class MainMenu extends Scene {
     });
 
     // Button click triggers payment request (only once)
-
+    let userClickedPlay = false;
     buttonGraphics.on("pointerdown", async () => {
       if (this.isProcessing.current) return;
-
+      userClickedPlay = true;
       buttonGraphics.disableInteractive();
       this.audioManager.playSound("menuSelect");
       this.playButtonText.setText("Processing...");
@@ -619,8 +619,9 @@ export class MainMenu extends Scene {
         if (this.isProcessing.current && !this.showGameRef.current) {
           this.playButtonText.setText("Processing...");
         }
-        if (this.showGameRef.current) {
+        if (userClickedPlay && this.showGameRef.current) {
           this.scene.start("Game");
+          userClickedPlay = false;
         }
         // Update error display if errorRef changes
         if (this.errorRef.current) {
