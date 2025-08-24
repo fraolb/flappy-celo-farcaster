@@ -571,9 +571,9 @@ export class MainMenu extends Scene {
       .setDepth(2);
 
     // Error text display (initially hidden)
-    const errorFontSize = Math.floor(14 * scaleFactor);
+    const errorFontSize = Math.floor(16 * scaleFactor);
     const errorY =
-      playButtonY + playButtonHeight / 2 + Math.floor(30 * scaleFactor);
+      playButtonY + playButtonHeight / 2 + Math.floor(25 * scaleFactor);
     this.errorDisplay = this.add
       .text(centerX, errorY, "", {
         fontFamily: "Arial",
@@ -696,10 +696,10 @@ export class MainMenu extends Scene {
             ),
             Phaser.Geom.Rectangle.Contains
           );
-          const periodIdx = this.errorRef.current.indexOf(".");
-          const errText = this.errorRef.current.slice(0, periodIdx + 1);
-          console.log("Error text:", errText, this.errorRef.current);
-          this.errorDisplay.setText(errText);
+          // const periodIdx = this.errorRef.current.indexOf(".");
+          // const errText = this.errorRef.current.slice(0, periodIdx + 1);
+          // console.log("Error text:", errText, this.errorRef.current);
+          this.errorDisplay.setText(this.errorRef.current);
         }
       },
     });
