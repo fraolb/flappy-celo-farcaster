@@ -127,7 +127,7 @@ export class MainMenu extends Scene {
     const titleFontSize = Math.floor(27 * scaleFactor);
     const titleY = centerY - Math.floor(80 * scaleFactor);
 
-    this.title = this.add.text(centerX, titleY, "FLAPPY ROCKET V2", {
+    this.title = this.add.text(centerX, titleY, "FLAPPY ROCKET V3", {
       fontFamily: "Arial Black",
       fontSize: titleFontSize,
       color: "#FFD700", // Bright gold

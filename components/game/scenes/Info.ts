@@ -57,11 +57,11 @@ export class InfoScene extends Scene {
       .text(
         centerX,
         centerY - 50,
-        "FLAPPY ROCKET V2\n\n" +
+        "FLAPPY ROCKET V3\n\n" +
           "A fun space adventure game\n" +
           "Built with Phaser 3\n\n" +
           "Developed by Fraol Bereket\n" +
-          "Version 2.0.0\n\n",
+          "Version 3.0.0\n\n",
         {
           fontFamily: "Arial",
           fontSize: 16 * scaleFactor,
