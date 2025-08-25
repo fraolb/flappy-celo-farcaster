@@ -13,6 +13,7 @@ export class GameOver extends Scene {
   background!: Phaser.GameObjects.Image;
   gameover_text!: Phaser.GameObjects.Text;
   score_text!: Phaser.GameObjects.Text;
+  reward_text!: Phaser.GameObjects.Text;
   high_score_text!: Phaser.GameObjects.Text;
   tap_to_restart_text!: Phaser.GameObjects.Text;
   main_menu_text!: Phaser.GameObjects.Text;
@@ -79,7 +80,7 @@ export class GameOver extends Scene {
 
     // Score display with responsive styling
     const scoreFontSize = Math.floor(20 * scaleFactor);
-    const scoreY = gameOverY + Math.floor(32 * scaleFactor);
+    const scoreY = gameOverY + Math.floor(35 * scaleFactor);
 
     this.score_text = this.add.text(centerX, scoreY, `Score: ${data.score}`, {
       fontFamily: "Arial Black",
@@ -98,8 +99,36 @@ export class GameOver extends Scene {
     });
     this.score_text.setOrigin(0.5);
 
+    // Score display with responsive styling
+    const rewardFontSize = Math.floor(18 * scaleFactor);
+    const rewardY = gameOverY + Math.floor(27 * scaleFactor);
+    const rewarded = data.score * 0.0005;
+    const formattedEarned = data.score > 0 ? rewarded.toFixed(3) : "0.000";
+
+    this.reward_text = this.add.text(
+      centerX,
+      rewardY,
+      `You are rewarded: ${formattedEarned} CELO`,
+      {
+        fontFamily: "Arial Black",
+        fontSize: rewardFontSize,
+        color: "#FFD700", // Bright gold
+        stroke: "#FF4500", // Orange-red stroke
+        strokeThickness: Math.max(2, Math.floor(3 * scaleFactor)),
+        align: "center",
+        shadow: {
+          offsetX: Math.floor(1 * scaleFactor),
+          offsetY: Math.floor(1 * scaleFactor),
+          color: "#000000",
+          blur: Math.floor(2 * scaleFactor),
+          fill: true,
+        },
+      }
+    );
+    this.reward_text.setOrigin(0.5);
+
     // High score display with responsive styling
-    const highScoreY = scoreY + Math.floor(24 * scaleFactor);
+    const highScoreY = scoreY + Math.floor(22 * scaleFactor);
 
     // New high score message with responsive styling
     if (data.score >= data.highScore && data.score > 0) {
