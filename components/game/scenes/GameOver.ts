@@ -59,7 +59,7 @@ export class GameOver extends Scene {
 
     // Game Over title with responsive styling
     const gameOverFontSize = Math.floor(36 * scaleFactor);
-    const gameOverY = centerY - Math.floor(50 * scaleFactor);
+    const gameOverY = centerY - Math.floor(70 * scaleFactor);
 
     this.gameover_text = this.add.text(centerX, gameOverY, "GAME OVER", {
       fontFamily: "Arial Black",
@@ -80,7 +80,7 @@ export class GameOver extends Scene {
 
     // Score display with responsive styling
     const scoreFontSize = Math.floor(20 * scaleFactor);
-    const scoreY = gameOverY + Math.floor(35 * scaleFactor);
+    const scoreY = gameOverY + Math.floor(28 * scaleFactor);
 
     this.score_text = this.add.text(centerX, scoreY, `Score: ${data.score}`, {
       fontFamily: "Arial Black",
@@ -99,9 +99,9 @@ export class GameOver extends Scene {
     });
     this.score_text.setOrigin(0.5);
 
-    // Score display with responsive styling
+    // reward display with responsive styling
     const rewardFontSize = Math.floor(18 * scaleFactor);
-    const rewardY = gameOverY + Math.floor(27 * scaleFactor);
+    const rewardY = gameOverY + Math.floor(42 * scaleFactor);
     const rewarded = data.score * 0.0005;
     const formattedEarned = data.score > 0 ? rewarded.toFixed(3) : "0.000";
 
@@ -128,7 +128,7 @@ export class GameOver extends Scene {
     this.reward_text.setOrigin(0.5);
 
     // High score display with responsive styling
-    const highScoreY = scoreY + Math.floor(22 * scaleFactor);
+    const highScoreY = scoreY + Math.floor(24 * scaleFactor);
 
     // New high score message with responsive styling
     if (data.score >= data.highScore && data.score > 0) {
