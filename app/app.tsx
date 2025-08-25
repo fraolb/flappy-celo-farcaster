@@ -166,8 +166,9 @@ function App() {
   };
 
   const shareScore = async (score: number) => {
+    const rewardAmount = (score * 0.0005).toFixed(3);
     await sdk.actions.composeCast({
-      text: `🎮 I just scored ${score} playing Flappy Rocket! 🏆\n 🚀 Play and win Celo Weekly!\n`,
+      text: `🎮 I just scored ${score} playing Flappy Rocket and got rewarded ${rewardAmount}! 🏆\n 🚀 Play and win CELO instantly!\n`,
       embeds: ["https://flappy-farcaster.vercel.app"],
     });
   };
