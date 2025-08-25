@@ -101,7 +101,7 @@ export class GameOver extends Scene {
 
     // reward display with responsive styling
     const rewardFontSize = Math.floor(18 * scaleFactor);
-    const rewardY = gameOverY + Math.floor(42 * scaleFactor);
+    const rewardY = gameOverY + Math.floor(50 * scaleFactor);
     const rewarded = data.score * 0.0005;
     const formattedEarned = data.score > 0 ? rewarded.toFixed(3) : "0.000";
 
@@ -128,7 +128,7 @@ export class GameOver extends Scene {
     this.reward_text.setOrigin(0.5);
 
     // High score display with responsive styling
-    const highScoreY = scoreY + Math.floor(24 * scaleFactor);
+    const highScoreY = rewardY + Math.floor(24 * scaleFactor);
 
     // New high score message with responsive styling
     if (data.score >= data.highScore && data.score > 0) {
