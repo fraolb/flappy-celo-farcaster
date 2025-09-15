@@ -348,7 +348,8 @@ export class MainMenu extends Scene {
     // Add Buttons Row
     // ====================
     const buttonRowY =
-      this.playButtonText.y +
+      playButtonY -
+      playButtonHeight / 2 +
       (this.scoresRef?.current?.userScore
         ? Math.floor(250 * scaleFactor)
         : Math.floor(210 * scaleFactor));
