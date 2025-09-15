@@ -438,6 +438,8 @@ export class MainMenu extends Scene {
         userScoreY,
         availablePlay
           ? `${availablePlay}/4 Plays Left`
+          : availablePlay == 0
+          ? "You've used your 4 daily plays."
           : "Plays Left: Loading...",
         {
           fontFamily: "Arial Black",
@@ -492,6 +494,13 @@ export class MainMenu extends Scene {
     if (availablePlay) {
       this.userScoreText.setText(`${availablePlay}/4 Plays Left`);
       this.userScoreText.setColor("#FFD700"); // Reset color if it was changed
+    } else if (availablePlay == 0) {
+      this.userScoreText.setText(
+        "You've used your 4 daily plays. Come back tomorrow for more!"
+      );
+      const gameWidth = this.sys.canvas.width;
+      const scaleFactor = Math.min(gameWidth / 400, 1);
+      this.userScoreText.setFontSize(Math.floor(12 * scaleFactor));
     } else {
       this.userScoreText.setText("Plays Left: Loading...");
     }
