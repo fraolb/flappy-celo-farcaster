@@ -187,12 +187,11 @@ export class LeaderboardScene extends Scene {
   // Method to create the score display texts
   createScoreDisplays(
     centerX: number,
-    playButtonY: number,
+    userScoreY: number,
     scaleFactor: number,
     userScore: Score | null
   ) {
     const userScoreFontSize = Math.floor(24 * scaleFactor);
-    const userScoreY = playButtonY + Math.floor(78 * scaleFactor);
 
     // User score display
     this.userScoreText = this.add
