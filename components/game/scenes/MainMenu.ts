@@ -326,13 +326,13 @@ export class MainMenu extends Scene {
 
     // Display user's high score if available
     // Create the text objects initially (even if values are null)
-    const userScore = this.scoresRef?.current?.userScore;
+    const availablePlay = this.userGamePlayRef?.current?.playsLeft;
     const totalUserEarned = this.userGamePlayRef?.current?.totalEarned;
-    this.createScoreDisplays(
+    this.createAvailablePlayDisplays(
       centerX,
       playButtonY,
       scaleFactor,
-      userScore,
+      availablePlay,
       totalUserEarned
     );
 
@@ -420,11 +420,11 @@ export class MainMenu extends Scene {
   }
 
   // Method to create the score display texts
-  createScoreDisplays(
+  createAvailablePlayDisplays(
     centerX: number,
     playButtonY: number,
     scaleFactor: number,
-    userScore: Score | null,
+    availablePlay: number | null | undefined,
     totalUserEarned: number | undefined
   ) {
     const userScoreFontSize = Math.floor(24 * scaleFactor);
@@ -435,7 +435,9 @@ export class MainMenu extends Scene {
       .text(
         centerX,
         userScoreY,
-        userScore ? `Your Score: ${userScore.score}` : "Your Score: Loading...",
+        availablePlay
+          ? `${availablePlay}/4 Plays Left`
+          : "Plays Left: Loading...",
         {
           fontFamily: "Arial Black",
           fontSize: userScoreFontSize,
@@ -478,25 +480,26 @@ export class MainMenu extends Scene {
 
   // Method to update the displays
   updateScoreDisplays() {
-    const userScore = this.scoresRef?.current?.userScore;
+    const availablePlay = this.userGamePlayRef?.current?.playsLeft;
+
     const totalUserEarned = this.userGamePlayRef?.current?.totalEarned;
     const formattedEarned = totalUserEarned
       ? totalUserEarned.toFixed(3)
       : "0.000";
 
     // Update user score text
-    if (userScore) {
-      this.userScoreText.setText(`Your Score: ${userScore.score}`);
+    if (availablePlay) {
+      this.userScoreText.setText(`${availablePlay}/4 Plays Left`);
       this.userScoreText.setColor("#FFD700"); // Reset color if it was changed
     } else {
-      this.userScoreText.setText("Your Score: Loading...");
+      this.userScoreText.setText("Plays Left: Loading...");
     }
 
     // Update total rewards text
     this.totalRewardsText.setText(`Total Rewards: ${formattedEarned}`);
 
     // Optional: Add visual feedback when values update
-    if (userScore || totalUserEarned) {
+    if (availablePlay || totalUserEarned) {
       this.userScoreText.setColor("#dab900ff"); // Green flash on update
       this.totalRewardsText.setColor("#dab900ff");
 
