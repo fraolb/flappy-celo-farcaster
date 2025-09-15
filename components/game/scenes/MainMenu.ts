@@ -503,15 +503,14 @@ export class MainMenu extends Scene {
         playsLeftText = "4/4 Plays Left";
       } else {
         // Plays are truly zero. Show the countdown message.
-        playsLeftText =
-          "You've used your 4 daily plays. Come back tomorrow for more! 🎮";
+        playsLeftText = "You've used your 4 daily plays. 🎮";
         const countdownString =
           this.getTimeUntilResetFromLastPlay(lastPlayTimestamp);
         playsLeftText += `\n(${countdownString})`;
         const gameWidth = this.sys.canvas.width;
         const scaleFactor = Math.min(gameWidth / 400, 1);
-        this.userScoreText.setFontSize(Math.floor(12 * scaleFactor));
-        playsLeftColor = "#ff6666"; // Change color to indicate limit
+        this.userScoreText.setFontSize(Math.floor(16 * scaleFactor));
+        playsLeftColor = "#c5a800ff"; // Change color to indicate limit
       }
     } else if (availablePlay != undefined && availablePlay > 0) {
       // Normal case: User has plays remaining
