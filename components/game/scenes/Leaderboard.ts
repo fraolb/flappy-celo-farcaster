@@ -1,4 +1,4 @@
-import { Scene } from "phaser";
+import { Scene, GameObjects } from "phaser";
 import { AudioManager } from "../AudioManager";
 
 interface Score {
@@ -11,6 +11,7 @@ interface Score {
 
 export class LeaderboardScene extends Scene {
   private audioManager!: AudioManager;
+  userScoreText!: GameObjects.Text;
 
   scoresRef: React.RefObject<{
     userScore: Score | null;
@@ -57,9 +58,14 @@ export class LeaderboardScene extends Scene {
     // Panel
     const panelWidth = Math.min(gameWidth * 0.9, 400);
     const panelHeight = Math.min(gameHeight * 0.8, 600);
+
     this.add
       .rectangle(centerX, centerY, panelWidth, panelHeight, 0x1a1a2e)
       .setStrokeStyle(2, 0x4cc9f0);
+
+    const userScore = this.scoresRef?.current?.userScore;
+    const userScoreY = centerY - panelHeight / 2 + 70;
+    this.createScoreDisplays(centerX, userScoreY, scaleFactor, userScore);
 
     // Title
     this.add
@@ -176,5 +182,40 @@ export class LeaderboardScene extends Scene {
     gradient.setInteractive().on("pointerdown", () => {
       this.scene.start("MainMenu");
     });
+  }
+
+  // Method to create the score display texts
+  createScoreDisplays(
+    centerX: number,
+    playButtonY: number,
+    scaleFactor: number,
+    userScore: Score | null
+  ) {
+    const userScoreFontSize = Math.floor(24 * scaleFactor);
+    const userScoreY = playButtonY + Math.floor(78 * scaleFactor);
+
+    // User score display
+    this.userScoreText = this.add
+      .text(
+        centerX,
+        userScoreY,
+        userScore ? `Your Score: ${userScore.score}` : "Your Score: Loading...",
+        {
+          fontFamily: "Arial Black",
+          fontSize: userScoreFontSize,
+          color: "#fcfcfcff",
+          stroke: "#FF4500",
+          strokeThickness: Math.max(1, Math.floor(2 * scaleFactor)),
+          align: "center",
+          shadow: {
+            offsetX: Math.floor(1 * scaleFactor),
+            offsetY: Math.floor(1 * scaleFactor),
+            color: "#000000",
+            blur: Math.floor(2 * scaleFactor),
+            fill: true,
+          },
+        }
+      )
+      .setOrigin(0.5);
   }
 }
