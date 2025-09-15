@@ -338,7 +338,7 @@ export class MainMenu extends Scene {
 
     // Add polling to update the displays when refs change
     this.time.addEvent({
-      delay: 500, // Check every 500ms
+      delay: 1000, // Check every 500ms
       callback: this.updateScoreDisplays,
       callbackScope: this,
       loop: true,
@@ -483,41 +483,109 @@ export class MainMenu extends Scene {
 
   // Method to update the displays
   updateScoreDisplays() {
-    const availablePlay = this.userGamePlayRef?.current?.playsLeft;
+    const userData = this.userGamePlayRef?.current;
+    const availablePlay = userData?.playsLeft;
+    const lastPlayTimestamp = userData?.lastPlay;
 
-    const totalUserEarned = this.userGamePlayRef?.current?.totalEarned;
+    const totalUserEarned = userData?.totalEarned;
     const formattedEarned = totalUserEarned
       ? totalUserEarned.toFixed(3)
       : "0.000";
 
-    // Update user score text
-    if (availablePlay) {
-      this.userScoreText.setText(`${availablePlay}/4 Plays Left`);
-      this.userScoreText.setColor("#FFD700"); // Reset color if it was changed
-    } else if (availablePlay == 0) {
-      this.userScoreText.setText(
-        "You've used your 4 daily plays. Come back tomorrow for more!"
-      );
-      const gameWidth = this.sys.canvas.width;
-      const scaleFactor = Math.min(gameWidth / 400, 1);
-      this.userScoreText.setFontSize(Math.floor(12 * scaleFactor));
+    // --- UPDATED LOGIC FOR PLAYS LEFT ---
+    let playsLeftText;
+    let playsLeftColor = "#FFD700";
+
+    if (availablePlay === 0) {
+      // Check if the last play was over 24 hours ago, even if playsLeft is 0
+      if (this.isLastPlayOver24HoursAgo(lastPlayTimestamp)) {
+        // The server hasn't reset this yet, but for the user, it's a new day.
+        playsLeftText = "4/4 Plays Left";
+      } else {
+        // Plays are truly zero. Show the countdown message.
+        playsLeftText =
+          "You've used your 4 daily plays. Come back tomorrow for more! 🎮";
+        const countdownString =
+          this.getTimeUntilResetFromLastPlay(lastPlayTimestamp);
+        playsLeftText += `\n(${countdownString})`;
+        const gameWidth = this.sys.canvas.width;
+        const scaleFactor = Math.min(gameWidth / 400, 1);
+        this.userScoreText.setFontSize(Math.floor(12 * scaleFactor));
+        playsLeftColor = "#ff6666"; // Change color to indicate limit
+      }
+    } else if (availablePlay != undefined && availablePlay > 0) {
+      // Normal case: User has plays remaining
+      playsLeftText = `${availablePlay}/4 Plays Left`;
     } else {
-      this.userScoreText.setText("Plays Left: Loading...");
+      // Data is loading or unavailable
+      playsLeftText = "Plays Left: Loading...";
     }
+    // Set the text and color
+    this.userScoreText.setText(playsLeftText);
+    this.userScoreText.setColor(playsLeftColor);
+    // --- END UPDATED LOGIC ---
 
     // Update total rewards text
     this.totalRewardsText.setText(`Total Rewards: ${formattedEarned}`);
 
-    // Optional: Add visual feedback when values update
+    // Optional: Add visual feedback when values update (unchanged, but color is now variable)
     if (availablePlay || totalUserEarned) {
-      this.userScoreText.setColor("#dab900ff"); // Green flash on update
+      this.userScoreText.setColor("#dab900ff");
       this.totalRewardsText.setColor("#dab900ff");
 
       this.time.delayedCall(200, () => {
-        this.userScoreText.setColor("#FFD700");
+        // Revert to the color we calculated above (either gold or red)
+        this.userScoreText.setColor(playsLeftColor);
         this.totalRewardsText.setColor("#FFD700");
       });
     }
+  }
+
+  // Add this function to calculate if the lastPlay was over 24 hours ago
+  isLastPlayOver24HoursAgo(
+    lastPlayDateString: string | undefined | Date | null
+  ): boolean {
+    if (!lastPlayDateString) return true; // If no data, assume it's old.
+
+    const lastPlayDate = new Date(lastPlayDateString);
+    const now = new Date();
+
+    // Calculate the difference in milliseconds
+    const diffInMs = now.getTime() - lastPlayDate.getTime();
+    // Convert milliseconds to hours
+    const diffInHours = diffInMs / (1000 * 60 * 60);
+
+    return diffInHours >= 24;
+  }
+
+  // Updated function to get time until reset (now based on lastPlay + 24h)
+  getTimeUntilResetFromLastPlay(
+    lastPlayDateString: string | undefined | null | Date
+  ): string {
+    if (!lastPlayDateString) return "Resets soon!";
+
+    const lastPlayDate = new Date(lastPlayDateString);
+    const now = new Date();
+
+    // Calculate the reset time: lastPlay time + 24 hours
+    const resetTime = new Date(lastPlayDate.getTime() + 24 * 60 * 60 * 1000);
+
+    // Calculate the difference in milliseconds
+    const timeRemainingMs = resetTime.getTime() - now.getTime();
+
+    // If the reset time is in the past, return a message
+    if (timeRemainingMs <= 0) {
+      return "Plays reset now!";
+    }
+
+    // Convert milliseconds to hours and minutes
+    const hoursRemaining = Math.floor(timeRemainingMs / (1000 * 60 * 60));
+    const minutesRemaining = Math.floor(
+      (timeRemainingMs % (1000 * 60 * 60)) / (1000 * 60)
+    );
+
+    // Format the string (e.g., "10h 30m")
+    return `Resets in: ${hoursRemaining}h ${minutesRemaining}m`;
   }
 
   // Helper to show the Play button after wallet connection
