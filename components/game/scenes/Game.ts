@@ -97,6 +97,7 @@ export class Game extends Scene {
     if (!this.bird.body || this.isPaused) return;
 
     // Play flap sound
+    this.sound.volume = 0.2;
     this.sound.play("jump");
 
     // Set upward velocity
@@ -619,6 +620,7 @@ export class Game extends Scene {
     if (collided && now - this.lastCollisionTime > this.collisionCooldown) {
       this.lastCollisionTime = now;
       // Play collision sound
+      this.sound.volume = 0.2;
       this.sound.play("punch");
       console.log("heart level is ", this.heart);
       if (this.heart > 1) {
@@ -629,6 +631,7 @@ export class Game extends Scene {
         this.heart = 0;
         if (this.endGame) this.endGame();
         // Play game over sound and transition to GameOver scene
+        this.sound.volume = 0.2;
         this.sound.play("game_over");
         this.handleAddUserScore(this.score).catch((err) => {
           console.error("Error adding user score:", err);
@@ -647,6 +650,7 @@ export class Game extends Scene {
       this.bird.body.position.y <= -50;
     if (gameOver) {
       if (this.endGame) this.endGame();
+      this.sound.volume = 0.2;
       this.sound.play("game_over");
       this.scene.start("GameOver", {
         score: this.score,
