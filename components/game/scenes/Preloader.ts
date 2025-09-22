@@ -124,10 +124,10 @@ export class Preloader extends Scene {
 
   generateAudioFiles() {
     // Generate simple audio files using Web Audio API
-    this.generateSound("flap", 200, "sine", 0.3);
+    this.generateSound("flap", 200, "sine", 0.2);
     this.generateSound("score", 800, "square", 0.2);
-    this.generateSound("collision", 150, "sawtooth", 0.4);
-    this.generateSound("gameOver", 300, "triangle", 0.5);
+    this.generateSound("collision", 150, "sawtooth", 0.2);
+    this.generateSound("gameOver", 300, "triangle", 0.2);
   }
 
   generateSound(
