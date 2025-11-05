@@ -46,7 +46,7 @@ function App() {
 
   console.log("ts test ", error, canMoveSprite);
 
-  const { isConnected, chainId, address } = useAccount();
+  const { isConnected, address } = useAccount();
   const { connectAsync } = useConnect();
 
   const handleSubmit = async () => {
@@ -208,7 +208,7 @@ function App() {
         currentActiveScene={currentScene}
         onPaymentRequested={handleSubmit}
         handleConnectToCelo={handleConnectToCelo}
-        isConnected={isConnected && chainId == celo.id ? true : false}
+        isConnected={isConnected ? true : false}
         isProcessing={isProcessingRef}
         errorRef={errorRef}
         showGameRef={showGameRef}
