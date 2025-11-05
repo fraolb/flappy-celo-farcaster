@@ -87,7 +87,7 @@ export async function POST(request: Request) {
       // functionName: "payoutCELOToWinner",
       // args: [wallet, rewardInBigint],
       data: contractData as `0x${string}`,
-      // value: parseEther("0"),
+      value: parseEther("0"),
     });
 
     // Wait for transaction receipt
