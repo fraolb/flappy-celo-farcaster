@@ -5,6 +5,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { parseEther } from "viem";
 // import { submitReferral, getReferralTag } from "@divvi/referral-sdk";
 import FlappyRocketGameABI from "../../../ABI/FlappyRocket.json";
+import { encodeFunctionData } from "viem";
 
 import UserPlay from "@/model/userPlays";
 import dbConnect from "@/lib/mongodb";
@@ -68,11 +69,11 @@ export async function POST(request: Request) {
     const reward = score * RATE;
     const rewardInBigint = parseEther(String(reward));
     // Encode payoutCELOToWinner function call
-    // const contractData = encodeFunctionData({
-    //   abi: FlappyRocketGameABI,
-    //   functionName: "payoutCELOToWinner",
-    //   args: [wallet, rewardInBigint],
-    // });
+    const contractData = encodeFunctionData({
+      abi: FlappyRocketGameABI,
+      functionName: "payoutCELOToWinner",
+      args: [wallet, rewardInBigint],
+    });
 
     // const combinedData = referralTag
     //   ? contractData + referralTag
@@ -83,10 +84,10 @@ export async function POST(request: Request) {
       account,
       to: FlappyRocketGameAddress,
       abi: FlappyRocketGameABI,
-      functionName: "payoutCELOToWinner",
-      args: [wallet, rewardInBigint],
-      // data: contractData as `0x${string}`,
-      value: parseEther("0"),
+      // functionName: "payoutCELOToWinner",
+      // args: [wallet, rewardInBigint],
+      data: contractData as `0x${string}`,
+      // value: parseEther("0"),
     });
 
     // Wait for transaction receipt
