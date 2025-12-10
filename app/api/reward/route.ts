@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       transport: http("https://forno.celo.org"),
     });
 
-    const RATE = 0.0005; // CELO per point
+    const RATE = 0.005; // CELO per point
     const reward = score * RATE;
     const rewardInBigint = parseEther(String(reward));
     // Encode distributeReward function call
