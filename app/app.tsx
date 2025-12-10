@@ -132,12 +132,13 @@ function App() {
   };
 
   const handleAddUserScore = async (score: number) => {
-    if (!isConnected || !context?.user?.username) {
+    if (!context?.user?.username) {
       setError("Please connect your wallet first");
       return;
     }
     console.log("handleAddUserScore called with score:", score);
     const username = context.user.username;
+    const wallet = address ?? userGamePlayRef.current?.wallet;
     try {
       const rewardPlayer = await fetch("/api/reward", {
         method: "POST",
@@ -146,7 +147,7 @@ function App() {
         },
         body: JSON.stringify({
           username: context?.user?.username,
-          wallet: address,
+          wallet: wallet,
           score: score,
         }),
       });
@@ -208,7 +209,9 @@ function App() {
         currentActiveScene={currentScene}
         onPaymentRequested={handleSubmit}
         handleConnectToCelo={handleConnectToCelo}
-        isConnected={isConnected ? true : false}
+        isConnected={
+          isConnected || userGamePlayRef.current != null ? true : false
+        }
         isProcessing={isProcessingRef}
         errorRef={errorRef}
         showGameRef={showGameRef}
