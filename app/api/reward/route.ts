@@ -4,13 +4,13 @@ import { celo } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { parseEther } from "viem";
 // import { submitReferral, getReferralTag } from "@divvi/referral-sdk";
-import FlappyRocketGameABI from "../../../ABI/FlappyRocket.json";
+import FlappyRocketGameABI from "../../../ABI/FlappyRocketNew.json";
 import { encodeFunctionData } from "viem";
 
 import UserPlay from "@/model/userPlays";
 import dbConnect from "@/lib/mongodb";
 
-const FlappyRocketGameAddress = "0x883D06cc70BE8c3E018EA35f7BB7671B044b4Beb";
+const FlappyRocketGameAddress = "0x5634bE4F81b58AA6aFAcbacf57C1Fae157dfF938";
 
 export async function POST(request: Request) {
   await dbConnect();
@@ -68,10 +68,10 @@ export async function POST(request: Request) {
     const RATE = 0.0005; // CELO per point
     const reward = score * RATE;
     const rewardInBigint = parseEther(String(reward));
-    // Encode payoutCELOToWinner function call
+    // Encode distributeReward function call
     const contractData = encodeFunctionData({
       abi: FlappyRocketGameABI,
-      functionName: "payoutCELOToWinner",
+      functionName: "distributeReward",
       args: [wallet, rewardInBigint],
     });
 
